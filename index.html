@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Shanti Jewel - Final Verified Portal</title>
+    <title>Shanti Jewel - Deadline Portal</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root { --gold: #D4AF37; --brown: #3e2723; --bg: #f8f9fa; }
-        body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; padding-bottom: 95px; }
+        body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; padding-bottom: 100px; }
         
         .header { background: var(--brown); color: white; text-align: center; padding: 15px; border-bottom: 4px solid var(--gold); }
         .logo { font-size: 22px; font-weight: 700; letter-spacing: 3px; }
 
         .tab-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; border-top: 1px solid #ddd; height: 85px; z-index: 999; }
-        .tab { flex: 1; text-align: center; padding: 25px 5px; font-size: 10px; color: #888; font-weight: 700; text-transform: uppercase; }
+        .tab { flex: 1; text-align: center; padding: 25px 5px; font-size: 9px; color: #888; font-weight: 700; text-transform: uppercase; }
         .tab.active { color: var(--brown); border-top: 5px solid var(--gold); background: #fffcf5; }
 
         .page { display: none; padding: 15px; }
@@ -29,33 +29,44 @@
         .btn-outline { background: none; border: 2.5px solid var(--gold); color: var(--gold); margin-top: 10px; }
 
         .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        .photo-btn { height: 100px; background: #eee; border: 2px dashed #ccc; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #666; font-weight: 700; cursor: pointer; overflow: hidden; text-align: center; }
+        .photo-btn { height: 100px; background: #eee; border: 2px dashed #ccc; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #666; font-weight: 700; cursor: pointer; overflow: hidden; }
         .photo-btn img { width: 100%; height: 100%; object-fit: cover; }
 
-        #formPreview, #adminLock { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index: 10000; overflow-y: auto; text-align: center; }
+        .lock-overlay { display: block; position: fixed; top:0; left:0; width:100%; height:100%; background:var(--brown); z-index: 20000; text-align: center; color: white; }
+        #dashLock { display: none; }
         
-        /* SHARE FORM - CLEANED */
+        #formPreview { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index: 10000; overflow-y: auto; text-align: center; }
+        
         #canvasOutput { background: white; width: 750px; padding: 50px; position: fixed; left: -9999px; border: 20px solid var(--gold); }
-        .form-label { font-size: 16px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-top: 15px; }
-        .form-value { font-family: 'Montserrat'; font-size: 32px; font-weight: 700; color: var(--brown); border-bottom: 2px solid #f0f0f0; padding-bottom: 5px; margin-bottom: 10px; }
+        .form-label { font-size: 14px; font-weight: 700; color: #888; text-transform: uppercase; margin-top: 15px; }
+        .form-value { font-size: 28px; font-weight: 700; color: var(--brown); border-bottom: 2px solid #f0f0f0; padding-bottom: 5px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <div class="logo">SHANTI JEWEL</div>
-</div>
-
-<!-- PIN LOCK -->
-<div id="adminLock">
-    <div style="background:white; padding:40px 20px; border-radius:20px; width:80%; display:inline-block; margin-top:30%;">
-        <h3>ADMIN ACCESS</h3>
-        <input type="password" id="pinInput" placeholder="PIN" maxlength="4" style="text-align:center; letter-spacing:10px;">
-        <button class="btn btn-gold" onclick="checkPin()">UNLOCK</button>
+<!-- MAIN ENTRANCE LOCK (1008) -->
+<div id="mainEntrance" class="lock-overlay">
+    <div style="margin-top:40%;">
+        <div style="font-size:30px; letter-spacing:5px; margin-bottom:20px;">SHANTI JEWEL</div>
+        <p style="color:var(--gold); font-size:12px;">ENTER ACCESS PIN</p>
+        <input type="password" id="mainPin" maxlength="4" style="width:200px; text-align:center; letter-spacing:15px; background:transparent; border-bottom:2px solid white; border-top:none; border-left:none; border-right:none; color:white; font-size:24px;">
+        <button class="btn btn-gold" style="width:200px; margin-top:30px;" onclick="unlockMain()">ENTER</button>
     </div>
 </div>
 
-<!-- SHARE PREVIEW -->
+<!-- DASHBOARD LOCK (2215) -->
+<div id="dashLock" class="lock-overlay" style="background:rgba(0,0,0,0.95);">
+    <div style="margin-top:40%; background:white; padding:40px 20px; border-radius:20px; width:80%; display:inline-block; color:var(--brown);">
+        <h3>DASHBOARD PIN</h3>
+        <input type="password" id="dashPinInput" maxlength="4" style="text-align:center; letter-spacing:10px;">
+        <button class="btn btn-gold" onclick="unlockDash()">UNLOCK</button>
+        <button class="btn" style="background:#eee; margin-top:10px;" onclick="cancelDash()">CANCEL</button>
+    </div>
+</div>
+
+<div class="header"><div class="logo">SHANTI JEWEL</div></div>
+
+<!-- FORM PREVIEW -->
 <div id="formPreview">
     <div style="background:white; padding:10px; border-radius:15px; width:90%; display:inline-block; margin-top:20px;">
         <img id="renderImg" style="width:100%;">
@@ -66,7 +77,7 @@
     </div>
 </div>
 
-<!-- PUNCH IN (4 PHOTOS) -->
+<!-- PUNCH TAB -->
 <div id="punchPage" class="page active">
     <div class="card">
         <div class="photo-grid">
@@ -80,62 +91,68 @@
         <input type="file" id="f2" accept="image/*" style="display:none" onchange="handleImg(this, 2)">
         <input type="file" id="f3" accept="image/*" style="display:none" onchange="handleImg(this, 3)">
 
-        <input type="text" id="orderId" placeholder="Order ID (Internal Use)">
+        <input type="text" id="orderId" placeholder="Order ID">
         <select id="partyName">
-            <option value="">Select Party</option>
+            <option value="">Select Jewellers</option>
+            <option value="Shree Gajanan Jewellers">Shree Gajanan Jewellers</option>
+            <option value="PNG BROTHERS">PNG BROTHERS</option>
             <option value="P.N.GADGIL & SONS LTD.">P.N.GADGIL & SONS LTD.</option>
-            <option value="PNGS Reva Diamond Jewellery Ltd">PNGS Reva Diamond Jewellery Ltd</option>
             <option value="NEELKANTH JEWELLERS">NEELKANTH JEWELLERS</option>
-            <option value="INHOUSE">INHOUSE</option>
         </select>
         <input type="number" id="orderWt" placeholder="Weight (gms)">
-        <select id="orderKt"><option value="22">22KT</option><option value="18">18KT</option></select>
-        <select id="designer"><option value="">Designer</option><option value="DYE">DYE</option><option value="SHINDE">SHINDE</option></select>
-        <textarea id="instructions" rows="2" placeholder="Production Instructions..."></textarea>
+        <select id="orderKt">
+            <option value="23">23KT</option><option value="22">22KT</option><option value="18">18KT</option><option value="14">14KT</option><option value="9">9KT</option>
+        </select>
+        <select id="designer">
+            <option value="">Designer</option><option value="ALAUDDIN">ALAUDDIN</option><option value="DYE">DYE</option><option value="SHINDE">SHINDE</option>
+        </select>
+        <textarea id="instructions" rows="2" placeholder="Specifications..."></textarea>
         <button class="btn btn-gold" onclick="submitOrder()">PUNCH ORDER</button>
     </div>
 </div>
 
-<!-- PRODUCTION -->
+<!-- ACTIVE TAB -->
 <div id="activePage" class="page">
-    <div style="position:sticky; top:0; background:var(--bg); padding-bottom:10px;">
-        <input type="text" id="searchBar" placeholder="Search Order..." onkeyup="runSearch()">
+    <div style="position:sticky; top:0; background:var(--bg); padding-bottom:10px; z-index:100;">
+        <input type="text" id="searchBar" placeholder="Search ID or Jeweller..." onkeyup="runSearch()">
     </div>
     <div id="activeList"></div>
 </div>
 
-<!-- ADMIN -->
-<div id="dashPage" class="page">
+<!-- PAST TAB -->
+<div id="pastPage" class="page"><div id="pastList"></div></div>
+
+<!-- DASHBOARD TAB -->
+<div id="dashboardPage" class="page">
     <div class="card" style="text-align:center;">
         <h1 id="grossTotal">0.000</h1>
-        <p>TOTAL WT (GMS)</p>
+        <p>ACTIVE GROSS WT</p>
+        <h2 id="total24kt" style="color:var(--gold)">0.000</h2>
+        <p>24KT EQUIVALENT</p>
     </div>
     <div id="deptStats" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"></div>
     <button class="btn" style="background:#d32f2f; color:white; margin-top:20px;" onclick="wipeDatabase()">WIPEOUT MEMORY</button>
 </div>
 
-<!-- HIDDEN CANVAS (ID AND PARTY REMOVED) -->
+<!-- HIDDEN CANVAS -->
 <div id="canvasOutput">
-    <h1 style="text-align:center; font-size:55px; color:var(--brown); margin-bottom:40px; letter-spacing:5px;">SHANTI JEWEL</h1>
+    <h1 style="text-align:center; font-size:45px; color:var(--brown); margin-bottom:5px;">SHANTI JEWEL</h1>
+    <h2 style="text-align:center; font-size:22px; color:var(--gold); margin-bottom:30px;">ORDER FORM</h2>
     <div id="c_images" style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:40px;"></div>
-    
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:40px;">
         <div><div class="form-label">Weight</div><div id="c_wt" class="form-value"></div></div>
         <div><div class="form-label">Purity</div><div id="c_kt" class="form-value"></div></div>
     </div>
-    
-    <div class="form-label">Designer</div>
-    <div id="c_cad" class="form-value"></div>
-    
-    <div class="form-label">Instructions</div>
-    <div id="c_rem" class="form-value" style="font-size:24px; border:none;"></div>
+    <div class="form-label">Designer</div><div id="c_cad" class="form-value"></div>
+    <div class="form-label">Specifications</div><div id="c_rem" class="form-value"></div>
 </div>
 
-<!-- NAV -->
+<!-- NAV BAR -->
 <div class="tab-bar">
     <div class="tab active" onclick="nav('punch', this)">PUNCH</div>
-    <div class="tab" onclick="nav('active', this)">PRODUCTION</div>
-    <div class="tab" onclick="openLock()">ADMIN</div>
+    <div class="tab" onclick="nav('active', this)">ACTIVE</div>
+    <div class="tab" onclick="nav('past', this)">PAST</div>
+    <div class="tab" onclick="openDashLock()">DASHBOARD</div>
 </div>
 
 <script>
@@ -144,6 +161,11 @@
     const db = firebase.database();
     const stages = ["CAD", "CAM", "CASTING", "POLISH", "HUID", "READY"];
     let photos = [null, null, null, null];
+
+    function unlockMain() { if(document.getElementById('mainPin').value === '1008') document.getElementById('mainEntrance').style.display='none'; else alert("Wrong Pin"); }
+    function openDashLock() { document.getElementById('dashLock').style.display = 'block'; }
+    function unlockDash() { if(document.getElementById('dashPinInput').value === '2215') { document.getElementById('dashLock').style.display='none'; nav('dashboard', document.querySelectorAll('.tab')[3]); } else alert("Wrong Dash Pin"); }
+    function cancelDash() { document.getElementById('dashLock').style.display='none'; }
 
     function handleImg(input, index) {
         const reader = new FileReader();
@@ -157,7 +179,8 @@
         db.ref('orders/' + id).set({
             id: id, party: document.getElementById('partyName').value, weight: document.getElementById('orderWt').value,
             kt: document.getElementById('orderKt').value, cad: document.getElementById('designer').value,
-            rem: document.getElementById('instructions').value, status: "CAD", ts: Date.now(), imgs: photos.filter(p=>p)
+            rem: document.getElementById('instructions').value, status: "CAD", ts: Date.now(),
+            times: { CAD: new Date().toLocaleTimeString() }, imgs: photos.filter(p=>p)
         }).then(() => location.reload());
     }
 
@@ -165,32 +188,35 @@
         db.ref('orders').on('value', s => {
             const data = Object.values(s.val() || {}).sort((a,b)=>b.ts-a.ts);
             window.allOrders = data;
-            renderList(data);
+            renderLists(data);
             updateDash(data);
         });
     }
 
-    function renderList(data) {
-        const container = document.getElementById('activeList'); container.innerHTML = "";
+    function renderLists(data) {
+        const aList = document.getElementById('activeList'); const pList = document.getElementById('pastList');
+        aList.innerHTML = ""; pList.innerHTML = "";
         data.forEach(o => {
-            if(o.status === "READY") return;
-            container.innerHTML += `
+            const html = `
                 <div class="card">
                     <div style="display:flex; gap:12px;">
-                        <img src="${o.imgs[0]}" style="width:80px; height:80px; border-radius:10px; object-fit:cover;">
-                        <div style="flex:1"><b>${o.id}</b><br><small>${o.party}</small><br><b style="color:var(--gold)">${o.status}</b></div>
+                        <img src="${o.imgs[0]}" style="width:75px; height:75px; border-radius:10px; object-fit:cover;">
+                        <div style="flex:1"><b>${o.id}</b><br><small>${o.party}</small><br><b style="color:var(--gold)">${o.status} (${o.times[o.status] || ''})</b></div>
                     </div>
                     <div style="display:flex; gap:10px; margin-top:10px;">
-                        <button class="btn btn-outline" style="flex:1" onclick="moveNext('${o.id}', '${o.status}')">NEXT</button>
+                        ${o.status !== "READY" ? `<button class="btn btn-outline" style="flex:1" onclick="moveNext('${o.id}', '${o.status}')">NEXT</button>` : ''}
                         <button class="btn btn-outline" style="flex:1; color:green; border-color:green;" onclick="prepareShare('${o.id}')">SHARE</button>
                     </div>
                 </div>`;
+            if(o.status === "READY") pList.innerHTML += html; else aList.innerHTML += html;
         });
     }
 
     function moveNext(id, current) {
         const next = stages[stages.indexOf(current) + 1];
-        if(confirm(`Move to ${next}?`)) db.ref('orders/' + id).update({ status: next });
+        const newTimes = window.allOrders.find(x=>x.id===id).times || {};
+        newTimes[next] = new Date().toLocaleTimeString();
+        if(confirm(`Move to ${next}?`)) db.ref('orders/' + id).update({ status: next, times: newTimes });
     }
 
     function prepareShare(id) {
@@ -204,7 +230,7 @@
         setTimeout(() => {
             html2canvas(document.getElementById('canvasOutput'), {scale:2}).then(async canvas => {
                 const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.9));
-                const file = new File([blob], 'Order.jpg', {type:'image/jpeg'});
+                const file = new File([blob], 'OrderForm.jpg', {type:'image/jpeg'});
                 document.getElementById('renderImg').src = canvas.toDataURL('image/jpeg');
                 document.getElementById('formPreview').style.display = 'block';
                 document.getElementById('shareTrigger').onclick = () => navigator.share({files:[file]});
@@ -214,19 +240,24 @@
 
     function runSearch() {
         const q = document.getElementById('searchBar').value.toLowerCase();
-        renderList(window.allOrders.filter(o => o.id.toLowerCase().includes(q) || o.party.toLowerCase().includes(q)));
+        renderLists(window.allOrders.filter(o => o.id.toLowerCase().includes(q) || o.party.toLowerCase().includes(q)));
     }
 
     function updateDash(data) {
-        let total = 0; let counts = {};
-        data.forEach(o => { if(o.status !== "READY") { total += parseFloat(o.weight || 0); counts[o.status] = (counts[o.status] || 0) + 1; } });
+        let total = 0; let total24 = 0; let counts = {};
+        data.forEach(o => { 
+            if(o.status !== "READY") { 
+                const wt = parseFloat(o.weight || 0); total += wt; 
+                total24 += (wt * (parseFloat(o.kt)/24));
+                counts[o.status] = (counts[o.status] || 0) + 1; 
+            } 
+        });
         document.getElementById('grossTotal').innerText = total.toFixed(3);
+        document.getElementById('total24kt').innerText = total24.toFixed(3);
         const statBox = document.getElementById('deptStats'); statBox.innerHTML = "";
         stages.forEach(s => { if(s !== "READY") statBox.innerHTML += `<div class="card" style="margin:0; text-align:center;"><b>${s}</b><br>${counts[s] || 0}</div>`; });
     }
 
-    function openLock() { document.getElementById('adminLock').style.display = 'block'; }
-    function checkPin() { if(document.getElementById('pinInput').value === '1008') { document.getElementById('adminLock').style.display='none'; nav('dash', document.querySelectorAll('.tab')[2]); } else alert("Denied"); }
     function wipeDatabase() { if(confirm("DELETE ALL DATA?")) db.ref('orders').remove(); }
     function nav(p, el) { document.querySelectorAll('.page, .tab').forEach(x=>x.classList.remove('active')); document.getElementById(p+'Page').classList.add('active'); el.classList.add('active'); }
     
