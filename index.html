@@ -8,7 +8,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        :root { --gold: #D4AF37; --brown: #5d4037; --bg: #f4f7f6; --red: #d32f2f; }
+        :root { --gold: #D4AF37; --brown: #5d4037; --bg: #f4f7f6; --red: #d32f2f; --grey: #e0e0e0; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 90px; color: #333; }
         #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--brown); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
         .login-box { background: white; padding: 30px; border-radius: 15px; width: 80%; max-width: 300px; text-align: center; border-bottom: 5px solid var(--gold); }
@@ -19,7 +19,18 @@
         .shree-text { font-size: 14px; color: var(--gold); margin-bottom: 2px; display: block; }
         .page { display: none; padding: 15px; }
         .page.active { display: block; }
-        .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #eee; }
+        .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #eee; position: relative; }
+        .cancel-btn-corner { position: absolute; top: 10px; right: 10px; background: var(--red); color: white; border: none; border-radius: 50%; width: 25px; height: 25px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; z-index: 5; }
+        
+        /* Timeline Tracker Styles */
+        .timeline-container { margin: 20px 0 10px 0; position: relative; display: flex; justify-content: space-between; align-items: center; }
+        .timeline-line { position: absolute; top: 50%; left: 0; height: 2px; background: var(--grey); width: 100%; transform: translateY(-50%); z-index: 1; }
+        .timeline-progress { position: absolute; top: 50%; left: 0; height: 2px; background: var(--gold); transition: width 0.4s ease; z-index: 2; }
+        .step { width: 12px; height: 12px; border-radius: 50%; background: var(--grey); border: 2px solid white; z-index: 3; position: relative; }
+        .step.done { background: var(--gold); }
+        .step-label { position: absolute; top: 15px; left: 50%; transform: translateX(-50%); font-size: 7px; color: #999; font-weight: bold; }
+        .step.done .step-label { color: var(--brown); }
+
         .dash-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
         .dash-item { background: var(--brown); color: white; padding: 10px; border-radius: 8px; text-align: center; border-bottom: 3px solid var(--gold); }
         .dash-count { font-size: 18px; font-weight: bold; display: block; }
@@ -89,8 +100,11 @@
             <option value="INHOUSE">INHOUSE</option>
         </select>
         <select id="i_kt">
+            <option value="23">23KT Gold</option>
             <option value="22">22KT Gold</option>
             <option value="18">18KT Gold</option>
+            <option value="14">14KT Gold</option>
+            <option value="9">9KT Gold</option>
         </select>
         <div style="display:flex; gap:10px;">
             <input type="number" step="0.001" id="i_wt" placeholder="Weight (gms)">
@@ -175,6 +189,7 @@
     function unlockWipeout() { if(document.getElementById('wipeoutPass').value === '2215') { document.getElementById('wipeoutLock').style.display = 'none'; document.getElementById('wipeoutContent').style.display = 'block'; } }
     function lockDashboard() { document.getElementById('wipeoutLock').style.display = 'block'; document.getElementById('wipeoutContent').style.display = 'none'; }
     function commitChanges() { if(confirm("CLEAR ALL MEMORY?")) { db.ref('orders').remove().then(() => location.reload()); } }
+    function cancelOrder(id) { if(confirm("Cancel this order?")) { db.ref('orders/' + id).remove(); } }
 
     async function handleSingle(input, pId, idx) {
         const reader = new FileReader();
@@ -212,12 +227,17 @@
         });
     }
 
+    function getFineRatio(kt) {
+        const rates = {"23":0.958, "22":0.916, "18":0.750, "14":0.585, "9":0.375};
+        return rates[kt] || 0;
+    }
+
     function calcDash(data) {
         let gross = 0; let fine = 0; let pC = {};
         let statusCounts = {}; depts.forEach(d => statusCounts[d] = 0);
         data.forEach(o => {
             const wt = parseFloat(o.weight) || 0;
-            const itemFine = o.kt === "22" ? wt * 0.92 : wt * 0.76;
+            const itemFine = wt * getFineRatio(o.kt);
             if(o.status !== "READY") {
                 gross += wt; fine += itemFine; statusCounts[o.status]++;
                 if(!pC[o.party]) pC[o.party] = { p: 0, g: 0, f: 0 };
@@ -232,17 +252,58 @@
         document.getElementById('partyStatsBody').innerHTML = tb;
     }
 
+    function generateTimeline(currentStatus) {
+        const currentIndex = depts.indexOf(currentStatus);
+        const progressWidth = (currentIndex / (depts.length - 1)) * 100;
+        let stepsHtml = "";
+        depts.forEach((d, i) => {
+            const isDone = i <= currentIndex ? "done" : "";
+            stepsHtml += `<div class="step ${isDone}"><span class="step-label">${d}</span></div>`;
+        });
+        return `
+            <div class="timeline-container">
+                <div class="timeline-line"></div>
+                <div class="timeline-progress" style="width: ${progressWidth}%"></div>
+                ${stepsHtml}
+            </div>
+        `;
+    }
+
     function renderLists(data) {
         const pL = document.getElementById('prodList'); const aL = document.getElementById('activeList'); const pastL = document.getElementById('pastList');
         pL.innerHTML = ""; aL.innerHTML = ""; pastL.innerHTML = "";
         data.forEach(o => {
-            const html = `<div class="card"><div style="display:flex; gap:12px;"><img src="${o.imgs[0]}" style="width:65px; height:65px; object-fit:cover; border-radius:8px;"><div><b>${o.id}</b> | <span style="color:var(--gold)">${o.status}</span><br><small>${o.party}</small></div></div><div style="display:flex; gap:5px;"><button class="btn btn-out" style="flex:1" onclick="moveNext('${o.id}', '${o.status}')">NEXT</button><button class="btn btn-out" style="flex:1; color:green; border-color:green;" onclick="downloadForm('${o.id}')">FORM</button></div></div>`;
+            const timeline = generateTimeline(o.status);
+            const html = `
+                <div class="card">
+                    <button class="cancel-btn-corner" onclick="cancelOrder('${o.id}')">X</button>
+                    <div style="display:flex; gap:12px;">
+                        <img src="${o.imgs[0]}" style="width:65px; height:65px; object-fit:cover; border-radius:8px;">
+                        <div>
+                            <b>${o.id}</b> | <span style="color:var(--gold)">${o.status}</span><br>
+                            <small>${o.party}</small>
+                        </div>
+                    </div>
+                    ${timeline}
+                    <div style="display:flex; gap:5px; margin-top:15px;">
+                        <button class="btn btn-out" style="flex:1" onclick="moveNext('${o.id}', '${o.status}')">NEXT STAGE</button>
+                        <button class="btn btn-out" style="flex:1; color:green; border-color:green;" onclick="downloadForm('${o.id}')">FORM</button>
+                    </div>
+                </div>`;
             if(o.status === "READY") pastL.innerHTML += html;
             else { pL.innerHTML += html; aL.innerHTML += html; }
         });
     }
 
-    function moveNext(id, cur) { const idx = depts.indexOf(cur); if(idx < depts.length - 1) db.ref('orders/' + id).update({ status: depts[idx + 1] }); }
+    function moveNext(id, cur) {
+        const idx = depts.indexOf(cur);
+        const nextStage = depts[idx + 1];
+        if(idx < depts.length - 1) {
+            if(confirm(`CONFIRM: Move Order #${id} to ${nextStage}?`)) {
+                db.ref('orders/' + id).update({ status: nextStage });
+            }
+        }
+    }
 
     function downloadForm(id) {
         const o = window.fullData.find(x => x.id === id);
@@ -254,7 +315,8 @@
         document.getElementById('c_imgs').innerHTML = o.imgs.map(i => `<img src="${i}">`).join('');
         setTimeout(() => { html2canvas(document.querySelector("#formCanvas"), { scale: 2 }).then(canvas => {
             const img = canvas.toDataURL("image/jpeg", 0.9);
-            const w = window.open(); w.document.write(`<img src="${img}" style="width:100%;">`);
+            const w = window.open();
+            w.document.write(`<body style="margin:0; background:#333; text-align:center; padding-top:20px;"><div style="background:white; padding:10px; display:inline-block; border-radius:10px;"><img id="formImg" src="${img}" style="width:100%; max-width:600px; display:block; margin-bottom:15px;"><div style="display:flex; gap:10px;"><button style="flex:1; padding:15px; font-weight:bold; background:#D4AF37; color:white; border:none; border-radius:8px;" onclick="window.close()">CANCEL</button><button id="shareBtn" style="flex:1; padding:15px; font-weight:bold; background:green; color:white; border:none; border-radius:8px;">SHARE</button></div></div><script>document.getElementById('shareBtn').onclick = async () => { const response = await fetch(document.getElementById('formImg').src); const blob = await response.blob(); const file = new File([blob], 'order.jpg', { type: 'image/jpeg' }); if (navigator.share) { navigator.share({ files: [file], title: 'Shanti Jewel Order' }); } else { alert('Please long press the image to save and share manually.'); } };<\/script></body>`);
         }); }, 500);
     }
 
