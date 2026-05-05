@@ -10,54 +10,41 @@
     <style>
         :root { --gold: #D4AF37; --brown: #5d4037; --bg: #f4f7f6; --red: #d32f2f; --grey: #e0e0e0; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 90px; color: #333; }
-        
-        /* Entrance & Dashboard Locks */
         #loginOverlay, .dash-lock-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--brown); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
         .login-box { background: white; padding: 30px; border-radius: 15px; width: 80%; max-width: 300px; text-align: center; border-bottom: 5px solid var(--gold); color: #333; }
         .login-box input { width: 100%; padding: 12px; border: 2px solid #ddd; text-align: center; letter-spacing: 8px; font-size: 24px; color: var(--brown); border-radius: 8px; box-sizing: border-box; }
-        
         .header { background: var(--brown); color: white; text-align: center; padding: 10px; border-bottom: 3px solid var(--gold); }
         .logo-text { font-size: 22px; font-weight: bold; letter-spacing: 2px; margin: 0; }
         .sub-header { font-size: 10px; letter-spacing: 4px; color: var(--gold); }
         .shree-text { font-size: 14px; color: var(--gold); margin-bottom: 2px; display: block; }
-        
         .page { display: none; padding: 15px; }
         .page.active { display: block; }
         .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #eee; position: relative; }
         .cancel-btn-corner { position: absolute; top: 10px; right: 10px; background: var(--red); color: white; border: none; border-radius: 50%; width: 25px; height: 25px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; z-index: 5; }
-        
-        /* Timeline Tracker Styles */
         .timeline-container { margin: 25px 0 15px 0; position: relative; display: flex; justify-content: space-between; align-items: center; padding: 0 5px; }
         .timeline-line { position: absolute; top: 50%; left: 0; height: 2px; background: var(--grey); width: 100%; transform: translateY(-50%); z-index: 1; }
         .timeline-progress { position: absolute; top: 50%; left: 0; height: 2px; background: var(--gold); transition: width 0.4s ease; z-index: 2; }
         .step { width: 16px; height: 16px; border-radius: 50%; background: var(--grey); border: 2px solid white; z-index: 3; position: relative; display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; font-weight: bold; }
         .step.done { background: var(--gold); }
         .step-label { position: absolute; top: 18px; left: 50%; transform: translateX(-50%); font-size: 8px; color: #999; font-weight: bold; white-space: nowrap; }
-        .step.done .step-label { color: var(--brown); }
-
         .dash-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
         .dash-item { background: white; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #eee; border-left: 4px solid var(--gold); }
         .dash-count { font-size: 18px; font-weight: bold; color: var(--brown); }
         .dash-label { font-size: 10px; text-transform: uppercase; color: #888; display: block; margin-top: 4px; }
         .dash-wt { font-size: 12px; font-weight: bold; color: var(--gold); }
-
         .stats-banner { background: var(--brown); border-radius: 8px; padding: 15px; margin-bottom: 20px; display: flex; justify-content: space-around; text-align: center; color: white; }
         .stats-banner b { display: block; font-size: 16px; color: var(--gold); }
-        
         input, textarea, select { width: 100%; padding: 14px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; font-family: inherit; }
         .btn { padding: 15px; border: none; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; text-transform: uppercase; font-family: inherit; }
         .btn-gold { background: var(--gold); color: white; }
         .btn-red { background: var(--red); color: white; margin-top: 15px; }
         .btn-out { background: none; border: 1.5px solid var(--gold); color: var(--gold); margin-top: 8px; font-size: 12px; }
-        
         .tab-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; border-top: 1px solid #ddd; height: 75px; z-index: 1000; }
         .tab { flex: 1; text-align: center; padding: 25px 5px; font-size: 8px; color: #999; font-weight: bold; text-transform: uppercase; display: flex; align-items: center; justify-content: center; }
         .tab.active { color: var(--brown); border-top: 4px solid var(--gold); background: #fffcf5; }
-        
         .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
         .photo-box { height: 100px; background: #f9f9f9; border: 2px dashed #ddd; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #aaa; border-radius: 8px; overflow: hidden; }
         .photo-box img { width: 100%; height: 100%; object-fit: cover; }
-        
         #formCanvas { background: white; width: 650px; padding: 40px; position: fixed; left: -5000px; border: 15px solid var(--gold); box-sizing: border-box; }
         .canvas-header { text-align: center; border-bottom: 5px solid var(--brown); padding-bottom: 20px; margin-bottom: 25px; }
         .canvas-logo { font-size: 50px; font-weight: bold; color: var(--brown); letter-spacing: 6px; margin: 0; }
@@ -66,7 +53,6 @@
         .canvas-grid img { width: 100%; height: 260px; object-fit: cover; border: 3px solid #eee; border-radius: 10px; }
         .canvas-table { width: 100%; font-size: 24px; border-collapse: collapse; }
         .canvas-table td { padding: 15px 0; border-bottom: 2px solid #f0f0f0; }
-
         #toast { visibility: hidden; min-width: 200px; background-color: #333; color: #fff; text-align: center; border-radius: 10px; padding: 16px; position: fixed; z-index: 10001; left: 50%; top: 30px; transform: translateX(-50%); font-weight: bold; border: 2px solid var(--gold); }
     </style>
 </head>
@@ -74,11 +60,10 @@
 
 <div id="toast">Stage Updated Successfully!</div>
 
-<!-- MAIN LOGIN (1008) -->
 <div id="loginOverlay">
     <div class="login-box">
         <span style="color:var(--gold); font-weight:bold; display:block; margin-bottom:10px;">IIश्रीII</span>
-        <h2 style="margin:0 0 20px 0;"> SHANTI JEWEL</h2>
+        <h2 style="margin:0 0 20px 0;">SHANTI JEWEL</h2>
         <input type="password" id="passInput" placeholder="••••" maxlength="4">
         <button class="btn btn-gold" style="margin-top:20px;" onclick="checkPass()">ENTER APP</button>
     </div>
@@ -86,7 +71,7 @@
 
 <div class="header">
     <span class="shree-text">IIश्रीII</span>
-    <div class="logo-text"> SHANTI JEWEL</div>
+    <div class="logo-text">SHREE SHANTI JEWEL</div>
     <div class="sub-header">ORDER PORTAL</div>
 </div>
 
@@ -122,6 +107,11 @@
             <input type="number" step="0.001" id="i_wt" placeholder="Weight (gms)">
             <input type="number" id="i_sz" placeholder="Size">
         </div>
+        <!-- DELIVERY DATE INPUT -->
+        <div style="display:flex; flex-direction:column; margin: 8px 0;">
+            <label style="font-size: 10px; color: var(--brown); font-weight: bold; margin-bottom: 2px;">DELIVERY DATE</label>
+            <input type="date" id="i_dd">
+        </div>
         <select id="i_cad">
             <option value="">Select CAD Worker</option><option value="DYE">DYE</option><option value="SHINDE">SHINDE</option><option value="ALAUDDIN">ALAUDDIN</option>
         </select>
@@ -137,14 +127,12 @@
 </div>
 <div id="pastPage" class="page"><div id="pastList"></div></div>
 
-<!-- DASHBOARD WITH LOCK (2215) -->
 <div id="dashPage" class="page">
     <div id="wipeoutLock" class="card" style="text-align:center; padding: 40px 20px;">
         <h2 style="color:var(--brown);">ADMIN ACCESS</h2>
         <input type="password" id="wipeoutPass" placeholder="••••" maxlength="4" style="width:150px; margin-bottom:15px;">
         <button class="btn btn-gold" onclick="unlockWipeout()">UNLOCK DASHBOARD</button>
     </div>
-    
     <div id="wipeoutContent" style="display:none;">
         <div class="stats-banner">
             <div><b id="totalHandWt">0.000</b><span>Gross Hand</span></div>
@@ -164,7 +152,7 @@
     </div>
 </div>
 
-<!-- SHAREABLE FORM CANVAS -->
+<!-- FORM CANVAS: DELIVERY DATE NOT INCLUDED HERE -->
 <div id="formCanvas">
     <div class="canvas-header">
         <span style="font-size:24px; color:var(--gold);">IIश्रीII</span>
@@ -220,13 +208,15 @@
 
     function saveOrder() {
         const id = document.getElementById('i_id').value;
+        const deliveryDate = document.getElementById('i_dd').value;
         const valid = photoData.filter(p => p !== null);
-        if(!id || valid.length === 0) return alert("ID & Photos Required");
+        if(!id || valid.length === 0 || !deliveryDate) return alert("ID, Photos & Delivery Date Required");
         db.ref('orders/' + id).set({
             id: id, party: document.getElementById('i_pa').value,
             weight: parseFloat(document.getElementById('i_wt').value).toFixed(3),
             kt: document.getElementById('i_kt').value,
             size: document.getElementById('i_sz').value + " NO.",
+            deliveryDate: deliveryDate,
             status: "CAD", ts: Date.now(), imgs: valid,
             cadWorker: document.getElementById('i_cad').value,
             specs: document.getElementById('i_sp').value
@@ -235,7 +225,7 @@
 
     function loadOrders() {
         db.ref('orders').on('value', s => {
-            const data = Object.values(s.val() || {}).sort((a,b) => b.ts - a.ts);
+            const data = Object.values(s.val() || {});
             window.fullData = data; renderLists(data); calcDash(data);
         });
     }
@@ -253,8 +243,7 @@
             const itemFine = wt * getFineRatio(o.kt);
             if(o.status !== "READY") {
                 gross += wt; fine += itemFine; 
-                stats[o.status].count++;
-                stats[o.status].wt += wt;
+                stats[o.status].count++; stats[o.status].wt += wt;
                 if(!pC[o.party]) pC[o.party] = { p: 0, g: 0, f: 0 };
                 pC[o.party].p++; pC[o.party].g += wt; pC[o.party].f += itemFine;
             }
@@ -262,11 +251,7 @@
         document.getElementById('totalHandWt').innerText = gross.toFixed(3);
         document.getElementById('totalFineHand').innerText = fine.toFixed(3);
         let grid = ""; 
-        depts.forEach(s => { 
-            if(s !== "READY") {
-                grid += `<div class="dash-item"><span class="dash-count">${stats[s].count}</span><span class="dash-label">${s}</span><span class="dash-wt">${stats[s].wt.toFixed(2)}g</span></div>`; 
-            }
-        });
+        depts.forEach(s => { if(s !== "READY") grid += `<div class="dash-item"><span class="dash-count">${stats[s].count}</span><span class="dash-label">${s}</span><span class="dash-wt">${stats[s].wt.toFixed(2)}g</span></div>`; });
         document.getElementById('statusCounts').innerHTML = grid;
         let tb = ""; Object.keys(pC).forEach(p => { tb += `<tr style="border-bottom:1px solid #eee;"><td style="padding:8px;">${p}</td><td>${pC[p].p}</td><td>${pC[p].g.toFixed(2)}</td><td>${pC[p].f.toFixed(2)}</td></tr>`; });
         document.getElementById('partyStatsBody').innerHTML = tb;
@@ -286,9 +271,36 @@
     function renderLists(data) {
         const pL = document.getElementById('prodList'); const aL = document.getElementById('activeList'); const pastL = document.getElementById('pastList');
         pL.innerHTML = ""; aL.innerHTML = ""; pastL.innerHTML = "";
-        data.forEach(o => {
+
+        // SORTING: Active orders sorted by Delivery Date (Soonest first)
+        const activeOrders = data.filter(o => o.status !== "READY").sort((a,b) => new Date(a.deliveryDate) - new Date(b.deliveryDate));
+        const readyOrders = data.filter(o => o.status === "READY").sort((a,b) => b.ts - a.ts);
+
+        activeOrders.forEach(o => {
             const timeline = generateTimeline(o.status);
             const html = `
+                <div class="card">
+                    <button class="cancel-btn-corner" onclick="cancelOrder('${o.id}')">X</button>
+                    <div style="display:flex; gap:12px;">
+                        <img src="${o.imgs[0]}" style="width:65px; height:65px; object-fit:cover; border-radius:8px;">
+                        <div>
+                            <b>${o.id}</b> | <span style="color:var(--gold)">${o.status}</span><br>
+                            <small>${o.party}</small><br>
+                            <span style="font-size:9px; color:var(--red); font-weight:bold;">DELIVERY: ${o.deliveryDate}</span>
+                        </div>
+                    </div>
+                    ${timeline}
+                    <div style="display:flex; gap:5px; margin-top:15px;">
+                        <button class="btn btn-out" style="flex:1" onclick="moveNext('${o.id}', '${o.status}')">NEXT STAGE</button>
+                        <button class="btn btn-out" style="flex:1; color:green; border-color:green;" onclick="downloadForm('${o.id}')">SHARE FORM</button>
+                    </div>
+                </div>`;
+            pL.innerHTML += html; aL.innerHTML += html;
+        });
+
+        readyOrders.forEach(o => {
+            const timeline = generateTimeline(o.status);
+            pastL.innerHTML += `
                 <div class="card">
                     <button class="cancel-btn-corner" onclick="cancelOrder('${o.id}')">X</button>
                     <div style="display:flex; gap:12px;">
@@ -300,12 +312,9 @@
                     </div>
                     ${timeline}
                     <div style="display:flex; gap:5px; margin-top:15px;">
-                        ${o.status !== "READY" ? `<button class="btn btn-out" style="flex:1" onclick="moveNext('${o.id}', '${o.status}')">NEXT STAGE</button>` : ''}
                         <button class="btn btn-out" style="flex:1; color:green; border-color:green;" onclick="downloadForm('${o.id}')">SHARE FORM</button>
                     </div>
                 </div>`;
-            if(o.status === "READY") pastL.innerHTML += html;
-            else { pL.innerHTML += html; aL.innerHTML += html; }
         });
     }
 
