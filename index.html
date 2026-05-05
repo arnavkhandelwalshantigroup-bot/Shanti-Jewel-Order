@@ -3,195 +3,234 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Shanti Jewel Portal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital@1&display=swap" rel="stylesheet">
+    <title>Shanti Jewel - Final Verified Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        :root { --gold: #D4AF37; --brown: #5d4037; --bg: #f4f7f6; --red: #d32f2f; --grey: #e0e0e0; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 90px; color: #333; }
+        :root { --gold: #D4AF37; --brown: #3e2723; --bg: #f8f9fa; }
+        body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; padding-bottom: 95px; }
         
-        /* Large Header */
-        .header { background: var(--brown); color: white; text-align: center; padding: 15px; border-bottom: 3px solid var(--gold); }
-        .logo-text { font-size: 24px; font-weight: bold; letter-spacing: 2px; }
-        
-        /* Navigation Tabs (Big & Clear) */
-        .tab-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; border-top: 1px solid #ddd; height: 80px; z-index: 1000; }
-        .tab { flex: 1; text-align: center; padding: 25px 2px; font-size: 10px; color: #999; font-weight: bold; text-transform: uppercase; }
+        .header { background: var(--brown); color: white; text-align: center; padding: 15px; border-bottom: 4px solid var(--gold); }
+        .logo { font-size: 22px; font-weight: 700; letter-spacing: 3px; }
+
+        .tab-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; border-top: 1px solid #ddd; height: 85px; z-index: 999; }
+        .tab { flex: 1; text-align: center; padding: 25px 5px; font-size: 10px; color: #888; font-weight: 700; text-transform: uppercase; }
         .tab.active { color: var(--brown); border-top: 5px solid var(--gold); background: #fffcf5; }
 
-        /* Large Cards for High Visibility */
-        .card { background: white; padding: 20px; border-radius: 12px; margin: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #eee; position: relative; }
-        .page { display: none; padding: 10px; }
+        .page { display: none; padding: 15px; }
         .page.active { display: block; }
-
-        /* Form Overlay */
-        #previewOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10001; overflow-y: auto; padding: 20px 0; text-align: center; }
+        .card { background: white; padding: 20px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #eee; }
         
-        /* Timeline */
-        .timeline-container { margin: 25px 0 15px 0; position: relative; display: flex; justify-content: space-between; align-items: center; }
-        .timeline-line { position: absolute; top: 50%; left: 0; height: 3px; background: var(--grey); width: 100%; transform: translateY(-50%); z-index: 1; }
-        .timeline-progress { position: absolute; top: 50%; left: 0; height: 3px; background: var(--gold); z-index: 2; }
-        .step { width: 15px; height: 15px; border-radius: 50%; background: var(--grey); border: 3px solid white; z-index: 3; position: relative; }
-        .step.done { background: var(--gold); }
-        .step-label { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); font-size: 9px; font-weight: bold; }
-
-        /* Dashboard Grid */
-        .dash-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 15px; }
-        .dash-item { background: var(--brown); color: white; padding: 15px; border-radius: 10px; text-align: center; border-bottom: 4px solid var(--gold); }
-        
-        /* Buttons */
-        .btn { padding: 18px; border: none; border-radius: 10px; font-weight: bold; width: 100%; cursor: pointer; font-size: 16px; }
+        input, select, textarea { width: 100%; padding: 16px; margin: 8px 0; border: 1px solid #ccc; border-radius: 12px; font-family: 'Montserrat'; font-size: 16px; box-sizing: border-box; }
+        .btn { padding: 18px; border: none; border-radius: 12px; font-weight: 700; width: 100%; cursor: pointer; font-size: 16px; font-family: 'Montserrat'; text-transform: uppercase; }
         .btn-gold { background: var(--gold); color: white; }
-        .btn-out { background: none; border: 2px solid var(--gold); color: var(--gold); margin-top: 10px; }
+        .btn-outline { background: none; border: 2.5px solid var(--gold); color: var(--gold); margin-top: 10px; }
+
+        .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .photo-btn { height: 100px; background: #eee; border: 2px dashed #ccc; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #666; font-weight: 700; cursor: pointer; overflow: hidden; text-align: center; }
+        .photo-btn img { width: 100%; height: 100%; object-fit: cover; }
+
+        #formPreview, #adminLock { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index: 10000; overflow-y: auto; text-align: center; }
         
-        /* Bespoke Canvas Styling */
-        #formCanvas { background: white; width: 650px; padding: 40px; position: fixed; left: -5000px; border: 15px solid var(--gold); }
-        .bespoke-text { font-family: 'Libre Baskerville', serif; font-size: 26px; color: var(--brown); font-style: italic; }
+        /* SHARE FORM - CLEANED */
+        #canvasOutput { background: white; width: 750px; padding: 50px; position: fixed; left: -9999px; border: 20px solid var(--gold); }
+        .form-label { font-size: 16px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-top: 15px; }
+        .form-value { font-family: 'Montserrat'; font-size: 32px; font-weight: 700; color: var(--brown); border-bottom: 2px solid #f0f0f0; padding-bottom: 5px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <div class="logo-text">SHANTI JEWEL</div>
+    <div class="logo">SHANTI JEWEL</div>
 </div>
 
-<!-- Form Preview Overlay -->
-<div id="previewOverlay">
-    <div style="background: white; display: inline-block; padding: 10px; border-radius: 10px; width: 90%;">
-        <img id="finalPreviewImg" style="width: 100%;">
-    </div>
-    <div style="padding: 20px; display: flex; gap: 10px;">
-        <button class="btn" style="background:#555; color:white;" onclick="closePreview()">CLOSE</button>
-        <button id="shareBtnAction" class="btn btn-gold">SHARE</button>
+<!-- PIN LOCK -->
+<div id="adminLock">
+    <div style="background:white; padding:40px 20px; border-radius:20px; width:80%; display:inline-block; margin-top:30%;">
+        <h3>ADMIN ACCESS</h3>
+        <input type="password" id="pinInput" placeholder="PIN" maxlength="4" style="text-align:center; letter-spacing:10px;">
+        <button class="btn btn-gold" onclick="checkPin()">UNLOCK</button>
     </div>
 </div>
 
-<!-- Tabs -->
+<!-- SHARE PREVIEW -->
+<div id="formPreview">
+    <div style="background:white; padding:10px; border-radius:15px; width:90%; display:inline-block; margin-top:20px;">
+        <img id="renderImg" style="width:100%;">
+    </div>
+    <div style="padding:20px; display:flex; gap:10px;">
+        <button class="btn" style="background:#555; color:white; flex:1;" onclick="document.getElementById('formPreview').style.display='none'">CLOSE</button>
+        <button id="shareTrigger" class="btn btn-gold" style="flex:2;">SHARE FORM</button>
+    </div>
+</div>
+
+<!-- PUNCH IN (4 PHOTOS) -->
 <div id="punchPage" class="page active">
     <div class="card">
-        <input type="text" id="i_id" placeholder="Order ID">
-        <select id="i_pa">
-            <option value="">Party Name</option>
+        <div class="photo-grid">
+            <div class="photo-btn" id="box0" onclick="document.getElementById('f0').click()">MAIN IMAGE</div>
+            <div class="photo-btn" id="box1" onclick="document.getElementById('f1').click()">REF 1</div>
+            <div class="photo-btn" id="box2" onclick="document.getElementById('f2').click()">REF 2</div>
+            <div class="photo-btn" id="box3" onclick="document.getElementById('f3').click()">REF 3</div>
+        </div>
+        <input type="file" id="f0" accept="image/*" style="display:none" onchange="handleImg(this, 0)">
+        <input type="file" id="f1" accept="image/*" style="display:none" onchange="handleImg(this, 1)">
+        <input type="file" id="f2" accept="image/*" style="display:none" onchange="handleImg(this, 2)">
+        <input type="file" id="f3" accept="image/*" style="display:none" onchange="handleImg(this, 3)">
+
+        <input type="text" id="orderId" placeholder="Order ID (Internal Use)">
+        <select id="partyName">
+            <option value="">Select Party</option>
             <option value="P.N.GADGIL & SONS LTD.">P.N.GADGIL & SONS LTD.</option>
             <option value="PNGS Reva Diamond Jewellery Ltd">PNGS Reva Diamond Jewellery Ltd</option>
             <option value="NEELKANTH JEWELLERS">NEELKANTH JEWELLERS</option>
+            <option value="INHOUSE">INHOUSE</option>
         </select>
-        <input type="number" step="0.001" id="i_wt" placeholder="Weight (gms)">
-        <select id="i_kt"><option value="22">22KT</option><option value="18">18KT</option></select>
-        <button class="btn btn-gold" onclick="saveOrder()">PUNCH ORDER</button>
+        <input type="number" id="orderWt" placeholder="Weight (gms)">
+        <select id="orderKt"><option value="22">22KT</option><option value="18">18KT</option></select>
+        <select id="designer"><option value="">Designer</option><option value="DYE">DYE</option><option value="SHINDE">SHINDE</option></select>
+        <textarea id="instructions" rows="2" placeholder="Production Instructions..."></textarea>
+        <button class="btn btn-gold" onclick="submitOrder()">PUNCH ORDER</button>
     </div>
 </div>
 
-<div id="productionPage" class="page"><div id="prodList"></div></div>
-<div id="activePage" class="page"><div id="activeList"></div></div>
-<div id="pastPage" class="page"><div id="pastList"></div></div>
+<!-- PRODUCTION -->
+<div id="activePage" class="page">
+    <div style="position:sticky; top:0; background:var(--bg); padding-bottom:10px;">
+        <input type="text" id="searchBar" placeholder="Search Order..." onkeyup="runSearch()">
+    </div>
+    <div id="activeList"></div>
+</div>
 
+<!-- ADMIN -->
 <div id="dashPage" class="page">
-    <div class="dash-grid" id="statusCounts"></div>
     <div class="card" style="text-align:center;">
-        <h3 id="dashGross">0.000 GMS</h3>
-        <p>TOTAL GROSS WEIGHT</p>
-        <button class="btn btn-gold" style="background:red;" onclick="wipeData()">WIPEOUT ALL</button>
+        <h1 id="grossTotal">0.000</h1>
+        <p>TOTAL WT (GMS)</p>
     </div>
+    <div id="deptStats" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"></div>
+    <button class="btn" style="background:#d32f2f; color:white; margin-top:20px;" onclick="wipeDatabase()">WIPEOUT MEMORY</button>
 </div>
 
+<!-- HIDDEN CANVAS (ID AND PARTY REMOVED) -->
+<div id="canvasOutput">
+    <h1 style="text-align:center; font-size:55px; color:var(--brown); margin-bottom:40px; letter-spacing:5px;">SHANTI JEWEL</h1>
+    <div id="c_images" style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:40px;"></div>
+    
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:40px;">
+        <div><div class="form-label">Weight</div><div id="c_wt" class="form-value"></div></div>
+        <div><div class="form-label">Purity</div><div id="c_kt" class="form-value"></div></div>
+    </div>
+    
+    <div class="form-label">Designer</div>
+    <div id="c_cad" class="form-value"></div>
+    
+    <div class="form-label">Instructions</div>
+    <div id="c_rem" class="form-value" style="font-size:24px; border:none;"></div>
+</div>
+
+<!-- NAV -->
 <div class="tab-bar">
-    <div class="tab active" onclick="nav('punch', this)">PUNCH IN</div>
-    <div class="tab" onclick="nav('production', this)">PRODUCTION</div>
-    <div class="tab" onclick="nav('active', this)">ACTIVE</div>
-    <div class="tab" onclick="nav('past', this)">PAST</div>
-    <div class="tab" onclick="nav('dash', this)">DASHBOARD</div>
-</div>
-
-<!-- Form Canvas -->
-<div id="formCanvas">
-    <h1 style="text-align:center; color:var(--brown); letter-spacing:5px;">SHANTI JEWEL</h1>
-    <div id="c_imgs" style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;"></div>
-    <table style="width:100%; margin-top:30px; font-size:20px;">
-        <tr><td>Order ID:</td><td id="c_id" class="bespoke-text"></td></tr>
-        <tr><td>Weight:</td><td id="c_wt" class="bespoke-text"></td></tr>
-        <tr><td>Purity:</td><td id="c_kt" class="bespoke-text"></td></tr>
-    </table>
+    <div class="tab active" onclick="nav('punch', this)">PUNCH</div>
+    <div class="tab" onclick="nav('active', this)">PRODUCTION</div>
+    <div class="tab" onclick="openLock()">ADMIN</div>
 </div>
 
 <script>
     const firebaseConfig = { apiKey: "AIzaSyBnvmQBPkJmJcjXf71vEUY91B2_2P9oAgU", authDomain: "shanti-jewel-order.firebaseapp.com", projectId: "shanti-jewel-order", databaseURL: "https://shanti-jewel-order-default-rtdb.firebaseio.com/" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    const depts = ["CAD", "CAM", "CASTING", "POLISH", "HUID", "READY"];
+    const stages = ["CAD", "CAM", "CASTING", "POLISH", "HUID", "READY"];
+    let photos = [null, null, null, null];
 
-    function saveOrder() {
-        const id = document.getElementById('i_id').value;
-        if(!id) return alert("Enter ID");
+    function handleImg(input, index) {
+        const reader = new FileReader();
+        reader.onload = (e) => { photos[index] = e.target.result; document.getElementById('box'+index).innerHTML = `<img src="${e.target.result}">`; };
+        reader.readAsDataURL(input.files[0]);
+    }
+
+    function submitOrder() {
+        const id = document.getElementById('orderId').value;
+        if(!id || !photos[0]) return alert("ID and Main Photo Required");
         db.ref('orders/' + id).set({
-            id: id, party: document.getElementById('i_pa').value,
-            weight: document.getElementById('i_wt').value,
-            kt: document.getElementById('i_kt').value,
-            status: "CAD", ts: Date.now(), imgs: ["https://via.placeholder.com/150"]
+            id: id, party: document.getElementById('partyName').value, weight: document.getElementById('orderWt').value,
+            kt: document.getElementById('orderKt').value, cad: document.getElementById('designer').value,
+            rem: document.getElementById('instructions').value, status: "CAD", ts: Date.now(), imgs: photos.filter(p=>p)
         }).then(() => location.reload());
     }
 
-    function loadOrders() {
+    function init() {
         db.ref('orders').on('value', s => {
-            const data = Object.values(s.val() || {}).sort((a,b) => b.ts - a.ts);
-            window.fullData = data;
-            renderAll(data);
+            const data = Object.values(s.val() || {}).sort((a,b)=>b.ts-a.ts);
+            window.allOrders = data;
+            renderList(data);
+            updateDash(data);
         });
     }
 
-    function renderAll(data) {
-        const pL = document.getElementById('prodList'); const aL = document.getElementById('activeList'); const pastL = document.getElementById('pastList');
-        pL.innerHTML = ""; aL.innerHTML = ""; pastL.innerHTML = "";
-        let gross = 0;
+    function renderList(data) {
+        const container = document.getElementById('activeList'); container.innerHTML = "";
         data.forEach(o => {
-            if(o.status !== "READY") gross += parseFloat(o.weight || 0);
-            const html = `
+            if(o.status === "READY") return;
+            container.innerHTML += `
                 <div class="card">
-                    <b>${o.id}</b> | ${o.party}<br>
-                    <div style="margin:15px 0;">${o.status} Process</div>
-                    <button class="btn btn-out" onclick="moveNext('${o.id}', '${o.status}')">NEXT PROCESS</button>
-                    <button class="btn btn-out" style="color:green; border-color:green;" onclick="viewForm('${o.id}')">SHARE FORM</button>
+                    <div style="display:flex; gap:12px;">
+                        <img src="${o.imgs[0]}" style="width:80px; height:80px; border-radius:10px; object-fit:cover;">
+                        <div style="flex:1"><b>${o.id}</b><br><small>${o.party}</small><br><b style="color:var(--gold)">${o.status}</b></div>
+                    </div>
+                    <div style="display:flex; gap:10px; margin-top:10px;">
+                        <button class="btn btn-outline" style="flex:1" onclick="moveNext('${o.id}', '${o.status}')">NEXT</button>
+                        <button class="btn btn-outline" style="flex:1; color:green; border-color:green;" onclick="prepareShare('${o.id}')">SHARE</button>
+                    </div>
                 </div>`;
-            if(o.status === "READY") pastL.innerHTML += html;
-            else { pL.innerHTML += html; aL.innerHTML += html; }
         });
-        document.getElementById('dashGross').innerText = gross.toFixed(3) + " GMS";
     }
 
-    function moveNext(id, cur) {
-        const idx = depts.indexOf(cur);
-        if(confirm(`Move Order #${id} to ${depts[idx+1]}?`)) {
-            db.ref('orders/' + id).update({ status: depts[idx+1] });
-        }
+    function moveNext(id, current) {
+        const next = stages[stages.indexOf(current) + 1];
+        if(confirm(`Move to ${next}?`)) db.ref('orders/' + id).update({ status: next });
     }
 
-    function viewForm(id) {
-        const o = window.fullData.find(x => x.id === id);
-        document.getElementById('c_id').innerText = o.id;
+    function prepareShare(id) {
+        const o = window.allOrders.find(x=>x.id === id);
         document.getElementById('c_wt').innerText = o.weight + " GMS";
         document.getElementById('c_kt').innerText = o.kt + " KT";
-        html2canvas(document.querySelector("#formCanvas")).then(canvas => {
-            const img = canvas.toDataURL("image/jpeg");
-            document.getElementById('finalPreviewImg').src = img;
-            document.getElementById('previewOverlay').style.display = 'block';
-            document.getElementById('shareBtnAction').onclick = async () => {
-                const blob = await (await fetch(img)).blob();
-                const file = new File([blob], 'order.jpg', {type:'image/jpeg'});
-                navigator.share({files:[file]}).catch(()=>{});
-            };
-        });
+        document.getElementById('c_cad').innerText = o.cad || "---";
+        document.getElementById('c_rem').innerText = o.rem || "---";
+        document.getElementById('c_images').innerHTML = o.imgs.map(i=>`<img src="${i}" style="width:100%; height:250px; object-fit:cover; border-radius:15px;">`).join('');
+
+        setTimeout(() => {
+            html2canvas(document.getElementById('canvasOutput'), {scale:2}).then(async canvas => {
+                const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.9));
+                const file = new File([blob], 'Order.jpg', {type:'image/jpeg'});
+                document.getElementById('renderImg').src = canvas.toDataURL('image/jpeg');
+                document.getElementById('formPreview').style.display = 'block';
+                document.getElementById('shareTrigger').onclick = () => navigator.share({files:[file]});
+            });
+        }, 500);
     }
 
-    function closePreview() { document.getElementById('previewOverlay').style.display = 'none'; }
-    function nav(p, el) {
-        document.querySelectorAll('.page, .tab').forEach(x => x.classList.remove('active'));
-        document.getElementById(p + 'Page').classList.add('active');
-        el.classList.add('active');
+    function runSearch() {
+        const q = document.getElementById('searchBar').value.toLowerCase();
+        renderList(window.allOrders.filter(o => o.id.toLowerCase().includes(q) || o.party.toLowerCase().includes(q)));
     }
-    function wipeData() { if(confirm("WIPE ALL DATA?")) db.ref('orders').remove(); }
-    loadOrders();
+
+    function updateDash(data) {
+        let total = 0; let counts = {};
+        data.forEach(o => { if(o.status !== "READY") { total += parseFloat(o.weight || 0); counts[o.status] = (counts[o.status] || 0) + 1; } });
+        document.getElementById('grossTotal').innerText = total.toFixed(3);
+        const statBox = document.getElementById('deptStats'); statBox.innerHTML = "";
+        stages.forEach(s => { if(s !== "READY") statBox.innerHTML += `<div class="card" style="margin:0; text-align:center;"><b>${s}</b><br>${counts[s] || 0}</div>`; });
+    }
+
+    function openLock() { document.getElementById('adminLock').style.display = 'block'; }
+    function checkPin() { if(document.getElementById('pinInput').value === '1008') { document.getElementById('adminLock').style.display='none'; nav('dash', document.querySelectorAll('.tab')[2]); } else alert("Denied"); }
+    function wipeDatabase() { if(confirm("DELETE ALL DATA?")) db.ref('orders').remove(); }
+    function nav(p, el) { document.querySelectorAll('.page, .tab').forEach(x=>x.classList.remove('active')); document.getElementById(p+'Page').classList.add('active'); el.classList.add('active'); }
+    
+    init();
 </script>
 </body>
 </html>
