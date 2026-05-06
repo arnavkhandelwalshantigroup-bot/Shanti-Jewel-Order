@@ -4,15 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Shanti Jewel Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root { --gold: #D4AF37; --brown: #5d4037; --bg: #f4f7f6; --red: #d32f2f; --grey: #e0e0e0; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 90px; color: #333; }
+        body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; padding-bottom: 90px; color: #333; }
         #loginOverlay, .dash-lock-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--brown); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
         .login-box { background: white; padding: 30px; border-radius: 15px; width: 80%; max-width: 300px; text-align: center; border-bottom: 5px solid var(--gold); color: #333; }
-        .login-box input { width: 100%; padding: 12px; border: 2px solid #ddd; text-align: center; letter-spacing: 8px; font-size: 24px; color: var(--brown); border-radius: 8px; box-sizing: border-box; }
+        .login-box input { width: 100%; padding: 12px; border: 2px solid #ddd; text-align: center; letter-spacing: 8px; font-size: 24px; color: var(--brown); border-radius: 8px; box-sizing: border-box; font-family: inherit; }
         .header { background: var(--brown); color: white; text-align: center; padding: 10px; border-bottom: 3px solid var(--gold); }
         .logo-text { font-size: 22px; font-weight: bold; letter-spacing: 2px; margin: 0; }
         .sub-header { font-size: 10px; letter-spacing: 4px; color: var(--gold); }
@@ -45,7 +46,7 @@
         .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
         .photo-box { height: 100px; background: #f9f9f9; border: 2px dashed #ddd; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #aaa; border-radius: 8px; overflow: hidden; }
         .photo-box img { width: 100%; height: 100%; object-fit: cover; }
-        #formCanvas { background: white; width: 650px; padding: 40px; position: fixed; left: -5000px; border: 15px solid var(--gold); box-sizing: border-box; }
+        #formCanvas { background: white; width: 650px; padding: 40px; position: fixed; left: -5000px; border: 15px solid var(--gold); box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
         .canvas-header { text-align: center; border-bottom: 5px solid var(--brown); padding-bottom: 20px; margin-bottom: 25px; }
         .canvas-logo { font-size: 50px; font-weight: bold; color: var(--brown); letter-spacing: 6px; margin: 0; }
         .canvas-sub { font-size: 14px; letter-spacing: 5px; color: var(--gold); margin-top: 5px; font-weight: bold; }
@@ -75,7 +76,6 @@
     <div class="sub-header">ORDER PORTAL</div>
 </div>
 
-<!-- PUNCH PAGE -->
 <div id="punchPage" class="page active">
     <div class="card">
         <div class="photo-grid">
@@ -107,7 +107,6 @@
             <input type="number" step="0.001" id="i_wt" placeholder="Weight (gms)">
             <input type="number" id="i_sz" placeholder="Size">
         </div>
-        <!-- DELIVERY DATE INPUT -->
         <div style="display:flex; flex-direction:column; margin: 8px 0;">
             <label style="font-size: 10px; color: var(--brown); font-weight: bold; margin-bottom: 2px;">DELIVERY DATE</label>
             <input type="date" id="i_dd">
@@ -152,7 +151,6 @@
     </div>
 </div>
 
-<!-- FORM CANVAS: DELIVERY DATE NOT INCLUDED HERE -->
 <div id="formCanvas">
     <div class="canvas-header">
         <span style="font-size:24px; color:var(--gold);">IIश्रीII</span>
@@ -272,7 +270,6 @@
         const pL = document.getElementById('prodList'); const aL = document.getElementById('activeList'); const pastL = document.getElementById('pastList');
         pL.innerHTML = ""; aL.innerHTML = ""; pastL.innerHTML = "";
 
-        // SORTING: Active orders sorted by Delivery Date (Soonest first)
         const activeOrders = data.filter(o => o.status !== "READY").sort((a,b) => new Date(a.deliveryDate) - new Date(b.deliveryDate));
         const readyOrders = data.filter(o => o.status === "READY").sort((a,b) => b.ts - a.ts);
 
@@ -291,64 +288,4 @@
                     </div>
                     ${timeline}
                     <div style="display:flex; gap:5px; margin-top:15px;">
-                        <button class="btn btn-out" style="flex:1" onclick="moveNext('${o.id}', '${o.status}')">NEXT STAGE</button>
-                        <button class="btn btn-out" style="flex:1; color:green; border-color:green;" onclick="downloadForm('${o.id}')">SHARE FORM</button>
-                    </div>
-                </div>`;
-            pL.innerHTML += html; aL.innerHTML += html;
-        });
-
-        readyOrders.forEach(o => {
-            const timeline = generateTimeline(o.status);
-            pastL.innerHTML += `
-                <div class="card">
-                    <button class="cancel-btn-corner" onclick="cancelOrder('${o.id}')">X</button>
-                    <div style="display:flex; gap:12px;">
-                        <img src="${o.imgs[0]}" style="width:65px; height:65px; object-fit:cover; border-radius:8px;">
-                        <div>
-                            <b>${o.id}</b> | <span style="color:var(--gold)">${o.status}</span><br>
-                            <small>${o.party}</small>
-                        </div>
-                    </div>
-                    ${timeline}
-                    <div style="display:flex; gap:5px; margin-top:15px;">
-                        <button class="btn btn-out" style="flex:1; color:green; border-color:green;" onclick="downloadForm('${o.id}')">SHARE FORM</button>
-                    </div>
-                </div>`;
-        });
-    }
-
-    function moveNext(id, cur) {
-        const idx = depts.indexOf(cur);
-        const nextStage = depts[idx + 1];
-        if(idx < depts.length - 1) {
-            if(confirm(`CONFIRM: Move Order #${id} to ${nextStage}?`)) {
-                db.ref('orders/' + id).update({ status: nextStage }).then(() => showToast());
-            }
-        }
-    }
-
-    function downloadForm(id) {
-        const o = window.fullData.find(x => x.id === id);
-        document.getElementById('c_wt').innerText = o.weight + " gms";
-        document.getElementById('c_kt').innerText = o.kt + " KT";
-        document.getElementById('c_sz').innerText = o.size;
-        document.getElementById('c_cad').innerText = o.cadWorker;
-        document.getElementById('c_sp').innerText = o.specs;
-        document.getElementById('c_imgs').innerHTML = o.imgs.map(i => `<img src="${i}">`).join('');
-        setTimeout(() => { html2canvas(document.querySelector("#formCanvas"), { scale: 2 }).then(canvas => {
-            const img = canvas.toDataURL("image/jpeg", 0.9);
-            const w = window.open();
-            w.document.write(`<body style="margin:0; background:#333; text-align:center; padding-top:20px;"><div style="background:white; padding:10px; display:inline-block; border-radius:10px;"><img id="formImg" src="${img}" style="width:100%; max-width:600px; display:block; margin-bottom:15px;"><div style="display:flex; gap:10px;"><button style="flex:1; padding:15px; font-weight:bold; background:#D4AF37; color:white; border:none; border-radius:8px;" onclick="window.close()">CLOSE</button><button id="shareBtn" style="flex:1; padding:15px; font-weight:bold; background:green; color:white; border:none; border-radius:8px;">SHARE</button></div></div><script>document.getElementById('shareBtn').onclick = async () => { const response = await fetch(document.getElementById('formImg').src); const blob = await response.blob(); const file = new File([blob], 'order.jpg', { type: 'image/jpeg' }); if (navigator.share) { navigator.share({ files: [file], title: 'Shree Shanti Jewel Order' }); } else { alert('Long press image to save.'); } };<\/script></body>`);
-        }); }, 500);
-    }
-
-    function nav(p, el) {
-        document.querySelectorAll('.page, .tab').forEach(x => x.classList.remove('active'));
-        document.getElementById(p + 'Page').classList.add('active');
-        el.classList.add('active');
-        if(p !== 'dash') lockDashboard();
-    }
-</script>
-</body>
-</html> 
+                        <button class="btn btn-out" style="flex:1" onclick="moveNext('${o.id}', '${o.status}')">NEXT STAGE
