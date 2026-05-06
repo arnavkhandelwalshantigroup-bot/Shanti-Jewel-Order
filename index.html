@@ -16,62 +16,46 @@
         :root { --gold: #D4AF37; --brown: #5d4037; --bg: #f4f7f6; --red: #d32f2f; --grey: #e0e0e0; }
         body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; padding-bottom: 90px; color: #333; }
         
-        /* NEW: Upload Loader Overlay */
+        /* High-Res Upload Loader */
         #uploadOverlay { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.9); z-index: 10002; flex-direction: column; 
+            background: rgba(0,0,0,0.95); z-index: 10002; flex-direction: column; 
             justify-content: center; align-items: center; color: white;
         }
-        .progress-container { width: 80%; background: #444; border-radius: 10px; height: 10px; margin-top: 15px; overflow: hidden; }
+        .progress-container { width: 80%; background: #444; border-radius: 10px; height: 12px; margin-top: 15px; overflow: hidden; border: 1px solid var(--gold); }
         .progress-bar { width: 0%; height: 100%; background: var(--gold); transition: width 0.3s; }
 
-        #loginOverlay, .dash-lock-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--brown); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
+        #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--brown); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
         .login-box { background: white; padding: 30px; border-radius: 15px; width: 80%; max-width: 300px; text-align: center; border-bottom: 5px solid var(--gold); color: #333; }
-        .login-box input { width: 100%; padding: 12px; border: 2px solid #ddd; text-align: center; letter-spacing: 8px; font-size: 24px; color: var(--brown); border-radius: 8px; box-sizing: border-box; }
+        .login-box input { width: 100%; padding: 12px; border: 2px solid #ddd; text-align: center; letter-spacing: 8px; font-size: 24px; border-radius: 8px; box-sizing: border-box; }
         .header { background: var(--brown); color: white; text-align: center; padding: 10px; border-bottom: 3px solid var(--gold); }
         .logo-text { font-size: 22px; font-weight: bold; letter-spacing: 2px; margin: 0; }
         .sub-header { font-size: 10px; letter-spacing: 4px; color: var(--gold); }
-        .shree-text { font-size: 14px; color: var(--gold); margin-bottom: 2px; display: block; }
         .page { display: none; padding: 15px; }
         .page.active { display: block; }
         .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #eee; position: relative; }
-        .timeline-container { margin: 25px 0 15px 0; position: relative; display: flex; justify-content: space-between; align-items: center; padding: 0 5px; }
-        .timeline-line { position: absolute; top: 50%; left: 0; height: 2px; background: var(--grey); width: 100%; transform: translateY(-50%); z-index: 1; }
-        .timeline-progress { position: absolute; top: 50%; left: 0; height: 2px; background: var(--gold); transition: width 0.4s ease; z-index: 2; }
-        .step { width: 16px; height: 16px; border-radius: 50%; background: var(--grey); border: 2px solid white; z-index: 3; position: relative; display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; font-weight: bold; }
-        .step.done { background: var(--gold); }
-        .step-label { position: absolute; top: 18px; left: 50%; transform: translateX(-50%); font-size: 8px; color: #999; font-weight: bold; white-space: nowrap; }
-        .dash-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
-        .dash-item { background: white; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #eee; border-left: 4px solid var(--gold); }
-        .dash-count { font-size: 18px; font-weight: bold; color: var(--brown); }
-        .dash-label { font-size: 10px; text-transform: uppercase; color: #888; display: block; margin-top: 4px; }
         input, select, textarea { width: 100%; padding: 14px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
         .btn { padding: 15px; border: none; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; text-transform: uppercase; }
         .btn-gold { background: var(--gold); color: white; }
-        .btn-out { background: none; border: 1.5px solid var(--gold); color: var(--gold); margin-top: 8px; font-size: 12px; }
         .tab-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; border-top: 1px solid #ddd; height: 75px; z-index: 1000; }
         .tab { flex: 1; text-align: center; padding: 25px 5px; font-size: 8px; color: #999; font-weight: bold; text-transform: uppercase; display: flex; align-items: center; justify-content: center; }
         .tab.active { color: var(--brown); border-top: 4px solid var(--gold); background: #fffcf5; }
         .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
         .photo-box { height: 100px; background: #f9f9f9; border: 2px dashed #ddd; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #aaa; border-radius: 8px; overflow: hidden; }
         .photo-box img { width: 100%; height: 100%; object-fit: cover; }
-        #formCanvas { background: white; width: 650px; padding: 40px; position: fixed; left: -5000px; border: 15px solid var(--gold); box-sizing: border-box; }
-        #toast { visibility: hidden; min-width: 200px; background-color: #333; color: #fff; text-align: center; border-radius: 10px; padding: 16px; position: fixed; z-index: 10001; left: 50%; top: 30px; transform: translateX(-50%); font-weight: bold; border: 2px solid var(--gold); }
     </style>
 </head>
 <body>
 
 <div id="uploadOverlay">
-    <h2 style="color:var(--gold);">SHANTI JEWEL</h2>
-    <p id="uploadStatus">PROCESSING HIGH-RES DESIGN...</p>
+    <h2 style="color:var(--gold); letter-spacing: 2px;">SHANTI JEWEL</h2>
+    <p id="uploadStatus">UPLOADING HIGH-RES DESIGN...</p>
     <div class="progress-container"><div id="uploadBar" class="progress-bar"></div></div>
 </div>
 
-<div id="toast">Stage Updated!</div>
-<div id="loginOverlay"><div class="login-box"><span style="color:var(--gold);font-weight:bold;display:block;margin-bottom:10px;">IIश्रीII</span><h2 style="margin:0 0 20px 0;">SHANTI JEWEL</h2><input type="password" id="passInput" placeholder="••••" maxlength="4"><button class="btn btn-gold" style="margin-top:20px;" onclick="checkPass()">ENTER APP</button></div></div>
-<div class="header"><span class="shree-text">IIश्रीII</span><div class="logo-text">SHANTI JEWEL</div><div class="sub-header">ORDER PORTAL</div></div>
+<div id="loginOverlay"><div class="login-box"><h2 style="margin:0 0 20px 0;">SHANTI JEWEL</h2><input type="password" id="passInput" placeholder="••••" maxlength="4"><button class="btn btn-gold" style="margin-top:20px;" onclick="checkPass()">ENTER APP</button></div></div>
+<div class="header"><div class="logo-text">SHANTI JEWEL</div><div class="sub-header">ORDER PORTAL</div></div>
 
-<!-- Pages -->
 <div id="punchPage" class="page active">
     <div class="card">
         <div class="photo-grid">
@@ -86,91 +70,46 @@
         <input type="file" id="f4" accept="image/*" style="display:none" onchange="handleSingle(this,'p4',3)">
         
         <input type="text" id="i_id" placeholder="Order Number">
-        <select id="i_pa">
-            <option value="">Select Party Name</option>
-            <option value="Shree Gajanan Jewellers">Shree Gajanan Jewellers</option>
-            <option value="P.N.GADGIL & SONS LTD.">P.N.GADGIL & SONS LTD.</option>
-            <option value="PNGS Reva Diamond Jewellery Ltd">PNGS Reva Diamond Jewellery Ltd</option>
-            <option value="PNG BROTHERS">PNG BROTHERS</option>
-            <option value="ANNAPURNA GOLD">ANNAPURNA GOLD</option>
-            <option value="NEELKANTH JEWELLERS">NEELKANTH JEWELLERS</option>
-            <option value="INHOUSE">INHOUSE</option>
-        </select>
         <select id="i_kt">
             <option value="23">23KT Gold</option>
             <option value="22">22KT Gold</option>
             <option value="18">18KT Gold</option>
-            <option value="14">14KT Gold</option>
             <option value="9">9KT Gold</option>
         </select>
-        <div style="display:flex;gap:10px;">
-            <input type="number" step="0.001" id="i_wt" placeholder="Weight (gms)">
-            <input type="number" id="i_sz" placeholder="Size">
-        </div>
-        <div style="margin:8px 0;">
-            <label style="font-size:10px;color:var(--brown);font-weight:bold;">DELIVERY DATE</label>
-            <input type="date" id="i_dd">
-        </div>
-        <select id="i_cad">
-            <option value="">Select CAD Designer</option>
-            <option value="DYE">DYE</option>
-            <option value="SHINDE">SHINDE</option>
-            <option value="ALAUDDIN">ALAUDDIN</option>
-        </select>
-        <textarea id="i_sp" rows="3" placeholder="Instructions"></textarea>
+        <input type="number" step="0.001" id="i_wt" placeholder="Weight (gms)">
+        <input type="date" id="i_dd">
+        <textarea id="i_sp" rows="3" placeholder="Design Instructions"></textarea>
         <button class="btn btn-gold" onclick="saveOrder()">SAVE & PROCESS</button>
     </div>
 </div>
 
 <div id="productionPage" class="page"><div id="prodList"></div></div>
-<div id="activePage" class="page">
-    <div style="margin-bottom:15px;"><input type="text" id="searchInput" placeholder="🔍 Search Order ID..." onkeyup="filterOrders()"></div>
-    <div id="activeList"></div>
-</div>
-<div id="pastPage" class="page"><div id="pastList"></div></div>
+<div id="activePage" class="page"><div id="activeList"></div></div>
 
-<div id="dashPage" class="page">
-    <div id="wipeoutLock" class="card" style="text-align:center;padding:40px 20px;">
-        <h2>ADMIN ACCESS</h2>
-        <input type="password" id="wipeoutPass" placeholder="••••" maxlength="4" style="width:150px;">
-        <button class="btn btn-gold" style="margin-top:15px" onclick="unlockWipeout()">UNLOCK</button>
-    </div>
-    <div id="wipeoutContent" style="display:none;">
-        <div id="statusCounts" class="dash-grid"></div>
-        <button class="btn btn-red" onclick="commitChanges()">WIPEOUT ALL DATA</button>
-        <button class="btn btn-out" onclick="lockDashboard()">EXIT ADMIN</button>
-    </div>
-</div>
-
-<!-- Tab Bar -->
 <div class="tab-bar">
     <div class="tab active" onclick="nav('punch',this)">PUNCH IN</div>
     <div class="tab" onclick="nav('production',this)">PRODUCTION</div>
     <div class="tab" onclick="nav('active',this)">ACTIVE</div>
-    <div class="tab" onclick="nav('past',this)">PAST ORDERS</div>
-    <div class="tab" onclick="nav('dash',this)">DASHBOARD</div>
 </div>
 
 <script>
-// REPLACE WITH YOUR ACTUAL FIREBASE CONFIG
+// PRE-FILLED CONFIG FOR SHANTI JEWEL
 const firebaseConfig = {
     apiKey: "AIzaSyBnvmQBPkJmJcjXf71vEUY91B2_2P9oAgU",
     authDomain: "shanti-jewel-order.firebaseapp.com",
     projectId: "shanti-jewel-order",
     databaseURL: "https://shanti-jewel-order-default-rtdb.firebaseio.com/",
-    storageBucket: "shanti-jewel-order.appspot.com" // IMPORTANT: Correct storage bucket
+    storageBucket: "shanti-jewel-order.appspot.com"
 };
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 const storage = firebase.storage();
-const depts = ["CAD","CAM","CASTING","POLISH","HUID","READY"];
 let photoFiles = [null, null, null, null];
 
-function checkPass(){ if(document.getElementById('passInput').value==='1008'){ document.getElementById('loginOverlay').style.display='none'; loadOrders(); } else { alert("Wrong Pass"); }}
+function checkPass(){ if(document.getElementById('passInput').value==='1008') document.getElementById('loginOverlay').style.display='none'; }
 
-// NEW: Store raw files instead of Base64
-async function handleSingle(input, pId, idx){
+function handleSingle(input, pId, idx){
     const file = input.files[0];
     if(!file) return;
     photoFiles[idx] = file;
@@ -179,85 +118,46 @@ async function handleSingle(input, pId, idx){
 
 async function saveOrder(){
     const id = document.getElementById('i_id').value;
-    const dd = document.getElementById('i_dd').value;
-    if(!id || !dd) return alert("Order ID and Delivery Date are required.");
+    if(!id) return alert("Order ID required");
 
-    const overlay = document.getElementById('uploadOverlay');
-    const bar = document.getElementById('uploadBar');
-    const status = document.getElementById('uploadStatus');
-    
-    overlay.style.display = 'flex';
+    document.getElementById('uploadOverlay').style.display = 'flex';
     let uploadedUrls = [];
 
     try {
         for(let i=0; i < photoFiles.length; i++) {
             if(photoFiles[i]) {
-                status.innerText = `Uploading Image ${i+1}...`;
                 const ref = storage.ref(`designs/${id}/img_${i}.jpg`);
-                const snapshot = await ref.put(photoFiles[i]);
-                const url = await snapshot.ref.getDownloadURL();
+                const snap = await ref.put(photoFiles[i]);
+                const url = await snap.ref.getDownloadURL();
                 uploadedUrls.push(url);
-                bar.style.width = ((i+1)/photoFiles.length * 100) + "%";
+                document.getElementById('uploadBar').style.width = ((i+1)/photoFiles.length * 100) + "%";
             }
         }
 
         await db.ref('orders/'+id).set({
             id: id,
-            party: document.getElementById('i_pa').value,
-            weight: parseFloat(document.getElementById('i_wt').value||0).toFixed(3),
+            weight: document.getElementById('i_wt').value,
             kt: document.getElementById('i_kt').value,
-            size: document.getElementById('i_sz').value + " NO.",
-            deliveryDate: dd,
+            deliveryDate: document.getElementById('i_dd').value,
             status: "CAD",
-            ts: Date.now(),
             imgs: uploadedUrls,
-            cadDesigner: document.getElementById('i_cad').value,
-            specs: document.getElementById('i_sp').value
+            specs: document.getElementById('i_sp').value,
+            ts: Date.now()
         });
 
-        alert("Order Saved Successfully!");
+        alert("Order Saved!");
         location.reload();
     } catch (e) {
-        alert("Upload Failed: " + e.message);
-        overlay.style.display = 'none';
+        alert("Error: " + e.message);
+        document.getElementById('uploadOverlay').style.display = 'none';
     }
 }
 
-function loadOrders(){ db.ref('orders').on('value', s => { const data = Object.values(s.val()||{}); window.fullData = data; renderLists(data); calcDash(data); }); }
-
-function renderLists(data){
-    const pL=document.getElementById('prodList'), aL=document.getElementById('activeList'), pastL=document.getElementById('pastList');
-    pL.innerHTML=""; aL.innerHTML=""; pastL.innerHTML="";
-    data.sort((a,b)=>new Date(a.deliveryDate)-new Date(b.deliveryDate)).forEach(o=>{
-        const h = `
-            <div class="card">
-                <div style="display:flex;gap:12px;">
-                    <img src="${o.imgs[0]||''}" style="width:65px;height:65px;object-fit:cover;border-radius:8px;">
-                    <div><b>${o.id}</b> | <span style="color:var(--gold)">${o.status}</span><br><small>${o.party}</small><br>
-                    <span style="font-size:9px;color:var(--red);font-weight:bold;">DELIVERY: ${o.deliveryDate}</span></div>
-                </div>
-                ${generateTimeline(o.status)}
-                <div style="display:flex;gap:5px;margin-top:15px;">
-                    ${o.status!=='READY'?`<button class="btn btn-out" style="flex:1" onclick="moveNext('${o.id}','${o.status}')">NEXT</button>`:''}
-                    <button class="btn btn-out" style="flex:1;color:green;border-color:green;" onclick="downloadForm('${o.id}')">SHARE</button>
-                </div>
-            </div>`;
-        if(o.status==="READY") pastL.innerHTML+=h; else { pL.innerHTML+=h; aL.innerHTML+=h; }
-    });
+function nav(p,el){ 
+    document.querySelectorAll('.page, .tab').forEach(x=>x.classList.remove('active'));
+    document.getElementById(p+'Page').classList.add('active');
+    el.classList.add('active');
 }
-
-function generateTimeline(cur){
-    const idx=depts.indexOf(cur); const prg=(idx/(depts.length-1))*100; let s="";
-    depts.forEach((d,i)=>{ s+=`<div class="step ${i<=idx?'done':''}">${i<=idx?'✓':''}<span class="step-label">${d}</span></div>`; });
-    return `<div class="timeline-container"><div class="timeline-line"></div><div class="timeline-progress" style="width:${prg}%"></div>${s}</div>`;
-}
-
-function moveNext(id,cur){ const next=depts[depts.indexOf(cur)+1]; if(next&&confirm(`Move to ${next}?`)) db.ref('orders/'+id).update({status:next}); }
-function nav(p,el){ document.querySelectorAll('.page, .tab').forEach(x=>x.classList.remove('active')); document.getElementById(p+'Page').classList.add('active'); el.classList.add('active'); }
-function filterOrders(){ const v=document.getElementById('searchInput').value.toLowerCase(); const cards=document.getElementById('activeList').getElementsByClassName('card'); for(let c of cards){ c.style.display=c.innerText.toLowerCase().includes(v)?"block":"none"; } }
-function unlockWipeout(){ if(document.getElementById('wipeoutPass').value==='2215'){ document.getElementById('wipeoutLock').style.display='none'; document.getElementById('wipeoutContent').style.display='block'; }}
-function lockDashboard(){ document.getElementById('wipeoutLock').style.display='block'; document.getElementById('wipeoutContent').style.display='none'; }
-function commitChanges(){ if(confirm("CLEAR ALL?")){ db.ref('orders').remove().then(()=>location.reload()); }}
 </script>
 </body>
 </html>
