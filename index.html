@@ -3,35 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Shanti Jewel Portal</title>
+    <title>Shanti Jewel Master Portal</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <style>
-        :root { --gold: #D4AF37; --brown: #5d4037; }
-        body { font-family: sans-serif; background: #f4f7f6; margin: 0; padding: 20px; display: flex; justify-content: center; }
-        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 400px; border-top: 8px solid var(--gold); }
-        h2 { color: var(--brown); margin-bottom: 5px; }
-        input { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
-        .btn { width: 100%; padding: 20px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 18px; background: var(--gold); color: white; }
-        #successScreen { display: none; text-align: center; }
+        :root { --gold: #D4AF37; --brown: #5d4037; --bg: #f4f7f6; }
+        body { font-family: sans-serif; background: var(--bg); margin: 0; padding-bottom: 80px; }
+        .header { background: var(--brown); color: white; text-align: center; padding: 15px; border-bottom: 3px solid var(--gold); font-weight: bold; position: sticky; top: 0; z-index: 100; }
+        .tab-content { display: none; padding: 15px; }
+        .active-tab { display: block; }
+        .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-left: 5px solid var(--gold); }
+        input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        .btn-gold { background: var(--gold); color: white; }
+        .nav-bar { position: fixed; bottom: 0; width: 100%; background: var(--brown); display: flex; justify-content: space-around; padding: 10px 0; border-top: 2px solid var(--gold); z-index: 1000; }
+        .nav-item { color: white; font-size: 10px; text-align: center; opacity: 0.6; flex: 1; cursor: pointer; }
+        .nav-item.active { opacity: 1; color: var(--gold); font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div class="card" id="formArea">
-    <h2>SHANTI JEWEL</h2>
-    <p style="color: #666; font-size: 14px;">MUMBAI SERVER: <span style="color: green; font-weight: bold;">CONNECTED</span></p>
-    
-    <input type="text" id="orderNum" placeholder="Order Number">
-    <input type="number" step="0.01" id="orderWt" placeholder="Weight (Grams)">
-    
-    <button type="button" class="btn" onclick="punchOrder()">PUNCH IN</button>
+<!-- ALL THING LOCK -->
+<div id="authOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:var(--brown); z-index:2000; display:flex; flex-direction:column; justify-content:center; align-items:center; color:white;">
+    <h2 style="color:var(--gold);">SHANTI JEWEL LOGIN</h2>
+    <input type="password" id="pinInput" placeholder="ENTER PIN" style="width:60%; text-align:center; color: black;">
+    <button class="btn btn-gold" style="width:60%; margin-top:10px;" onclick="checkPin()">UNLOCK SYSTEM</button>
 </div>
 
-<div class="card" id="successScreen">
-    <h1 style="color: green;">✅ SAVED</h1>
-    <p>Order is now in the PRODUCTION list.</p>
-    <button class="btn" onclick="location.reload()">NEXT ORDER</button>
+<div class="header">SHANTI JEWEL MANAGEMENT</div>
+
+<!-- PUNCH IN TAB -->
+<div id="punch" class="tab-content active-tab">
+    <div class="card">
+        <h3>PUNCH IN</h3>
+        <input type="text" id="orderId" placeholder="Order Number">
+        <input type="number" step="0.01" id="weight" placeholder="Weight (Grams)">
+        <button class="btn btn-gold" onclick="saveOrder()">SAVE TO PRODUCTION</button>
+    </div>
+</div>
+
+<!-- PRODUCTION TAB (ACTIVE) -->
+<div id="production" class="tab-content">
+    <h3>PRODUCTION (ACTIVE)</h3>
+    <div id="prodList">Loading...</div>
+</div>
+
+<!-- PAST ORDERS TAB -->
+<div id="past" class="tab-content">
+    <h3>PAST ORDERS</h3>
+    <div id="pastList">No completed orders.</div>
+</div>
+
+<!-- DASHBOARD TAB -->
+<div id="dashboard" class="tab-content">
+    <div class="card">
+        <h3>DASHBOARD</h3>
+        <p>Total Production Weight: <span id="totalWt" style="color:var(--gold); font-weight:bold;">0.00</span>g</p>
+        <button class="btn" style="background:red; color:white;" onclick="wipeOut()">WIPEOUT MEMORY</button>
+    </div>
+</div>
+
+<!-- NAVIGATION BAR -->
+<div class="nav-bar">
+    <div class="nav-item active" onclick="showTab('punch', this)">PUNCH</div>
+    <div class="nav-item" onclick="showTab('production', this)">PRODUCTION</div>
+    <div class="nav-item" onclick="showTab('past', this)">PAST</div>
+    <div class="nav-item" onclick="showTab('dashboard', this)">DASHBOARD</div>
 </div>
 
 <script>
@@ -41,42 +78,61 @@ const firebaseConfig = {
     projectId: "shanti-jewel-order",
     databaseURL: "https://shanti-jewel-order-default-rtdb.firebaseio.com/"
 };
-
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-async function punchOrder() {
-    const id = document.getElementById('orderNum').value;
-    const wt = document.getElementById('orderWt').value;
-    
-    if(!id || !wt) return alert("Fill Order # and Weight");
+function checkPin() {
+    if(document.getElementById('pinInput').value === "1008") {
+        document.getElementById('authOverlay').style.display = 'none';
+    } else {
+        alert("ACCESS DENIED");
+    }
+}
 
-    const btn = document.querySelector('.btn');
-    btn.innerText = "SAVING...";
-    btn.style.opacity = "0.5";
-    btn.disabled = true;
+function showTab(tabId, el) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active-tab');
+    el.classList.add('active');
+}
+
+async function saveOrder() {
+    const id = document.getElementById('orderId').value;
+    const wt = document.getElementById('weight').value;
+    if(!id || !wt) return alert("Fill all fields");
 
     try {
-        // Saving to the 'PRODUCTION' tab as per your instruction
         await db.ref('orders/' + id).set({
             id: id,
-            weight: wt,
+            weight: parseFloat(wt),
             status: "PRODUCTION",
             timestamp: Date.now()
         });
+        alert("PUNCHED SUCCESSFULLY");
+        document.getElementById('orderId').value = "";
+        document.getElementById('weight').value = "";
+    } catch(e) { alert("Error: " + e.message); }
+}
 
-        // Hide the input and show Success without reloading
-        document.getElementById('formArea').style.display = 'none';
-        document.getElementById('successScreen').style.display = 'block';
+db.ref('orders').on('value', snap => {
+    const prodList = document.getElementById('prodList');
+    const totalWtEl = document.getElementById('totalWt');
+    prodList.innerHTML = "";
+    let total = 0;
 
-    } catch (err) {
-        alert("CRITICAL ERROR: " + err.message);
-        btn.innerText = "TRY AGAIN";
-        btn.disabled = false;
-        btn.style.opacity = "1";
+    snap.forEach(child => {
+        const o = child.val();
+        total += o.weight;
+        prodList.innerHTML += `<div class="card"><b>#${o.id}</b> - ${o.weight}g</div>`;
+    });
+    totalWtEl.innerText = total.toFixed(2);
+});
+
+function wipeOut() {
+    if(confirm("WIPEOUT ALL MEMORY?")) {
+        db.ref('orders').remove();
     }
 }
 </script>
-
 </body>
 </html>
