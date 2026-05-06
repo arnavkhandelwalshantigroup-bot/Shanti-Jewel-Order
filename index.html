@@ -182,7 +182,7 @@
     const depts = ["CAD", "CAM", "CASTING", "POLISH", "HUID", "READY"];
     let photoData = [null, null, null, null];
 
-    function checkPass() { if(document.getElementById('passInput').value === '1008') { document.getElementById('loginOverlay').style.display = 'none'; loadOrders(); } }
+    function checkPass() { if(document.getElementById('passInput').value === '1008') { document.getElementById('loginOverlay').style.display = 'none'; loadOrders(); } else { alert("Wrong Password"); } }
     function unlockWipeout() { if(document.getElementById('wipeoutPass').value === '2215') { document.getElementById('wipeoutLock').style.display = 'none'; document.getElementById('wipeoutContent').style.display = 'block'; } }
     function lockDashboard() { document.getElementById('wipeoutLock').style.display = 'block'; document.getElementById('wipeoutContent').style.display = 'none'; }
     function showToast() { const t = document.getElementById("toast"); t.style.visibility = "visible"; setTimeout(() => t.style.visibility = "hidden", 2000); }
@@ -288,4 +288,74 @@
                     </div>
                     ${timeline}
                     <div style="display:flex; gap:5px; margin-top:15px;">
-                        <button class="btn btn-out" style="flex:1" onclick="moveNext('${o.id}', '${o.status}')">NEXT STAGE
+                        <button class="btn btn-out" style="flex:1" onclick="moveNext('${o.id}', '${o.status}')">NEXT STAGE</button>
+                        <button class="btn btn-out" style="flex:1; color:green; border-color:green;" onclick="downloadForm('${o.id}')">SHARE FORM</button>
+                    </div>
+                </div>`;
+            pL.innerHTML += html; aL.innerHTML += html;
+        });
+
+        readyOrders.forEach(o => {
+            const timeline = generateTimeline(o.status);
+            pastL.innerHTML += `
+                <div class="card">
+                    <button class="cancel-btn-corner" onclick="cancelOrder('${o.id}')">X</button>
+                    <div style="display:flex; gap:12px;">
+                        <img src="${o.imgs[0]}" style="width:65px; height:65px; object-fit:cover; border-radius:8px;">
+                        <div>
+                            <b>${o.id}</b> | <span style="color:var(--gold)">${o.status}</span><br>
+                            <small>${o.party}</small>
+                        </div>
+                    </div>
+                    ${timeline}
+                    <div style="display:flex; gap:5px; margin-top:15px;">
+                        <button class="btn btn-out" style="flex:1; color:green; border-color:green;" onclick="downloadForm('${o.id}')">SHARE FORM</button>
+                    </div>
+                </div>`;
+        });
+    }
+
+    function moveNext(id, cur) {
+        const idx = depts.indexOf(cur);
+        const nextStage = depts[idx + 1];
+        if(idx < depts.length - 1) {
+            if(confirm(`CONFIRM: Move Order #${id} to ${nextStage}?`)) {
+                db.ref('orders/' + id).update({ status: nextStage }).then(() => showToast());
+            }
+        }
+    }
+
+    function downloadForm(id) {
+        const o = window.fullData.find(x => x.id === id);
+        document.getElementById('c_wt').innerText = o.weight + " gms";
+        document.getElementById('c_kt').innerText = o.kt + " KT";
+        document.getElementById('c_sz').innerText = o.size;
+        // Fix for undefined CAD Designer
+        document.getElementById('c_cad').innerText = o.cadDesigner || o.cadWorker || "N/A";
+        document.getElementById('c_sp').innerText = o.specs || "";
+        document.getElementById('c_imgs').innerHTML = o.imgs.map(i => `<img src="${i}">`).join('');
+        setTimeout(() => { html2canvas(document.querySelector("#formCanvas"), { scale: 2 }).then(canvas => {
+            const img = canvas.toDataURL("image/jpeg", 0.9);
+            const w = window.open();
+            w.document.write(`<body style="margin:0; background:#333; text-align:center; padding-top:20px;"><div style="background:white; padding:10px; display:inline-block; border-radius:10px;"><img id="formImg" src="${img}" style="width:100%; max-width:600px; display:block; margin-bottom:15px;"><div style="display:flex; gap:10px;"><button style="flex:1; padding:15px; font-weight:bold; background:#D4AF37; color:white; border:none; border-radius:8px;" onclick="window.close()">CLOSE</button><button id="shareBtn" style="flex:1; padding:15px; font-weight:bold; background:green; color:white; border:none; border-radius:8px;">SHARE</button></div></div><script>document.getElementById('shareBtn').onclick = async () => { const response = await fetch(document.getElementById('formImg').src); const blob = await response.blob(); const file = new File([blob], 'order.jpg', { type: 'image/jpeg' }); if (navigator.share) { navigator.share({ files: [file], title: 'Shree Shanti Jewel Order' }); } else { alert('Long press image to save.'); } };<\/script></body>`);
+        }); }, 500);
+    }
+
+    function filterOrders() {
+        const val = document.getElementById('searchInput').value.toLowerCase();
+        const cards = document.getElementById('activeList').getElementsByClassName('card');
+        for (let card of cards) {
+            const idText = card.getElementsByTagName('b')[0].innerText.toLowerCase();
+            card.style.display = idText.includes(val) ? "block" : "none";
+        }
+    }
+
+    function nav(p, el) {
+        document.querySelectorAll('.page, .tab').forEach(x => x.classList.remove('active'));
+        document.getElementById(p + 'Page').classList.add('active');
+        el.classList.add('active');
+        if(p !== 'dash') lockDashboard();
+    }
+</script>
+</body>
+</html>
