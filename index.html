@@ -71,7 +71,7 @@
 
 <div class="header">
     <span class="shree-text">IIश्रीII</span>
-    <div class="logo-text">SHREE SHANTI JEWEL</div>
+    <div class="logo-text">SHANTI JEWEL</div>
     <div class="sub-header">ORDER PORTAL</div>
 </div>
 
@@ -113,7 +113,7 @@
             <input type="date" id="i_dd">
         </div>
         <select id="i_cad">
-            <option value="">Select CAD Worker</option><option value="DYE">DYE</option><option value="SHINDE">SHINDE</option><option value="ALAUDDIN">ALAUDDIN</option>
+            <option value="">Select CAD Designer</option><option value="DYE">DYE</option><option value="SHINDE">SHINDE</option><option value="ALAUDDIN">ALAUDDIN</option>
         </select>
         <textarea id="i_sp" rows="3" placeholder="Instructions"></textarea>
         <button class="btn btn-gold" onclick="saveOrder()">SAVE & PROCESS</button>
@@ -164,7 +164,7 @@
         <tr><td><b>WEIGHT:</b></td><td id="c_wt"></td></tr>
         <tr><td><b>PURITY:</b></td><td id="c_kt"></td></tr>
         <tr><td><b>SIZE:</b></td><td id="c_sz"></td></tr>
-        <tr><td><b>CAD WORKER:</b></td><td id="c_cad"></td></tr>
+        <tr><td><b>CAD Designer:</b></td><td id="c_cad"></td></tr>
         <tr><td><b>INSTRUCTION:</b></td><td id="c_sp"></td></tr>
     </table>
 </div>
@@ -218,7 +218,7 @@
             size: document.getElementById('i_sz').value + " NO.",
             deliveryDate: deliveryDate,
             status: "CAD", ts: Date.now(), imgs: valid,
-            cadWorker: document.getElementById('i_cad').value,
+            cadDesigner: document.getElementById('i_cad').value,
             specs: document.getElementById('i_sp').value
         }).then(() => location.reload());
     }
