@@ -1,4 +1,4 @@
-u<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -90,6 +90,15 @@ function moveNext(id,cur){const next=depts[depts.indexOf(cur)+1];if(next&&confir
 function downloadForm(id){const o=window.fullData.find(x=>x.id===id);document.getElementById('c_wt').innerText=o.weight+" g/ms";document.getElementById('c_kt').innerText=o.kt+" KT";document.getElementById('c_sz').innerText=o.size;document.getElementById('c_cad').innerText=o.cadDesigner||"N/A";document.getElementById('c_sp').innerText=o.specs||"";document.getElementById('c_imgs').innerHTML=(o.imgs||[]).map(i=>`<img src="${i}">`).join('');setTimeout(()=>{html2canvas(document.querySelector("#formCanvas"),{scale:2}).then(canvas=>{const img=canvas.toDataURL("image/jpeg",0.9);const w=window.open();w.document.write(`<body style="margin:0;background:#333;text-align:center;padding-top:20px;"><div style="background:white;padding:10px;display:inline-block;border-radius:10px;"><img id="formImg" src="${img}" style="width:100%;max-width:600px;display:block;margin-bottom:15px;"><div style="display:flex;gap:10px;"><button style="flex:1;padding:15px;font-weight:bold;background:#D4AF37;color:white;border:none;border-radius:8px;" onclick="window.close()">CLOSE</button><button id="shareBtn" style="flex:1;padding:15px;font-weight:bold;background:green;color:white;border:none;border-radius:8px;">SHARE</button></div></div><script>document.getElementById('shareBtn').onclick=async()=>{const r=await fetch(document.getElementById('formImg').src);const b=await r.blob();const f=new File([b],'order.jpg',{type:'image/jpeg'});if(navigator.share){navigator.share({files:[f],title:'Shanti Jewel'});}else{alert('Save image manually');}};<\/script></body>`);});},500);}
 function filterOrders(){const v=document.getElementById('searchInput').value.toLowerCase();const cards=document.getElementById('activeList').getElementsByClassName('card');for(let c of cards){c.style.display=c.innerText.toLowerCase().includes(v)?"block":"none";}}
 function nav(p,el){document.querySelectorAll('.page, .tab').forEach(x=>x.classList.remove('active'));document.getElementById(p+'Page').classList.add('active');el.classList.add('active');if(p!=='dash')lockDashboard();}
+
+// CRITICAL PWA SERVICE WORKER REGISTRATION
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => console.log('Service Worker registered', reg))
+      .catch(err => console.log('Service Worker failed', err));
+  });
+}
 </script>
 </body>
-</html> 
+</html>
