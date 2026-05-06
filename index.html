@@ -4,24 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Shanti Jewel Portal</title>
-    
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="logo.png">
     <link rel="icon" type="image/png" href="logo.png">
     <meta name="theme-color" content="#5d4037">
-
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-    
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    
     <style>
         :root { --gold: #D4AF37; --brown: #5d4037; --bg: #f4f7f6; --red: #d32f2f; --grey: #e0e0e0; }
         body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; padding-bottom: 90px; color: #333; }
         #loginOverlay, .dash-lock-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--brown); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
         .login-box { background: white; padding: 30px; border-radius: 15px; width: 80%; max-width: 300px; text-align: center; border-bottom: 5px solid var(--gold); color: #333; }
-        .login-box input { width: 100%; padding: 12px; border: 2px solid #ddd; text-align: center; letter-spacing: 8px; font-size: 24px; color: var(--brown); border-radius: 8px; box-sizing: border-box; font-family: inherit; }
+        .login-box input { width: 100%; padding: 12px; border: 2px solid #ddd; text-align: center; letter-spacing: 8px; font-size: 24px; color: var(--brown); border-radius: 8px; box-sizing: border-box; }
         .header { background: var(--brown); color: white; text-align: center; padding: 10px; border-bottom: 3px solid var(--gold); }
         .logo-text { font-size: 22px; font-weight: bold; letter-spacing: 2px; margin: 0; }
         .sub-header { font-size: 10px; letter-spacing: 4px; color: var(--gold); }
@@ -42,7 +38,7 @@
         .dash-label { font-size: 10px; text-transform: uppercase; color: #888; display: block; margin-top: 4px; }
         .dash-wt { font-size: 12px; font-weight: bold; color: var(--gold); }
         input, textarea, select { width: 100%; padding: 14px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; font-family: inherit; }
-        .btn { padding: 15px; border: none; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; text-transform: uppercase; font-family: inherit; }
+        .btn { padding: 15px; border: none; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; text-transform: uppercase; }
         .btn-gold { background: var(--gold); color: white; }
         .btn-red { background: var(--red); color: white; margin-top: 15px; }
         .btn-out { background: none; border: 1.5px solid var(--gold); color: var(--gold); margin-top: 8px; font-size: 12px; }
@@ -64,201 +60,37 @@
     </style>
 </head>
 <body>
-
-<div id="toast">Stage Updated Successfully!</div>
-
-<div id="loginOverlay">
-    <div class="login-box">
-        <span style="color:var(--gold); font-weight:bold; display:block; margin-bottom:10px;">IIश्रीII</span>
-        <h2 style="margin:0 0 20px 0;">SHANTI JEWEL</h2>
-        <input type="password" id="passInput" placeholder="••••" maxlength="4">
-        <button class="btn btn-gold" style="margin-top:20px;" onclick="checkPass()">ENTER APP</button>
-    </div>
-</div>
-
-<div class="header">
-    <span class="shree-text">IIश्रीII</span>
-    <div class="logo-text">SHANTI JEWEL</div>
-    <div class="sub-header">ORDER PORTAL</div>
-</div>
-
-<div id="punchPage" class="page active">
-    <div class="card">
-        <div class="photo-grid">
-            <div class="photo-box" id="p1" onclick="document.getElementById('f1').click()">+ PHOTO 1</div>
-            <div class="photo-box" id="p2" onclick="document.getElementById('f2').click()">+ PHOTO 2</div>
-            <div class="photo-box" id="p3" onclick="document.getElementById('f3').click()">+ PHOTO 3</div>
-            <div class="photo-box" id="p4" onclick="document.getElementById('f4').click()">+ PHOTO 4</div>
-        </div>
-        <input type="file" id="f1" accept="image/*" style="display:none" onchange="handleSingle(this, 'p1', 0)">
-        <input type="file" id="f2" accept="image/*" style="display:none" onchange="handleSingle(this, 'p2', 1)">
-        <input type="file" id="f3" accept="image/*" style="display:none" onchange="handleSingle(this, 'p3', 2)">
-        <input type="file" id="f4" accept="image/*" style="display:none" onchange="handleSingle(this, 'p4', 3)">
-        
-        <input type="text" id="i_id" placeholder="Order Number">
-        <select id="i_pa">
-            <option value="">Select Party Name</option>
-            <option value="Shree Gajanan Jewellers">Shree Gajanan Jewellers</option>
-            <option value="P.N.GADGIL & SONS LTD.">P.N.GADGIL & SONS LTD.</option>
-            <option value="PNGS Reva Diamond Jewellery Ltd">PNGS Reva Diamond Jewellery Ltd</option>
-            <option value="PNG BROTHERS">PNG BROTHERS</option>
-            <option value="ANNAPURNA GOLD">ANNAPURNA GOLD</option>
-            <option value="NEELKANTH JEWELLERS">NEELKANTH JEWELLERS</option>
-            <option value="INHOUSE">INHOUSE</option>
-        </select>
-        <select id="i_kt">
-            <option value="23">23KT Gold</option><option value="22">22KT Gold</option><option value="18">18KT Gold</option><option value="14">14KT Gold</option><option value="9">9KT Gold</option>
-        </select>
-        <div style="display:flex; gap:10px;">
-            <input type="number" step="0.001" id="i_wt" placeholder="Weight (gms)">
-            <input type="number" id="i_sz" placeholder="Size">
-        </div>
-        <div style="display:flex; flex-direction:column; margin: 8px 0;">
-            <label style="font-size: 10px; color: var(--brown); font-weight: bold; margin-bottom: 2px;">DELIVERY DATE</label>
-            <input type="date" id="i_dd">
-        </div>
-        <select id="i_cad">
-            <option value="">Select CAD Designer</option><option value="DYE">DYE</option><option value="SHINDE">SHINDE</option><option value="ALAUDDIN">ALAUDDIN</option>
-        </select>
-        <textarea id="i_sp" rows="3" placeholder="Instructions"></textarea>
-        <button class="btn btn-gold" onclick="saveOrder()">SAVE & PROCESS</button>
-    </div>
-</div>
-
+<div id="toast">Stage Updated!</div>
+<div id="loginOverlay"><div class="login-box"><span style="color:var(--gold);font-weight:bold;display:block;margin-bottom:10px;">IIश्रीII</span><h2 style="margin:0 0 20px 0;">SHANTI JEWEL</h2><input type="password" id="passInput" placeholder="••••" maxlength="4"><button class="btn btn-gold" style="margin-top:20px;" onclick="checkPass()">ENTER APP</button></div></div>
+<div class="header"><span class="shree-text">IIश्रीII</span><div class="logo-text">SHANTI JEWEL</div><div class="sub-header">ORDER PORTAL</div></div>
+<div id="punchPage" class="page active"><div class="card"><div class="photo-grid"><div class="photo-box" id="p1" onclick="document.getElementById('f1').click()">+ PHOTO 1</div><div class="photo-box" id="p2" onclick="document.getElementById('f2').click()">+ PHOTO 2</div><div class="photo-box" id="p3" onclick="document.getElementById('f3').click()">+ PHOTO 3</div><div class="photo-box" id="p4" onclick="document.getElementById('f4').click()">+ PHOTO 4</div></div><input type="file" id="f1" accept="image/*" style="display:none" onchange="handleSingle(this,'p1',0)"><input type="file" id="f2" accept="image/*" style="display:none" onchange="handleSingle(this,'p2',1)"><input type="file" id="f3" accept="image/*" style="display:none" onchange="handleSingle(this,'p3',2)"><input type="file" id="f4" accept="image/*" style="display:none" onchange="handleSingle(this,'p4',3)"><input type="text" id="i_id" placeholder="Order Number"><select id="i_pa"><option value="">Select Party Name</option><option value="Shree Gajanan Jewellers">Shree Gajanan Jewellers</option><option value="P.N.GADGIL & SONS LTD.">P.N.GADGIL & SONS LTD.</option><option value="PNGS Reva Diamond Jewellery Ltd">PNGS Reva Diamond Jewellery Ltd</option><option value="PNG BROTHERS">PNG BROTHERS</option><option value="ANNAPURNA GOLD">ANNAPURNA GOLD</option><option value="NEELKANTH JEWELLERS">NEELKANTH JEWELLERS</option><option value="INHOUSE">INHOUSE</option></select><select id="i_kt"><option value="23">23KT Gold</option><option value="22">22KT Gold</option><option value="18">18KT Gold</option><option value="14">14KT Gold</option><option value="9">9KT Gold</option></select><div style="display:flex;gap:10px;"><input type="number" step="0.001" id="i_wt" placeholder="Weight (gms)"><input type="number" id="i_sz" placeholder="Size"></div><div style="margin:8px 0;"><label style="font-size:10px;color:var(--brown);font-weight:bold;">DELIVERY DATE</label><input type="date" id="i_dd"></div><select id="i_cad"><option value="">Select CAD Designer</option><option value="DYE">DYE</option><option value="SHINDE">SHINDE</option><option value="ALAUDDIN">ALAUDDIN</option></select><textarea id="i_sp" rows="3" placeholder="Instructions"></textarea><button class="btn btn-gold" onclick="saveOrder()">SAVE & PROCESS</button></div></div>
 <div id="productionPage" class="page"><div id="prodList"></div></div>
-<div id="activePage" class="page">
-    <div style="margin-bottom:15px;"><input type="text" id="searchInput" placeholder="🔍 Search Order ID..." onkeyup="filterOrders()"></div>
-    <div id="activeList"></div>
-</div>
+<div id="activePage" class="page"><div style="margin-bottom:15px;"><input type="text" id="searchInput" placeholder="🔍 Search Order ID..." onkeyup="filterOrders()"></div><div id="activeList"></div></div>
 <div id="pastPage" class="page"><div id="pastList"></div></div>
-
-<div id="dashPage" class="page">
-    <div id="wipeoutLock" class="card" style="text-align:center; padding: 40px 20px;">
-        <h2 style="color:var(--brown);">ADMIN ACCESS</h2>
-        <input type="password" id="wipeoutPass" placeholder="••••" maxlength="4" style="width:150px; margin-bottom:15px;">
-        <button class="btn btn-gold" onclick="unlockWipeout()">UNLOCK DASHBOARD</button>
-    </div>
-    <div id="wipeoutContent" style="display:none;">
-        <div id="statusCounts" class="dash-grid"></div>
-        <button class="btn btn-red" onclick="commitChanges()">WIPEOUT: CLEAR ALL MEMORY</button>
-        <button class="btn btn-out" onclick="lockDashboard()" style="margin-top:10px;">EXIT ADMIN</button>
-    </div>
-</div>
-
-<div id="formCanvas">
-    <div class="canvas-header">
-        <span style="font-size:24px; color:var(--gold);">IIश्रीII</span>
-        <div class="canvas-logo">SHANTI JEWEL</div>
-        <div class="canvas-sub">ORDER FORM</div>
-    </div>
-    <div id="c_imgs" class="canvas-grid"></div>
-    <table class="canvas-table">
-        <tr><td><b>WEIGHT:</b></td><td id="c_wt"></td></tr>
-        <tr><td><b>PURITY:</b></td><td id="c_kt"></td></tr>
-        <tr><td><b>SIZE:</b></td><td id="c_sz"></td></tr>
-        <tr><td><b>CAD Designer:</b></td><td id="c_cad"></td></tr>
-        <tr><td><b>INSTRUCTION:</b></td><td id="c_sp"></td></tr>
-    </table>
-</div>
-
-<div class="tab-bar">
-    <div class="tab active" onclick="nav('punch', this)">PUNCH IN</div>
-    <div class="tab" onclick="nav('production', this)">PRODUCTION</div>
-    <div class="tab" onclick="nav('active', this)">ACTIVE</div>
-    <div class="tab" onclick="nav('past', this)">PAST ORDERS</div>
-    <div class="tab" onclick="nav('dash', this)">DASHBOARD</div>
-</div>
+<div id="dashPage" class="page"><div id="wipeoutLock" class="card" style="text-align:center;padding:40px 20px;"><h2>ADMIN ACCESS</h2><input type="password" id="wipeoutPass" placeholder="••••" maxlength="4" style="width:150px;"><button class="btn btn-gold" style="margin-top:15px" onclick="unlockWipeout()">UNLOCK</button></div><div id="wipeoutContent" style="display:none;"><div id="statusCounts" class="dash-grid"></div><button class="btn btn-red" onclick="commitChanges()">WIPEOUT ALL DATA</button><button class="btn btn-out" onclick="lockDashboard()">EXIT ADMIN</button></div></div>
+<div id="formCanvas"><div class="canvas-header"><span style="font-size:24px;color:var(--gold);">IIश्रीII</span><div class="canvas-logo">SHANTI JEWEL</div><div class="canvas-sub">ORDER FORM</div></div><div id="c_imgs" class="canvas-grid"></div><table class="canvas-table"><tr><td><b>WEIGHT:</b></td><td id="c_wt"></td></tr><tr><td><b>PURITY:</b></td><td id="c_kt"></td></tr><tr><td><b>SIZE:</b></td><td id="c_sz"></td></tr><tr><td><b>CAD Designer:</b></td><td id="c_cad"></td></tr><tr><td><b>INSTRUCTION:</b></td><td id="c_sp"></td></tr></table></div>
+<div class="tab-bar"><div class="tab active" onclick="nav('punch',this)">PUNCH IN</div><div class="tab" onclick="nav('production',this)">PRODUCTION</div><div class="tab" onclick="nav('active',this)">ACTIVE</div><div class="tab" onclick="nav('past',this)">PAST ORDERS</div><div class="tab" onclick="nav('dash',this)">DASHBOARD</div></div>
 
 <script>
-    const firebaseConfig = { apiKey: "AIzaSyBnvmQBPkJmJcjXf71vEUY91B2_2P9oAgU", authDomain: "shanti-jewel-order.firebaseapp.com", projectId: "shanti-jewel-order", databaseURL: "https://shanti-jewel-order-default-rtdb.firebaseio.com/" };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const depts = ["CAD", "CAM", "CASTING", "POLISH", "HUID", "READY"];
-    let photoData = [null, null, null, null];
+const firebaseConfig={apiKey:"AIzaSyBnvmQBPkJmJcjXf71vEUY91B2_2P9oAgU",authDomain:"shanti-jewel-order.firebaseapp.com",projectId:"shanti-jewel-order",databaseURL:"https://shanti-jewel-order-default-rtdb.firebaseio.com/"};
+firebase.initializeApp(firebaseConfig);const db=firebase.database();const depts=["CAD","CAM","CASTING","POLISH","HUID","READY"];let photoData=[null,null,null,null];
+function checkPass(){if(document.getElementById('passInput').value==='1008'){document.getElementById('loginOverlay').style.display='none';loadOrders();}else{alert("Wrong Pass");}}
+function unlockWipeout(){if(document.getElementById('wipeoutPass').value==='2215'){document.getElementById('wipeoutLock').style.display='none';document.getElementById('wipeoutContent').style.display='block';}}
+function lockDashboard(){document.getElementById('wipeoutLock').style.display='block';document.getElementById('wipeoutContent').style.display='none';}
+function showToast(){const t=document.getElementById("toast");t.style.visibility="visible";setTimeout(()=>t.style.visibility="hidden",2000);}
+function commitChanges(){if(confirm("CLEAR ALL?")){db.ref('orders').remove().then(()=>location.reload());}}
+function cancelOrder(id){if(confirm("Cancel order?")){db.ref('orders/'+id).remove();}}
+async function handleSingle(input,pId,idx){const reader=new FileReader();reader.onload=(e)=>{const img=new Image();img.src=e.target.result;img.onload=()=>{const canvas=document.createElement('canvas');canvas.width=800;canvas.height=800;canvas.getContext('2d').drawImage(img,0,0,800,800);photoData[idx]=canvas.toDataURL("image/jpeg",0.6);document.getElementById(pId).innerHTML=`<img src="${photoData[idx]}">`;};};reader.readAsDataURL(input.files[0]);}
+function saveOrder(){const id=document.getElementById('i_id').value;const dd=document.getElementById('i_dd').value;if(!id||!dd)return alert("ID & Date Required");db.ref('orders/'+id).set({id:id,party:document.getElementById('i_pa').value,weight:parseFloat(document.getElementById('i_wt').value||0).toFixed(3),kt:document.getElementById('i_kt').value,size:document.getElementById('i_sz').value+" NO.",deliveryDate:dd,status:"CAD",ts:Date.now(),imgs:photoData.filter(p=>p!==null),cadDesigner:document.getElementById('i_cad').value,specs:document.getElementById('i_sp').value}).then(()=>location.reload());}
+function loadOrders(){db.ref('orders').on('value',s=>{const data=Object.values(s.val()||{});window.fullData=data;renderLists(data);calcDash(data);});}
+function calcDash(data){let stats={};depts.forEach(d=>stats[d]={count:0,wt:0});data.forEach(o=>{if(o.status!=='READY'){stats[o.status].count++;stats[o.status].wt+=parseFloat(o.weight);}});let grid="";depts.forEach(s=>{if(s!=='READY')grid+=`<div class="dash-item"><span class="dash-count">${stats[s].count}</span><span class="dash-label">${s}</span><span class="dash-wt">${stats[s].wt.toFixed(2)}g</span></div>`;});document.getElementById('statusCounts').innerHTML=grid;}
+function generateTimeline(cur){const idx=depts.indexOf(cur);const prg=(idx/(depts.length-1))*100;let s="";depts.forEach((d,i)=>{s+=`<div class="step ${i<=idx?'done':''}">${i<=idx?'✓':''}<span class="step-label">${d}</span></div>`;});return `<div class="timeline-container"><div class="timeline-line"></div><div class="timeline-progress" style="width:${prg}%"></div>${s}</div>`;}
+function renderLists(data){const pL=document.getElementById('prodList'),aL=document.getElementById('activeList'),pastL=document.getElementById('pastList');pL.innerHTML="";aL.innerHTML="";pastL.innerHTML="";data.sort((a,b)=>new Date(a.deliveryDate)-new Date(b.deliveryDate)).forEach(o=>{const h=`<div class="card"><button class="cancel-btn-corner" onclick="cancelOrder('${o.id}')">X</button><div style="display:flex;gap:12px;"><img src="${o.imgs[0]||''}" style="width:65px;height:65px;object-fit:cover;border-radius:8px;"><div><b>${o.id}</b> | <span style="color:var(--gold)">${o.status}</span><br><small>${o.party}</small><br><span style="font-size:9px;color:var(--red);font-weight:bold;">DELIVERY: ${o.deliveryDate}</span></div></div>${generateTimeline(o.status)}<div style="display:flex;gap:5px;margin-top:15px;">${o.status!=='READY'?`<button class="btn btn-out" style="flex:1" onclick="moveNext('${o.id}','${o.status}')">NEXT</button>`:''}<button class="btn btn-out" style="flex:1;color:green;border-color:green;" onclick="downloadForm('${o.id}')">SHARE</button></div></div>`;if(o.status==="READY")pastL.innerHTML+=h;else{pL.innerHTML+=h;aL.innerHTML+=h;}});}
+function moveNext(id,cur){const next=depts[depts.indexOf(cur)+1];if(next&&confirm(`Move to ${next}?`))db.ref('orders/'+id).update({status:next}).then(()=>showToast());}
+function downloadForm(id){const o=window.fullData.find(x=>x.id===id);document.getElementById('c_wt').innerText=o.weight+" g/ms";document.getElementById('c_kt').innerText=o.kt+" KT";document.getElementById('c_sz').innerText=o.size;document.getElementById('c_cad').innerText=o.cadDesigner||"N/A";document.getElementById('c_sp').innerText=o.specs||"";document.getElementById('c_imgs').innerHTML=(o.imgs||[]).map(i=>`<img src="${i}">`).join('');setTimeout(()=>{html2canvas(document.querySelector("#formCanvas"),{scale:2}).then(canvas=>{const img=canvas.toDataURL("image/jpeg",0.9);const w=window.open();w.document.write(`<body style="margin:0;background:#333;text-align:center;padding-top:20px;"><div style="background:white;padding:10px;display:inline-block;border-radius:10px;"><img id="formImg" src="${img}" style="width:100%;max-width:600px;display:block;margin-bottom:15px;"><div style="display:flex;gap:10px;"><button style="flex:1;padding:15px;font-weight:bold;background:#D4AF37;color:white;border:none;border-radius:8px;" onclick="window.close()">CLOSE</button><button id="shareBtn" style="flex:1;padding:15px;font-weight:bold;background:green;color:white;border:none;border-radius:8px;">SHARE</button></div></div><script>document.getElementById('shareBtn').onclick=async()=>{const r=await fetch(document.getElementById('formImg').src);const b=await r.blob();const f=new File([b],'order.jpg',{type:'image/jpeg'});if(navigator.share){navigator.share({files:[f],title:'Shanti Jewel'});}else{alert('Save image manually');}};<\/script></body>`);});},500);}
+function filterOrders(){const v=document.getElementById('searchInput').value.toLowerCase();const cards=document.getElementById('activeList').getElementsByClassName('card');for(let c of cards){c.style.display=c.innerText.toLowerCase().includes(v)?"block":"none";}}
+function nav(p,el){document.querySelectorAll('.page, .tab').forEach(x=>x.classList.remove('active'));document.getElementById(p+'Page').classList.add('active');el.classList.add('active');if(p!=='dash')lockDashboard();}
+</script>
+</body>
+</html>
 
-    function checkPass() { if(document.getElementById('passInput').value === '1008') { document.getElementById('loginOverlay').style.display = 'none'; loadOrders(); } else { alert("Wrong Password"); } }
-    function unlockWipeout() { if(document.getElementById('wipeoutPass').value === '2215') { document.getElementById('wipeoutLock').style.display = 'none'; document.getElementById('wipeoutContent').style.display = 'block'; } }
-    function lockDashboard() { document.getElementById('wipeoutLock').style.display = 'block'; document.getElementById('wipeoutContent').style.display = 'none'; }
-    function showToast() { const t = document.getElementById("toast"); t.style.visibility = "visible"; setTimeout(() => t.style.visibility = "hidden", 2000); }
-    function commitChanges() { if(confirm("CLEAR ALL MEMORY?")) { db.ref('orders').remove().then(() => location.reload()); } }
-    function cancelOrder(id) { if(confirm("Cancel this order?")) { db.ref('orders/' + id).remove(); } }
-
-    async function handleSingle(input, pId, idx) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const img = new Image(); img.src = e.target.result;
-            img.onload = () => {
-                const canvas = document.createElement('canvas'); canvas.width = 800; canvas.height = 800;
-                canvas.getContext('2d').drawImage(img, 0, 0, 800, 800);
-                photoData[idx] = canvas.toDataURL("image/jpeg", 0.6);
-                document.getElementById(pId).innerHTML = `<img src="${photoData[idx]}">`;
-            };
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
-
-    function saveOrder() {
-        const id = document.getElementById('i_id').value;
-        const deliveryDate = document.getElementById('i_dd').value;
-        if(!id || photoData.filter(p=>p!==null).length===0 || !deliveryDate) return alert("ID, Photos & Date Required");
-        db.ref('orders/' + id).set({
-            id: id, party: document.getElementById('i_pa').value,
-            weight: parseFloat(document.getElementById('i_wt').value).toFixed(3),
-            kt: document.getElementById('i_kt').value,
-            size: document.getElementById('i_sz').value + " NO.",
-            deliveryDate: deliveryDate,
-            status: "CAD", ts: Date.now(), imgs: photoData.filter(p=>p!==null),
-            cadDesigner: document.getElementById('i_cad').value,
-            specs: document.getElementById('i_sp').value
-        }).then(() => location.reload());
-    }
-
-    function loadOrders() {
-        db.ref('orders').on('value', s => {
-            const data = Object.values(s.val() || {});
-            window.fullData = data; renderLists(data); calcDash(data);
-        });
-    }
-
-    function calcDash(data) {
-        let stats = {}; depts.forEach(d => stats[d] = { count: 0, wt: 0 });
-        data.forEach(o => { if(o.status !== "READY") { stats[o.status].count++; stats[o.status].wt += parseFloat(o.weight); } });
-        let grid = ""; depts.forEach(s => { if(s !== "READY") grid += `<div class="dash-item"><span class="dash-count">${stats[s].count}</span><span class="dash-label">${s}</span><span class="dash-wt">${stats[s].wt.toFixed(2)}g</span></div>`; });
-        document.getElementById('statusCounts').innerHTML = grid;
-    }
-
-    function generateTimeline(currentStatus) {
-        const idx = depts.indexOf(currentStatus);
-        const progress = (idx / (depts.length - 1)) * 100;
-        let steps = "";
-        depts.forEach((d, i) => { steps += `<div class="step ${i <= idx ? 'done' : ''}">${i <= idx ? '✓' : ''}<span class="step-label">${d}</span></div>`; });
-        return `<div class="timeline-container"><div class="timeline-line"></div><div class="timeline-progress" style="width: ${progress}%"></div>${steps}</div>`;
-    }
-
-    function renderLists(data) {
-        const pL = document.getElementById('prodList'); const aL = document.getElementById('activeList'); const pastL = document.getElementById('pastList');
-        pL.innerHTML = ""; aL.innerHTML = ""; pastL.innerHTML = "";
-        data.sort((a,b) => new Date(a.deliveryDate) - new Date(b.deliveryDate)).forEach(o => {
-            const html = `<div class="card"><button class="cancel-btn-corner" onclick="cancelOrder('${o.id}')">X</button><div style="display:flex; gap:12px;"><img src="${o.imgs[0]}" style="width:65px; height:65px; object-fit:cover; border-radius:8px;"><div><b>${o.id}</b> | <span style="color:var(--gold)">${o.status}</span><br><small>${o.party}</small><br><span style="font-size:9px; color:var(--red); font-weight:bold;">DELIVERY: ${o.deliveryDate}</span></div></div>${generateTimeline(o.status)}<div style="display:flex; gap:5px; margin-top:15px;">${o.status!=='READY' ? `<button class="btn btn-out" style="flex:1" onclick="moveNext('${o.id}', '${o.status}')">NEXT</button>` : ''}<button class="btn btn-out" style="flex:1; color:green; border-color:green;" onclick="downloadForm('${o.id}')">SHARE</button></div></div>`;
-            if(o.status === "READY") pastL.innerHTML += html; else { pL.innerHTML += html; aL.innerHTML += html; }
-        });
-    }
-
-    function moveNext(id, cur) {
-        const next = depts[depts.indexOf(cur) + 1];
-        if(next && confirm(`Move #${id} to ${next}?`)) db.ref('orders/' + id).update({ status: next }).then(() => showToast());
-    }
-
-    function downloadForm(id) {
-        const o = window.fullData.find(x => x.id === id);
-        document.getElementById('c_wt').innerText = o.weight + " gms";
-        document.getElementById('c_kt').innerText = o.kt + " KT";
-        document.getElementById('c_sz').innerText = o.size;
-        document.getElementById('c_cad').innerText = o.cadDesigner || o.cadWorker || "N/A";
-        document.getElementById('c_sp').innerText = o.specs || "";
-        document.getElementById('c_imgs').innerHTML = o.imgs.map(i => `<img src="${i}">`).join('');
-        setTimeout(() => { html2canvas(document.querySelector("#formCanvas"), { scale: 2 }).then(canvas => {
-            const img = canvas.toDataURL("image/jpeg", 0.9);
-            const w = window.open();
-            w.document.write(`<body style="margin:0; background:#333; text-align:center; padding-top:20px;"><div style="background:white; padding:10px; display:inline-block; border-radius:10px;"><img id="formImg" src="${img}" style="width:100%; max-width:600px; display:block; margin-bottom:15px;"><div style="display:flex; gap:10px;"><button style="flex:1; padding:15px; font-weight:bold; background:#D4AF37; color:white; border:none; border-radius:8px;" onclick="window.close()">CLOSE</button><button id="shareBtn" style="flex:1; padding:15px; font-weight:bold; background:green; color:white; border:none; border-radius:8px;">SHARE</button></div></div><script>document.getElementById('shareBtn').onclick = async () => { const response = await fetch(document.getElementById('formImg').src); const blob = await response.blob(); const file = new File([blob], 'order.jpg', { type: 'image/jpeg' }); if (navigator.share) { navigator.share({ files: [file], title: 'Shanti Jewel Order' }); } else { alert('Long press image to save.'); } };<\/script></body>`);
-        
