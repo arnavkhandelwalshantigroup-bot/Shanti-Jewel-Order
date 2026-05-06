@@ -108,7 +108,7 @@
         <textarea id="i_sp" rows="3" placeholder="Instructions"></textarea>
         
         <button class="btn btn-gold" id="saveBtn" onclick="saveOrder()">SAVE & PROCESS</button>
-        <div id="uploadLoader" class="loader">UPLOADING HIGH-RES IMAGES...</div>
+        <div id="uploadLoader" class="loader">UPLOADING & COMPRESSING...</div>
     </div>
 </div>
 
@@ -149,18 +149,40 @@ const storage = firebase.storage();
 const depts=["CAD","CAM","CASTING","POLISH","HUID","READY"];
 let photoFiles=[null,null,null,null];
 
+// Compression Config
+const MAX_WIDTH = 1200;
+const IMAGE_QUALITY = 0.7;
+
 function checkPass(){if(document.getElementById('passInput').value==='1008'){document.getElementById('loginOverlay').style.display='none';loadOrders();}else{alert("Wrong Pass");}}
 function unlockWipeout(){if(document.getElementById('wipeoutPass').value==='2215'){document.getElementById('wipeoutLock').style.display='none';document.getElementById('wipeoutContent').style.display='block';}}
 function lockDashboard(){document.getElementById('wipeoutLock').style.display='block';document.getElementById('wipeoutContent').style.display='none';}
-function showToast(){const t=document.getElementById("toast");t.style.visibility="visible";setTimeout(()=>t.style.visibility="hidden",2000);}
+function showToast(msg="Stage Updated!"){const t=document.getElementById("toast");t.innerText=msg;t.style.visibility="visible";setTimeout(()=>t.style.visibility="hidden",2000);}
 
-function handleSingle(input,pId,idx){
+function handleSingle(input, pId, idx) {
     const file = input.files[0];
-    if(!file) return;
-    photoFiles[idx] = file;
+    if (!file) return;
+
     const reader = new FileReader();
     reader.onload = (e) => {
-        document.getElementById(pId).innerHTML = `<img src="${e.target.result}">`;
+        const img = new Image();
+        img.onload = () => {
+            let width = img.width;
+            let height = img.height;
+            if (width > MAX_WIDTH) {
+                height *= MAX_WIDTH / width;
+                width = MAX_WIDTH;
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            canvas.toBlob((blob) => {
+                photoFiles[idx] = blob;
+                document.getElementById(pId).innerHTML = `<img src="${URL.createObjectURL(blob)}">`;
+            }, 'image/jpeg', IMAGE_QUALITY);
+        };
+        img.src = e.target.result;
     };
     reader.readAsDataURL(file);
 }
