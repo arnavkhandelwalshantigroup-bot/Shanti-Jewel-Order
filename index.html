@@ -9,6 +9,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
         :root { --gold: #D4AF37; --brown: #3E2723; --cream: #FFFDE7; --text: #212121; }
@@ -23,41 +24,48 @@
         #loginOverlay { position: fixed; inset: 0; background: var(--brown); z-index: 9999; display: flex; align-items: center; justify-content: center; }
         .login-card { background: white; padding: 40px; border-radius: 25px; text-align: center; border: 3px solid var(--gold); width: 85%; max-width: 350px; }
         
-        /* Navigation System */
-        .tab-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; height: 75px; border-top: 2px solid var(--gold); z-index: 1000; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); }
-        .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: #999; text-transform: uppercase; letter-spacing: 1px; }
+        /* Navigation */
+        .tab-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; height: 75px; border-top: 2px solid var(--gold); z-index: 1000; }
+        .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: #999; text-transform: uppercase; }
         .tab.active { color: var(--brown); background: var(--cream); border-top: 6px solid var(--gold); }
 
-        /* Page Layouts */
-        .page { display: none; padding: 15px; animation: fadeIn 0.3s; }
+        .page { display: none; padding: 15px; }
         .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
-        /* Order Cards & Timeline */
+        /* Cards & Timeline */
         .card { background: white; border-radius: 18px; padding: 20px; margin-bottom: 20px; border: 1px solid #eee; box-shadow: 0 6px 12px rgba(0,0,0,0.06); position: relative; }
         .timeline { display: flex; justify-content: space-between; margin: 30px 0 10px 0; position: relative; }
         .timeline::before { content: ""; position: absolute; top: 6px; left: 0; right: 0; height: 2px; background: #eee; }
-        .t-step { width: 14px; height: 14px; border-radius: 50%; background: #ddd; z-index: 2; position: relative; transition: 0.3s; }
+        .t-step { width: 14px; height: 14px; border-radius: 50%; background: #ddd; z-index: 2; position: relative; }
         .t-step.active { background: var(--gold); box-shadow: 0 0 10px var(--gold); }
         .t-label { position: absolute; top: 22px; font-size: 7px; transform: translateX(-45%); white-space: nowrap; font-weight: 800; color: #bbb; text-transform: uppercase; }
         .t-step.active .t-label { color: var(--brown); }
 
-        /* Form Controls */
+        /* Form Elements */
         input, select, textarea { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 12px; font-size: 15px; box-sizing: border-box; font-family: inherit; }
         .btn-gold { background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728); border: none; padding: 18px; border-radius: 12px; color: #3E2723; font-weight: bold; width: 100%; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .btn-share { background: var(--brown); color: var(--gold); border: 1px solid var(--gold); margin-top: 10px; }
         
         /* Image Grid */
         .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-        .photo-box { height: 90px; background: #fdfdfd; border: 2px dashed var(--gold); border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--gold); font-weight: bold; overflow: hidden; }
+        .photo-box { height: 90px; background: #fdfdfd; border: 2px dashed var(--gold); border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--gold); font-weight: bold; overflow: hidden; text-align: center; }
         .photo-box img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* Dashboard Stats */
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .stat-box { background: var(--brown); color: var(--gold); padding: 22px; border-radius: 20px; text-align: center; border: 1px solid var(--gold); }
-        .stat-box h2 { margin: 0; font-family: 'Cinzel'; font-size: 32px; }
+        /* Hidden Share Template */
+        #shareCanvas { position: fixed; left: -9999px; width: 500px; background: #FFF; padding: 30px; border: 8px solid var(--gold); }
     </style>
 </head>
 <body>
+
+<div id="shareCanvas">
+    <div style="text-align:center; color:var(--brown);">
+        <span style="letter-spacing:10px; font-weight:bold;">॥ श्री ॥</span>
+        <h1 style="font-family:'Cinzel'; font-size:36px; margin:10px 0;">SHANTI JEWEL</h1>
+        <div style="height:3px; background:var(--gold); width:60%; margin: 10px auto;"></div>
+    </div>
+    <div id="canvasBody" style="font-family:'Montserrat'; padding:20px;"></div>
+    <div style="text-align:center; color:#999; font-size:12px; margin-top:20px;">Manufacturing Excellence</div>
+</div>
 
 <div id="loginOverlay">
     <div class="login-card">
@@ -76,10 +84,10 @@
 <div id="punchPage" class="page active">
     <div class="card">
         <div class="photo-grid">
-            <div class="photo-box" id="p1" onclick="document.getElementById('f1').click()">IMAGE 1</div>
-            <div class="photo-box" id="p2" onclick="document.getElementById('f2').click()">IMAGE 2</div>
-            <div class="photo-box" id="p3" onclick="document.getElementById('f3').click()">IMAGE 3</div>
-            <div class="photo-box" id="p4" onclick="document.getElementById('f4').click()">IMAGE 4</div>
+            <div class="photo-box" id="p1" onclick="document.getElementById('f1').click()">IMAGE 1<br>(PRIMARY)</div>
+            <div class="photo-box" id="p2" onclick="document.getElementById('f2').click()">+ ADD</div>
+            <div class="photo-box" id="p3" onclick="document.getElementById('f3').click()">+ ADD</div>
+            <div class="photo-box" id="p4" onclick="document.getElementById('f4').click()">+ ADD</div>
         </div>
         <input type="file" id="f1" accept="image/*" hidden onchange="cmp(this, 0, 'p1')">
         <input type="file" id="f2" accept="image/*" hidden onchange="cmp(this, 1, 'p2')">
@@ -120,19 +128,13 @@
     <div id="activeList"></div>
 </div>
 
-<div id="productionPage" class="page"><div id="prodList"></div></div>
-
-<div id="pastPage" class="page"><div id="pastList"></div></div>
-
 <div id="dashPage" class="page">
-    <div id="statList" class="stat-grid"></div>
+    <div id="statList" style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;"></div>
 </div>
 
 <div class="tab-bar">
     <div class="tab active" onclick="nav('punch', this)">Punch</div>
     <div class="tab" onclick="nav('active', this)">Active</div>
-    <div class="tab" onclick="nav('production', this)">Prod</div>
-    <div class="tab" onclick="nav('past', this)">Past</div>
     <div class="tab" onclick="nav('dash', this)">Dash</div>
 </div>
 
@@ -196,7 +198,7 @@ async function save() {
                 await db.ref(`orders/${id}/imgs/${i}`).set(url);
             }
         }
-        alert("SUCCESS: Order Punched!"); location.reload();
+        alert("SUCCESS!"); location.reload();
     } catch(e) { alert(e.message); btn.disabled=false; }
 }
 
@@ -204,33 +206,63 @@ function load() {
     db.ref('orders').on('value', snap => {
         const all = Object.values(snap.val() || {});
         const stats = {}; stages.forEach(s => stats[s] = 0);
-        const act = document.getElementById('activeList'), prd = document.getElementById('prodList'), pst = document.getElementById('pastList');
-        act.innerHTML = ""; prd.innerHTML = ""; pst.innerHTML = "";
+        const act = document.getElementById('activeList');
+        act.innerHTML = "";
         
         all.reverse().forEach(o => {
             stats[o.status]++;
             const img = (o.imgs && o.imgs[0]) ? o.imgs[0] : '';
-            const html = `<div class="card">
-                <div style="display:flex; gap:15px; align-items:center;">
-                    <img src="${img}" style="width:70px; height:70px; object-fit:cover; border-radius:12px; border:1px solid var(--gold); background:#eee;">
-                    <div><b style="font-size:18px; color:var(--brown);">${o.id}</b><br><small style="font-weight:600; color:#666;">${o.party}</small></div>
-                </div>
-                <div class="timeline">
-                    ${stages.map((s,i) => `<div class="t-step ${stages.indexOf(o.status) >= i ? 'active' : ''}"><span class="t-label">${s}</span></div>`).join('')}
-                </div>
-                ${o.status !== 'READY' ? `<button class="btn-gold" style="padding:10px; font-size:11px; margin-top:25px;" onclick="move('${o.id}', '${o.status}')">PROCEED TO NEXT STAGE</button>` : ''}
-            </div>`;
-            
-            if(o.status === 'READY') pst.innerHTML += html;
-            else { act.innerHTML += html; prd.innerHTML += html; }
+            if(o.status !== 'READY') {
+                act.innerHTML += `<div class="card">
+                    <div style="display:flex; gap:15px; align-items:center;">
+                        <img src="${img}" style="width:70px; height:70px; object-fit:cover; border-radius:12px; border:1px solid var(--gold); background:#eee;">
+                        <div><b style="font-size:18px; color:var(--brown);">${o.id}</b><br><small style="font-weight:600; color:#666;">${o.party}</small></div>
+                    </div>
+                    <div class="timeline">
+                        ${stages.map((s,i) => `<div class="t-step ${stages.indexOf(o.status) >= i ? 'active' : ''}"><span class="t-label">${s}</span></div>`).join('')}
+                    </div>
+                    <button class="btn-gold" style="padding:10px; font-size:11px; margin-top:25px;" onclick="move('${o.id}', '${o.status}')">NEXT STAGE</button>
+                    <button class="btn-gold btn-share" style="padding:10px; font-size:11px;" onclick='shareCAD(${JSON.stringify(o)})'>SHARE CAD FORM</button>
+                </div>`;
+            }
         });
-        document.getElementById('statList').innerHTML = stages.map(s => `<div class="stat-box"><h2>${stats[s]}</h2><small>${s}</small></div>`).join('');
+        document.getElementById('statList').innerHTML = stages.map(s => `<div class="stat-box" style="background:var(--brown); color:var(--gold); padding:20px; border-radius:15px; text-align:center;"><h2>${stats[s]}</h2><small>${s}</small></div>`).join('');
     });
 }
 
 function move(id, cur) {
     const nextIdx = stages.indexOf(cur) + 1;
     if(nextIdx < stages.length) db.ref('orders/'+id).update({status: stages[nextIdx]});
+}
+
+function shareCAD(o) {
+    const body = document.getElementById('canvasBody');
+    const imgUrl = (o.imgs && o.imgs[0]) ? o.imgs[0] : '';
+    body.innerHTML = `
+        <div style="border:2px solid var(--gold); border-radius:15px; overflow:hidden; margin-bottom:20px;">
+            <img src="${imgUrl}" style="width:100%; height:350px; object-fit:contain; background:#f9f9f9;">
+        </div>
+        <div style="font-size:22px; line-height:1.8; color:#333;">
+            <b style="color:var(--brown);">ORDER ID:</b> ${o.id}<br>
+            <b style="color:var(--brown);">WEIGHT:</b> ${o.wt} gms<br>
+            <b style="color:var(--brown);">PURITY:</b> ${o.kt}<br>
+            <b style="color:var(--brown);">SIZE:</b> ${o.sz}<br>
+            <b style="color:var(--brown);">DESIGNER:</b> ${o.cad}<br><br>
+            <b style="color:var(--brown);">INSTRUCTIONS:</b><br>
+            <div style="background:#f4f4f4; padding:15px; border-radius:10px; font-size:20px;">${o.sp || 'No special instructions'}</div>
+        </div>
+    `;
+    
+    html2canvas(document.getElementById('shareCanvas'), {useCORS: true, scale: 2}).then(canvas => {
+        canvas.toBlob(blob => {
+            const file = new File([blob], `CAD_${o.id}.png`, {type: 'image/png'});
+            if (navigator.share) {
+                navigator.share({files: [file], title: 'CAD Order Form'});
+            } else {
+                alert("Please take a screenshot of the form.");
+            }
+        });
+    });
 }
 
 function nav(p, el) {
