@@ -12,54 +12,46 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
-        :root { --gold: #D4AF37; --brown: #3E2723; --cream: #FFFDE7; --text: #212121; --red: #d32f2f; }
+        :root { --gold: #D4AF37; --brown: #3E2723; --cream: #FFFDE7; --text: #212121; }
         body { font-family: 'Montserrat', sans-serif; background: #fdfbf7; margin: 0; padding-bottom: 90px; color: var(--text); }
         
-        /* Header */
         .header { background: var(--brown); color: var(--gold); text-align: center; padding: 25px 10px; border-bottom: 5px solid var(--gold); }
         .header h1 { font-family: 'Cinzel', serif; margin: 0; font-size: 26px; letter-spacing: 5px; }
-        .header span { font-size: 12px; letter-spacing: 8px; display: block; margin-bottom: 8px; opacity: 0.9; }
+        .header span { font-size: 10px; letter-spacing: 8px; display: block; margin-bottom: 5px; }
 
-        /* Full Screen Overlays (Entry & Dash Lock) */
         .premium-overlay { position: fixed; inset: 0; background: var(--brown); z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .login-card { background: white; padding: 40px; border-radius: 25px; text-align: center; border: 3px solid var(--gold); width: 85%; max-width: 350px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .login-card { background: white; padding: 30px; border-radius: 20px; text-align: center; border: 3px solid var(--gold); width: 85%; max-width: 350px; }
         
-        /* Tabs */
-        .tab-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; height: 75px; border-top: 2px solid var(--gold); z-index: 1000; }
-        .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: #999; text-transform: uppercase; }
-        .tab.active { color: var(--brown); background: var(--cream); border-top: 6px solid var(--gold); }
+        .tab-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; height: 70px; border-top: 2px solid var(--gold); z-index: 1000; }
+        .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #999; text-transform: uppercase; }
+        .tab.active { color: var(--brown); background: var(--cream); border-top: 5px solid var(--gold); }
 
         .page { display: none; padding: 15px; }
         .page.active { display: block; }
         
-        .card { background: white; border-radius: 18px; padding: 20px; margin-bottom: 20px; border: 1px solid #eee; box-shadow: 0 6px 12px rgba(0,0,0,0.06); }
+        .card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px; border: 1px solid #eee; box-shadow: 0 4px 10px rgba(0,0,0,0.05); overflow: hidden; position: relative;}
         
-        input, select, textarea { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 12px; font-size: 15px; box-sizing: border-box; font-family: inherit; }
-        .btn-gold { background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728); border: none; padding: 18px; border-radius: 12px; color: #3E2723; font-weight: bold; width: 100%; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; }
-        .btn-red { background: var(--red); color: white; border: none; padding: 15px; border-radius: 12px; width: 100%; margin-top: 20px; font-weight: bold; text-transform: uppercase; }
+        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; font-family: inherit; box-sizing: border-box; }
+        .btn-gold { background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728); border: none; padding: 14px; border-radius: 10px; color: #3E2723; font-weight: bold; width: 100%; cursor: pointer; text-transform: uppercase; font-size: 12px;}
 
-        .single-photo-box { height: 180px; background: #fdfdfd; border: 2px dashed var(--gold); border-radius: 15px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 15px; color: var(--gold); font-weight: bold; text-align: center; }
-        .single-photo-box img { width: 100%; height: 100%; object-fit: contain; }
+        /* Timeline on Main Page */
+        .timeline { display: flex; justify-content: space-between; margin: 25px 0 10px 0; position: relative; padding: 0 5px; }
+        .timeline::before { content: ""; position: absolute; top: 5px; left: 10px; right: 10px; height: 2px; background: #eee; z-index: 1; }
+        .t-step { width: 10px; height: 10px; border-radius: 50%; background: #ddd; z-index: 2; position: relative; }
+        .t-step.active { background: var(--gold); box-shadow: 0 0 5px var(--gold); }
+        .t-label { position: absolute; top: 15px; font-size: 6.5px; transform: translateX(-40%); white-space: nowrap; font-weight: bold; color: #aaa; text-transform: uppercase;}
+        .t-step.active .t-label { color: var(--brown); }
 
-        .party-row { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #eee; font-size: 13px; font-weight: 600; }
-        
-        #shareCanvas { position: fixed; left: -9999px; width: 500px; background: #FFF; padding: 30px; border: 8px solid var(--gold); }
+        .order-details { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #ddd; font-size: 12px; }
+        .order-details.open { display: block; }
     </style>
 </head>
 <body>
 
-<div id="shareCanvas">
-    <div style="text-align:center; color:var(--brown);">
-        <span style="letter-spacing:10px; font-weight:bold;">॥ श्री ॥</span>
-        <h1 style="font-family:'Cinzel'; font-size:36px; margin:10px 0;">SHANTI JEWEL</h1>
-    </div>
-    <div id="canvasBody" style="padding:20px;"></div>
-</div>
-
 <div id="loginOverlay" class="premium-overlay">
     <div class="login-card">
         <span style="letter-spacing: 5px; color: var(--gold); font-weight: bold;">॥ श्री ॥</span>
-        <h2 style="font-family: 'Cinzel'; color: var(--brown); margin-top: 10px;">SHANTI JEWEL</h2>
+        <h2 style="font-family: 'Cinzel'; color: var(--brown);">SHANTI JEWEL</h2>
         <input type="password" id="passInput" placeholder="PIN" style="text-align:center; letter-spacing: 10px;">
         <button class="btn-gold" onclick="auth()">ACCESS</button>
     </div>
@@ -72,7 +64,7 @@
 
 <div id="punchPage" class="page active">
     <div class="card">
-        <div class="single-photo-box" id="p1" onclick="document.getElementById('f1').click()">CLICK TO ADD PHOTO</div>
+        <div id="p1" style="height:140px; background:#fdfdfd; border:2px dashed var(--gold); border-radius:12px; display:flex; align-items:center; justify-content:center; overflow:hidden; margin-bottom:10px;" onclick="document.getElementById('f1').click()">CLICK TO ADD PHOTO</div>
         <input type="file" id="f1" accept="image/*" hidden onchange="cmp(this, 0, 'p1')">
         <input type="text" id="i_id" placeholder="ORDER ID">
         <select id="i_pa">
@@ -84,36 +76,37 @@
             <option>Annapurna Gold</option>
             <option>Inhouse Production</option>
         </select>
-        <div style="display:flex; gap:10px;"><input type="number" step="0.001" id="i_wt" placeholder="WT (g)"><input type="text" id="i_kt" placeholder="KT"></div>
+        <div style="display:flex; gap:10px;"><input type="number" step="0.001" id="i_wt" placeholder="WT"><input type="text" id="i_kt" placeholder="KT"></div>
         <div style="display:flex; gap:10px;"><input type="text" id="i_sz" placeholder="SIZE"><input type="date" id="i_dd"></div>
-        <textarea id="i_sp" rows="2" placeholder="SPECIAL INSTRUCTIONS"></textarea>
+        <textarea id="i_sp" rows="2" placeholder="SPECIFICATIONS"></textarea>
         <button class="btn-gold" id="saveBtn" onclick="save()">PUNCH ORDER</button>
     </div>
 </div>
 
 <div id="activePage" class="page">
-    <input type="text" id="src" placeholder="SEARCH ORDER ID..." onkeyup="filter()" style="margin-bottom:15px; border:2px solid var(--gold);">
+    <div style="display:flex; gap:8px; margin-bottom:12px;">
+        <input type="text" id="src" placeholder="SEARCH ID..." onkeyup="load()" style="margin:0; flex:1.2;">
+        <select id="partyFilter" onchange="load()" style="margin:0; flex:1;">
+            <option value="">ALL PARTIES</option>
+            <option>Shree Gajanan Jewellers</option>
+            <option>P.N.GADGIL & SONS</option>
+            <option>PNG Brothers</option>
+            <option>Neelkanth Jewellers</option>
+            <option>Annapurna Gold</option>
+            <option>Inhouse Production</option>
+        </select>
+    </div>
     <div id="activeList"></div>
 </div>
 
 <div id="dashPage" class="page">
-    <div id="dashContent" style="display:none;">
-        <h3 style="font-family:'Cinzel'; color:var(--brown); border-left: 4px solid var(--gold); padding-left: 10px;">STOCK STATUS</h3>
-        <div id="statList" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;"></div>
-        
-        <h3 style="font-family:'Cinzel'; color:var(--brown); border-left: 4px solid var(--gold); padding-left: 10px;">PARTY BREAKDOWN</h3>
-        <div class="card" id="partyList" style="padding:5px;"></div>
-
-        <button class="btn-red" onclick="wipeout()">WIPEOUT ALL DATA</button>
+    <div id="dashLock" class="card" style="text-align:center; padding:50px 20px; background:var(--brown); color:white;">
+        <h2 style="font-family:'Cinzel'; color:var(--gold);">DASHBOARD LOCK</h2>
+        <input type="password" id="dpin" placeholder="PIN" style="text-align:center; letter-spacing:10px; max-width:200px;">
+        <button class="btn-gold" onclick="unlockD()">UNLOCK</button>
     </div>
-    
-    <div id="dashLockOverlay" style="position: absolute; inset: 0; background: var(--brown); display: flex; align-items: center; justify-content: center; height: 80vh; border-radius: 20px;">
-        <div class="login-card">
-            <span style="letter-spacing: 5px; color: var(--gold); font-weight: bold;">॥ श्री ॥</span>
-            <h2 style="font-family: 'Cinzel'; color: var(--brown); margin-top: 10px;">SECURE DASH</h2>
-            <input type="password" id="dashPin" placeholder="PIN" style="text-align:center; letter-spacing: 10px;">
-            <button class="btn-gold" onclick="unlockDash()">UNLOCK</button>
-        </div>
+    <div id="dashBody" style="display:none;">
+        <div id="stats" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"></div>
     </div>
 </div>
 
@@ -136,18 +129,8 @@ const db = firebase.database(), storage = firebase.storage();
 const stages = ["CAD", "CAM", "CASTING", "POLISH", "HUID", "READY"];
 let blobs = [null];
 
-// MAIN AUTH (PIN: 1008)
 function auth(){ if(document.getElementById('passInput').value==='1008'){ document.getElementById('loginOverlay').remove(); load(); } }
-
-// DASHBOARD AUTH (PIN: 2215)
-function unlockDash(){ 
-    if(document.getElementById('dashPin').value==='2215'){ 
-        document.getElementById('dashLockOverlay').style.display='none'; 
-        document.getElementById('dashContent').style.display='block'; 
-    } else {
-        alert("Wrong Pin");
-    }
-}
+function unlockD(){ if(document.getElementById('dpin').value==='2215'){ document.getElementById('dashLock').style.display='none'; document.getElementById('dashBody').style.display='block'; } }
 
 function cmp(input, idx, pId) {
     const file = input.files[0];
@@ -155,12 +138,12 @@ function cmp(input, idx, pId) {
     reader.onload = (e) => {
         const img = new Image();
         img.onload = () => {
-            const canvas = document.createElement('canvas');
+            const cvs = document.createElement('canvas');
             const MAX = 800; let w=img.width, h=img.height;
             if(w>MAX){ h *= MAX/w; w=MAX; }
-            canvas.width=w; canvas.height=h;
-            canvas.getContext('2d').drawImage(img,0,0,w,h);
-            canvas.toBlob(b => { blobs[idx]=b; document.getElementById(pId).innerHTML=`<img src="${URL.createObjectURL(b)}">`; }, 'image/jpeg', 0.7);
+            cvs.width=w; cvs.height=h;
+            cvs.getContext('2d').drawImage(img,0,0,w,h);
+            cvs.toBlob(b => { blobs[idx]=b; document.getElementById(pId).innerHTML=`<img src="${URL.createObjectURL(b)}" style="width:100%; height:100%; object-fit:contain;">`; }, 'image/jpeg', 0.8);
         };
         img.src = e.target.result;
     };
@@ -169,93 +152,80 @@ function cmp(input, idx, pId) {
 
 async function save() {
     const id = document.getElementById('i_id').value;
-    if(!id) return alert("ID Required");
+    if(!id) return alert("Enter Order ID");
     const btn = document.getElementById('saveBtn');
-    btn.disabled = true; btn.innerText = "UPLOADING...";
+    btn.disabled = true; btn.innerText = "UPLOADING IMAGE...";
 
     const data = {
         id: id, party: document.getElementById('i_pa').value,
-        wt: parseFloat(document.getElementById('i_wt').value || 0), kt: document.getElementById('i_kt').value,
+        wt: document.getElementById('i_wt').value, kt: document.getElementById('i_kt').value,
         sz: document.getElementById('i_sz').value, dd: document.getElementById('i_dd').value,
-        sp: document.getElementById('i_sp').value,
-        status: "CAD", ts: Date.now()
+        sp: document.getElementById('i_sp').value, status: "CAD", ts: Date.now()
     };
 
     try {
-        await db.ref('orders/'+id).set(data);
         if(blobs[0]){
             const ref = storage.ref(`orders/${id}/p0.jpg`);
-            const task = ref.put(blobs[0]);
-            task.on('state_changed', null, null, async () => {
-                const url = await ref.getDownloadURL();
-                await db.ref(`orders/${id}/imgs/0`).set(url);
-                alert("PUNCHED SUCCESSFULLY!"); location.reload();
-            });
-        } else { location.reload(); }
-    } catch(e) { alert(e.message); btn.disabled=false; }
-}
-
-function load() {
-    db.ref('orders').on('value', snap => {
-        const all = Object.values(snap.val() || {});
-        const act = document.getElementById('activeList'), partBox = document.getElementById('partyList');
-        const stats = {}; stages.forEach(s => stats[s] = 0);
-        const partyData = {};
-
-        act.innerHTML = "";
-        all.reverse().forEach(o => {
-            stats[o.status]++;
-            if(!partyData[o.party]) partyData[o.party] = { count: 0, wt: 0 };
-            partyData[o.party].count++;
-            partyData[o.party].wt += o.wt;
-
-            const img = (o.imgs && o.imgs[0]) ? o.imgs[0] : '';
-            if(o.status !== 'READY') {
-                act.innerHTML += `<div class="card">
-                    <div style="display:flex; gap:15px; align-items:center;">
-                        <img src="${img}" style="width:70px; height:70px; object-fit:cover; border-radius:12px; border:1px solid var(--gold); background:#eee;">
-                        <div><b style="font-size:18px; color:var(--brown);">${o.id}</b><br><small style="font-weight:600;">${o.party}</small></div>
-                    </div>
-                    <button class="btn-gold" style="margin-top:15px; padding:10px; font-size:11px;" onclick='shareCAD(${JSON.stringify(o)})'>SHARE CAD FORM</button>
-                </div>`;
-            }
-        });
-
-        document.getElementById('statList').innerHTML = stages.map(s => `
-            <div style="background:var(--brown); color:var(--gold); padding:20px; border-radius:15px; text-align:center; border:1px solid var(--gold);">
-                <h2 style="margin:0; font-family:'Cinzel';">${stats[s]}</h2><small style="text-transform:uppercase; font-size:9px;">${s}</small>
-            </div>`).join('');
+            await ref.put(blobs[0]);
+            const url = await ref.getDownloadURL();
+            data.imgs = [url]; // Attach image URL directly to the data object
+        }
         
-        partBox.innerHTML = Object.keys(partyData).map(p => `
-            <div class="party-row">
-                <span>${p || 'General'}</span>
-                <span>${partyData[p].count} Pcs | ${partyData[p].wt.toFixed(3)}g</span>
-            </div>
-        `).join('');
-    });
-}
-
-function wipeout() {
-    if(confirm("DANGER: This will delete ALL orders. Proceed?")) {
-        db.ref('orders').remove();
-        alert("All Data Wiped.");
+        await db.ref('orders/'+id).set(data);
+        alert("PUNCHED SUCCESSFULLY!");
         location.reload();
+    } catch(e) { 
+        alert("System Error: " + e.message); 
+        btn.disabled=false; 
+        btn.innerText = "PUNCH ORDER";
     }
 }
 
-function shareCAD(o) {
-    const body = document.getElementById('canvasBody');
-    body.innerHTML = `<img src="${o.imgs[0]}" style="width:100%; border-radius:10px; margin-bottom:15px;">
-    <div style="font-size:22px; line-height:1.6; color:#333; font-family:'Montserrat';">
-        <b>ID:</b> ${o.id}<br><b>WT:</b> ${o.wt}g | <b>KT:</b> ${o.kt}<br><b>SIZE:</b> ${o.sz}<br>
-        <div style="background:#f4f4f4; padding:10px; border-radius:8px; margin-top:10px;"><b>NOTES:</b> ${o.sp || '-'}</div>
-    </div>`;
-    html2canvas(document.getElementById('shareCanvas'), {useCORS: true}).then(cvs => {
-        cvs.toBlob(b => {
-            const f = new File([b], `CAD_${o.id}.png`, {type:'image/png'});
-            if(navigator.share) navigator.share({files:[f]});
+function load() {
+    const search = document.getElementById('src').value.toLowerCase();
+    const pFilter = document.getElementById('partyFilter').value;
+    
+    db.ref('orders').on('value', snap => {
+        const all = Object.values(snap.val() || {});
+        const act = document.getElementById('activeList');
+        act.innerHTML = "";
+        
+        all.reverse().forEach(o => {
+            if((!search || o.id.toLowerCase().includes(search)) && (!pFilter || o.party === pFilter)) {
+                if(o.status !== 'READY') {
+                    const img = (o.imgs && o.imgs[0]) ? o.imgs[0] : '';
+                    act.innerHTML += `
+                    <div class="card" onclick="this.querySelector('.order-details').classList.toggle('open')">
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <div style="display:flex; gap:12px; align-items:center;">
+                                <img src="${img}" style="width:60px; height:60px; border-radius:8px; border:1px solid var(--gold); object-fit:cover; background:#f4f4f4;">
+                                <div><b style="font-size:16px; color:var(--brown);">${o.id}</b><br><small style="font-weight:600;">${o.party}</small></div>
+                            </div>
+                            <div style="text-align:right;"><small style="color:var(--gold); font-weight:bold;">DELIVERY:<br>${o.dd || 'TBD'}</small></div>
+                        </div>
+
+                        <div class="timeline">
+                            ${stages.map((s,i) => `<div class="t-step ${stages.indexOf(o.status) >= i ? 'active' : ''}"><span class="t-label">${s}</span></div>`).join('')}
+                        </div>
+                        
+                        <div class="order-details">
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:12px; background:#f9f9f9; padding:12px; border-radius:10px; margin-top:10px;">
+                                <span><b>WT:</b> ${o.wt}g</span><span><b>PURITY:</b> ${o.kt}</span>
+                                <span><b>SIZE:</b> ${o.sz}</span><span><b>STAGE:</b> ${o.status}</span>
+                            </div>
+                            <p style="margin:12px 0; font-size:12px;"><b>Notes:</b> ${o.sp || '-'}</p>
+                            <button class="btn-gold" style="padding:10px; font-size:10px;" onclick="event.stopPropagation(); move('${o.id}', '${o.status}')">MOVE TO NEXT STAGE</button>
+                        </div>
+                    </div>`;
+                }
+            }
         });
     });
+}
+
+function move(id, cur) {
+    const nextIdx = stages.indexOf(cur) + 1;
+    if(nextIdx < stages.length) db.ref('orders/'+id).update({status: stages[nextIdx]});
 }
 
 function nav(p, el) {
