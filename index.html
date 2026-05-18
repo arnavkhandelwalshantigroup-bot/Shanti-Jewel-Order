@@ -15,16 +15,13 @@
         :root { --gold: #D4AF37; --brown: #3E2723; --cream: #FFFDE7; --text: #212121; }
         body { font-family: 'Montserrat', sans-serif; background: #fdfbf7; margin: 0; padding-bottom: 90px; color: var(--text); }
         
-        /* Premium Header */
         .header { background: var(--brown); color: var(--gold); text-align: center; padding: 25px 10px; border-bottom: 5px solid var(--gold); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
         .header h1 { font-family: 'Cinzel', serif; margin: 0; font-size: 26px; letter-spacing: 5px; }
         .header span { font-size: 12px; letter-spacing: 8px; display: block; margin-bottom: 8px; opacity: 0.9; }
 
-        /* Security Overlay */
         #loginOverlay { position: fixed; inset: 0; background: var(--brown); z-index: 9999; display: flex; align-items: center; justify-content: center; }
         .login-card { background: white; padding: 40px; border-radius: 25px; text-align: center; border: 3px solid var(--gold); width: 85%; max-width: 350px; }
         
-        /* Navigation */
         .tab-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; height: 75px; border-top: 2px solid var(--gold); z-index: 1000; }
         .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: #999; text-transform: uppercase; }
         .tab.active { color: var(--brown); background: var(--cream); border-top: 6px solid var(--gold); }
@@ -32,26 +29,25 @@
         .page { display: none; padding: 15px; }
         .page.active { display: block; }
         
-        /* Cards & Timeline */
         .card { background: white; border-radius: 18px; padding: 20px; margin-bottom: 20px; border: 1px solid #eee; box-shadow: 0 6px 12px rgba(0,0,0,0.06); position: relative; }
-        .timeline { display: flex; justify-content: space-between; margin: 30px 0 10px 0; position: relative; }
-        .timeline::before { content: ""; position: absolute; top: 6px; left: 0; right: 0; height: 2px; background: #eee; }
-        .t-step { width: 14px; height: 14px; border-radius: 50%; background: #ddd; z-index: 2; position: relative; }
-        .t-step.active { background: var(--gold); box-shadow: 0 0 10px var(--gold); }
-        .t-label { position: absolute; top: 22px; font-size: 7px; transform: translateX(-45%); white-space: nowrap; font-weight: 800; color: #bbb; text-transform: uppercase; }
-        .t-step.active .t-label { color: var(--brown); }
-
-        /* Form Elements */
+        
+        /* Form Styling */
         input, select, textarea { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 12px; font-size: 15px; box-sizing: border-box; font-family: inherit; }
         .btn-gold { background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728); border: none; padding: 18px; border-radius: 12px; color: #3E2723; font-weight: bold; width: 100%; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .btn-share { background: var(--brown); color: var(--gold); border: 1px solid var(--gold); margin-top: 10px; }
-        
-        /* Image Grid */
-        .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-        .photo-box { height: 90px; background: #fdfdfd; border: 2px dashed var(--gold); border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--gold); font-weight: bold; overflow: hidden; text-align: center; }
-        .photo-box img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* Hidden Share Template */
+        /* Single Photo Slot */
+        .single-photo-box { height: 180px; background: #fdfdfd; border: 2px dashed var(--gold); border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--gold); font-weight: bold; overflow: hidden; margin-bottom: 15px; text-align: center; }
+        .single-photo-box img { width: 100%; height: 100%; object-fit: contain; }
+
+        /* Timeline Display */
+        .timeline { display: flex; justify-content: space-between; margin: 30px 0 10px 0; position: relative; }
+        .timeline::before { content: ""; position: absolute; top: 6px; left: 0; right: 0; height: 2px; background: #eee; }
+        .t-step { width: 12px; height: 12px; border-radius: 50%; background: #ddd; z-index: 2; position: relative; }
+        .t-step.active { background: var(--gold); box-shadow: 0 0 8px var(--gold); }
+        .t-label { position: absolute; top: 20px; font-size: 7px; transform: translateX(-40%); white-space: nowrap; font-weight: 800; color: #bbb; text-transform: uppercase; }
+        .t-step.active .t-label { color: var(--brown); }
+
         #shareCanvas { position: fixed; left: -9999px; width: 500px; background: #FFF; padding: 30px; border: 8px solid var(--gold); }
     </style>
 </head>
@@ -64,7 +60,6 @@
         <div style="height:3px; background:var(--gold); width:60%; margin: 10px auto;"></div>
     </div>
     <div id="canvasBody" style="font-family:'Montserrat'; padding:20px;"></div>
-    <div style="text-align:center; color:#999; font-size:12px; margin-top:20px;">Manufacturing Excellence</div>
 </div>
 
 <div id="loginOverlay">
@@ -83,16 +78,10 @@
 
 <div id="punchPage" class="page active">
     <div class="card">
-        <div class="photo-grid">
-            <div class="photo-box" id="p1" onclick="document.getElementById('f1').click()">IMAGE 1<br>(PRIMARY)</div>
-            <div class="photo-box" id="p2" onclick="document.getElementById('f2').click()">+ ADD</div>
-            <div class="photo-box" id="p3" onclick="document.getElementById('f3').click()">+ ADD</div>
-            <div class="photo-box" id="p4" onclick="document.getElementById('f4').click()">+ ADD</div>
+        <div class="single-photo-box" id="p1" onclick="document.getElementById('f1').click()">
+            TAP TO UPLOAD PRODUCT IMAGE
         </div>
         <input type="file" id="f1" accept="image/*" hidden onchange="cmp(this, 0, 'p1')">
-        <input type="file" id="f2" accept="image/*" hidden onchange="cmp(this, 1, 'p2')">
-        <input type="file" id="f3" accept="image/*" hidden onchange="cmp(this, 2, 'p3')">
-        <input type="file" id="f4" accept="image/*" hidden onchange="cmp(this, 3, 'p4')">
 
         <input type="text" id="i_id" placeholder="ORDER ID">
         <select id="i_pa">
@@ -149,7 +138,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database(), storage = firebase.storage();
 const stages = ["CAD", "CAM", "CASTING", "POLISH", "HUID", "READY"];
-let blobs = [null, null, null, null];
+let blobs = [null];
 
 function auth(){ if(document.getElementById('passInput').value==='1008'){ document.getElementById('loginOverlay').remove(); load(); } }
 
@@ -160,14 +149,14 @@ function cmp(input, idx, pId) {
         const img = new Image();
         img.onload = () => {
             const canvas = document.createElement('canvas');
-            const MAX = 600; let w=img.width, h=img.height;
+            const MAX = 800; let w=img.width, h=img.height;
             if(w>MAX){ h *= MAX/w; w=MAX; }
             canvas.width=w; canvas.height=h;
             canvas.getContext('2d').drawImage(img,0,0,w,h);
             canvas.toBlob(b => { 
                 blobs[idx]=b; 
                 document.getElementById(pId).innerHTML=`<img src="${URL.createObjectURL(b)}">`;
-            }, 'image/jpeg', 0.6);
+            }, 'image/jpeg', 0.7);
         };
         img.src = e.target.result;
     };
@@ -190,15 +179,13 @@ async function save() {
 
     try {
         await db.ref('orders/'+id).set(data);
-        for(let i=0; i<4; i++){
-            if(blobs[i]){
-                const ref = storage.ref(`orders/${id}/p${i}.jpg`);
-                await ref.put(blobs[i]);
-                const url = await ref.getDownloadURL();
-                await db.ref(`orders/${id}/imgs/${i}`).set(url);
-            }
+        if(blobs[0]){
+            const ref = storage.ref(`orders/${id}/p0.jpg`);
+            await ref.put(blobs[0]);
+            const url = await ref.getDownloadURL();
+            await db.ref(`orders/${id}/imgs/0`).set(url);
         }
-        alert("SUCCESS!"); location.reload();
+        alert("PUNCHED SUCCESSFULLY!"); location.reload();
     } catch(e) { alert(e.message); btn.disabled=false; }
 }
 
@@ -249,7 +236,7 @@ function shareCAD(o) {
             <b style="color:var(--brown);">SIZE:</b> ${o.sz}<br>
             <b style="color:var(--brown);">DESIGNER:</b> ${o.cad}<br><br>
             <b style="color:var(--brown);">INSTRUCTIONS:</b><br>
-            <div style="background:#f4f4f4; padding:15px; border-radius:10px; font-size:20px;">${o.sp || 'No special instructions'}</div>
+            <div style="background:#f4f4f4; padding:15px; border-radius:10px; font-size:20px;">${o.sp || 'None'}</div>
         </div>
     `;
     
@@ -259,7 +246,7 @@ function shareCAD(o) {
             if (navigator.share) {
                 navigator.share({files: [file], title: 'CAD Order Form'});
             } else {
-                alert("Please take a screenshot of the form.");
+                alert("Please screenshot this form.");
             }
         });
     });
