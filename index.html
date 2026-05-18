@@ -12,42 +12,35 @@
         :root { --gold: #D4AF37; --brown: #3E2723; --cream: #FFFDE7; --text: #212121; --red: #c62828; --green: #2e7d32; }
         body { font-family: 'Montserrat', sans-serif; background: #fdfbf7; margin: 0; padding-bottom: 90px; color: var(--text); -webkit-tap-highlight-color: transparent; }
         
-        /* Clean Header */
+        /* Global App Lock (1008) */
+        #mainLock { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--brown); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; color: white; }
+
         .header { background: var(--brown); color: var(--gold); text-align: center; padding: 30px 10px; border-bottom: 5px solid var(--gold); }
         .header h1 { font-family: 'Cinzel', serif; margin: 0; font-size: 26px; letter-spacing: 4px; }
 
-        /* Security Locks */
-        .lock-screen { position: fixed; top: 100px; bottom: 75px; left: 0; right: 0; background: var(--brown); z-index: 500; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; color: white; text-align: center; }
-
-        /* Form Styling */
+        /* General UI */
         .punch-card { background: white; border-radius: 20px; padding: 20px; border: 2px solid var(--gold); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        input, select, textarea { 
-            width: 100%; padding: 14px; margin: 8px 0; border: 1.5px solid #eee; border-radius: 12px; 
-            font-family: 'Montserrat', sans-serif; font-weight: 600; box-sizing: border-box; 
-            background: #fff; font-size: 14px;
-        }
-        
+        input, select, textarea { width: 100%; padding: 14px; margin: 8px 0; border: 1.5px solid #eee; border-radius: 12px; font-family: 'Montserrat', sans-serif; font-weight: 600; box-sizing: border-box; background: #fff; font-size: 14px; }
         .photo-box { height: 160px; background: #fdfbf7; border: 3px dashed var(--gold); border-radius: 15px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 15px; color: var(--gold); font-weight: 800; font-family: 'Cinzel'; font-size: 12px; }
 
-        /* Navigation Bar */
+        /* Tabs & Navigation */
         .tab-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; height: 75px; border-top: 2px solid var(--gold); z-index: 1000; }
         .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 8px; font-weight: 800; color: #999; text-transform: uppercase; }
         .tab.active { color: var(--brown); background: var(--cream); border-top: 5px solid var(--gold); }
-
         .page { display: none; padding: 15px; }
         .page.active { display: block; }
-        
-        /* Order Cards */
-        .card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px; border: 1px solid #eee; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .details { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #ddd; }
-        .card.expanded .details { display: block; }
 
-        /* Buttons */
+        /* Lock Screen for Dashboard (2215) */
+        .dash-lock { text-align: center; padding: 50px 20px; background: var(--brown); border-radius: 20px; color: white; border: 1px solid var(--gold); margin-top: 20px; }
+
         .btn-gold { background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728); border: none; padding: 16px; border-radius: 12px; color: #3E2723; font-weight: 800; width: 100%; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
-        .btn-whatsapp { background: var(--green); color: white; border: none; padding: 10px; border-radius: 8px; width: 100%; font-weight: bold; margin-top: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-whatsapp { background: var(--green); color: white; border: none; padding: 10px; border-radius: 8px; width: 100%; font-weight: bold; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; font-size: 12px; }
         .btn-red { background: var(--red); color: white; border: none; padding: 8px; border-radius: 8px; width: 100%; font-weight: bold; margin-top: 15px; }
 
-        /* Timeline Workflow */
+        /* Timeline */
+        .card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px; border: 1px solid #eee; }
+        .details { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #ddd; }
+        .card.expanded .details { display: block; }
         .timeline { display: flex; justify-content: space-between; margin: 30px 0 20px 0; position: relative; padding: 0 10px; }
         .timeline::before { content: ""; position: absolute; top: 5px; left: 15px; right: 15px; height: 2px; background: #eee; z-index: 1; }
         .t-step { width: 10px; height: 10px; border-radius: 50%; background: #ddd; z-index: 2; position: relative; }
@@ -55,87 +48,86 @@
         .t-label { position: absolute; top: 15px; font-size: 7px; transform: translateX(-40%); white-space: nowrap; font-weight: 800; color: #bbb; text-transform: uppercase; }
         .t-step.active .t-label { color: var(--brown); }
 
-        /* Stats Grid */
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .stat-box { background: var(--brown); color: var(--gold); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid var(--gold); }
-        .party-row { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #eee; font-size: 13px; font-weight: 800; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <h1>SHANTI JEWEL</h1>
-</div>
-
-<div id="punchPage" class="page active">
-    <div id="punchLock" class="lock-screen">
-        <h2 style="font-family:'Cinzel'; color:var(--gold);">PUNCH ACCESS</h2>
-        <input type="password" id="ppin" placeholder="PIN" style="text-align:center; letter-spacing:10px; max-width:200px; color:black;">
-        <button class="btn-gold" onclick="unlockPunch()">UNLOCK FORM</button>
-    </div>
-
-    <div id="punchBody" style="display:none;" class="punch-card">
-        <div id="p1" class="photo-box" onclick="document.getElementById('f1').click()">TAP TO CAPTURE PHOTO</div>
-        <input type="file" id="f1" accept="image/*" hidden onchange="processJSONPhoto(this)">
-        
-        <input type="text" id="i_id" placeholder="ORDER ID (SJ-101)">
-        <select id="i_pa">
-            <option value="">SELECT PARTY</option>
-            <option>REVA DIAMONDS</option>
-            <option>Shree Gajanan Jewellers</option>
-            <option>P.N.GADGIL & SONS</option>
-            <option>PNG Brothers</option>
-            <option>Neelkanth Jewellers</option>
-            <option>Inhouse Production</option>
-        </select>
-        <select id="i_cad">
-            <option value="">SELECT DESIGNER</option>
-            <option>DYE</option>
-            <option>SHINDE</option>
-            <option>ALAUDDIN</option>
-        </select>
-        <div style="display:flex; gap:10px;"><input type="number" step="0.001" id="i_wt" placeholder="WT"><input type="text" id="i_kt" placeholder="KT"></div>
-        <div style="display:flex; gap:10px;"><input type="text" id="i_sz" placeholder="Size"><input type="date" id="i_dd"></div>
-        <textarea id="i_sp" rows="2" placeholder="Instructions..."></textarea>
-        <button class="btn-gold" id="saveBtn" onclick="saveJSON()">PUNCH ORDER</button>
+<div id="mainLock">
+    <h1 style="font-family:'Cinzel'; color:var(--gold); letter-spacing:5px; margin-bottom:20px;">SHANTI JEWEL</h1>
+    <div style="background:rgba(255,255,255,0.1); padding:30px; border-radius:20px; border:1px solid var(--gold); width:85%; max-width:320px; text-align:center;">
+        <p style="font-size:10px; letter-spacing:2px; margin-bottom:20px; font-weight:800;">WORKSHOP ACCESS</p>
+        <input type="password" id="entryPin" placeholder="PIN" style="text-align:center; letter-spacing:15px; font-size:24px; color:black;">
+        <button class="btn-gold" onclick="unlockMain()">ENTER APP</button>
     </div>
 </div>
 
-<div id="activePage" class="page">
-    <div style="display:flex; gap:8px; margin-bottom:15px;">
-        <input type="text" id="src" placeholder="Search ID..." onkeyup="loadAll()" style="margin:0; flex:1.2;">
-        <select id="pFil" onchange="loadAll()" style="margin:0; flex:1;">
-            <option value="">ALL PARTIES</option>
-            <option>REVA DIAMONDS</option>
-            <option>Shree Gajanan Jewellers</option>
-            <option>P.N.GADGIL & SONS</option>
-        </select>
-    </div>
-    <div id="activeList"></div>
-</div>
+<div id="appContent" style="display:none;">
+    <div class="header"><h1>SHANTI JEWEL</h1></div>
 
-<div id="historyPage" class="page">
-    <div id="historyList"></div>
-</div>
-
-<div id="dashPage" class="page">
-    <div id="dashLock" class="lock-screen">
-        <h2 style="font-family:'Cinzel'; color:var(--gold);">ADMIN DASHBOARD</h2>
-        <input type="password" id="dpin" placeholder="PIN" style="text-align:center; letter-spacing:10px; max-width:200px; color:black;">
-        <button class="btn-gold" onclick="unlockDash()">UNLOCK DASH</button>
+    <div id="punchPage" class="page active">
+        <div class="punch-card">
+            <div id="p1" class="photo-box" onclick="document.getElementById('f1').click()">TAP TO CAPTURE PHOTO</div>
+            <input type="file" id="f1" accept="image/*" hidden onchange="processPhoto(this)">
+            
+            <input type="text" id="i_id" placeholder="ORDER ID (SJ-101)">
+            <select id="i_pa">
+                <option value="">SELECT PARTY</option>
+                <option>REVA DIAMONDS</option>
+                <option>Shree Gajanan Jewellers</option>
+                <option>P.N.GADGIL & SONS</option>
+                <option>PNG Brothers</option>
+                <option>Inhouse Production</option>
+            </select>
+            <select id="i_cad">
+                <option value="">SELECT DESIGNER</option>
+                <option>DYE</option>
+                <option>SHINDE</option>
+                <option>ALAUDDIN</option>
+            </select>
+            <div style="display:flex; gap:10px;"><input type="number" step="0.001" id="i_wt" placeholder="WT"><input type="text" id="i_kt" placeholder="KT"></div>
+            <div style="display:flex; gap:10px;"><input type="text" id="i_sz" placeholder="Size"><input type="date" id="i_dd"></div>
+            <textarea id="i_sp" rows="2" placeholder="Instructions..."></textarea>
+            <button class="btn-gold" id="saveBtn" onclick="saveOrder()">PUNCH ORDER</button>
+        </div>
     </div>
-    <div id="dashBody" style="display:none;">
-        <div id="stats" class="stat-grid"></div>
-        <div class="card" id="partyList" style="padding:5px;"></div>
-        <button class="btn-red" onclick="wipeout()">WIPEOUT DATABASE</button>
-    </div>
-</div>
 
-<div class="tab-bar">
-    <div class="tab active" onclick="nav('punch', this)">Punch</div>
-    <div class="tab" onclick="nav('active', this)">Active</div>
-    <div class="tab" onclick="nav('history', this)">History</div>
-    <div class="tab" onclick="nav('dash', this)">Dash</div>
+    <div id="activePage" class="page">
+        <div style="display:flex; gap:8px; margin-bottom:15px;">
+            <input type="text" id="src" placeholder="Search ID..." onkeyup="loadData()" style="margin:0; flex:1.2;">
+            <select id="pFil" onchange="loadData()" style="margin:0; flex:1;">
+                <option value="">ALL PARTIES</option>
+                <option>REVA DIAMONDS</option>
+                <option>Shree Gajanan Jewellers</option>
+            </select>
+        </div>
+        <div id="activeList"></div>
+    </div>
+
+    <div id="historyPage" class="page">
+        <div id="historyList"></div>
+    </div>
+
+    <div id="dashPage" class="page">
+        <div id="dashLock" class="dash-lock">
+            <h2 style="font-family:'Cinzel'; color:var(--gold);">ADMIN ONLY</h2>
+            <input type="password" id="dashPinInput" placeholder="PIN" style="text-align:center; letter-spacing:10px; max-width:200px; color:black;">
+            <button class="btn-gold" onclick="unlockDash()">UNLOCK DASHBOARD</button>
+        </div>
+        <div id="dashBody" style="display:none;">
+            <div id="stats" class="stat-grid"></div>
+            <div class="card" id="partyList" style="padding:5px;"></div>
+            <button class="btn-red" onclick="wipeData()">WIPEOUT DATABASE</button>
+        </div>
+    </div>
+
+    <div class="tab-bar">
+        <div class="tab active" onclick="nav('punch', this)">Punch</div>
+        <div class="tab" onclick="nav('active', this)">Active</div>
+        <div class="tab" onclick="nav('history', this)">History</div>
+        <div class="tab" onclick="nav('dash', this)">Dash</div>
+    </div>
 </div>
 
 <script>
@@ -143,61 +135,79 @@ const firebaseConfig = { apiKey: "AIzaSyBnvmQBPkJmJcjXf71vEUY91B2_2P9oAgU", data
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 const stages = ["CAD", "CAM", "CASTING", "POLISH", "HUID", "READY"];
-let base64Photo = "";
+let photoBase = "";
 
-function unlockPunch(){ if(document.getElementById('ppin').value==='2215'){ document.getElementById('punchLock').style.display='none'; document.getElementById('punchBody').style.display='block'; } }
-function unlockDash(){ if(document.getElementById('dpin').value==='2215'){ document.getElementById('dashLock').style.display='none'; document.getElementById('dashBody').style.display='block'; loadDashSummary(); } }
+function unlockMain() {
+    if(document.getElementById('entryPin').value === '1008') {
+        document.getElementById('mainLock').style.display = 'none';
+        document.getElementById('appContent').style.display = 'block';
+        loadData();
+    } else { alert("ACCESS DENIED"); }
+}
 
-function processJSONPhoto(input) {
-    const file = input.files[0];
+function unlockDash() {
+    if(document.getElementById('dashPinInput').value === '2215') {
+        document.getElementById('dashLock').style.display = 'none';
+        document.getElementById('dashBody').style.display = 'block';
+    } else { alert("WRONG PIN"); }
+}
+
+function processPhoto(input) {
     const reader = new FileReader();
     reader.onload = (e) => {
         const img = new Image();
         img.onload = () => {
             const cvs = document.createElement('canvas');
-            const MAX = 450; let w=img.width, h=img.height;
-            if(w>MAX){ h *= MAX/w; w=MAX; }
+            const max = 450; let w=img.width, h=img.height;
+            if(w>max){ h *= max/w; w=max; }
             cvs.width=w; cvs.height=h;
             cvs.getContext('2d').drawImage(img,0,0,w,h);
-            base64Photo = cvs.toDataURL('image/jpeg', 0.6);
-            document.getElementById('p1').innerHTML=`<img src="${base64Photo}" style="width:100%; height:100%; object-fit:contain;">`;
+            photoBase = cvs.toDataURL('image/jpeg', 0.6);
+            document.getElementById('p1').innerHTML=`<img src="${photoBase}" style="width:100%; height:100%; object-fit:contain;">`;
         };
         img.src = e.target.result;
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(input.files[0]);
 }
 
-async function saveJSON() {
+async function saveOrder() {
     const id = document.getElementById('i_id').value;
     const btn = document.getElementById('saveBtn');
-    if(!id || !base64Photo) return alert("Photo & ID Required");
+    if(!id || !photoBase) return alert("Photo & ID Required");
     btn.disabled = true; btn.innerText = "SAVING...";
-    const orderObj = {
-        id: id, party: document.getElementById('i_pa').value, cad: document.getElementById('i_cad').value,
+    const obj = {
+        id, party: document.getElementById('i_pa').value, cad: document.getElementById('i_cad').value,
         wt: parseFloat(document.getElementById('i_wt').value || 0), kt: document.getElementById('i_kt').value,
         sz: document.getElementById('i_sz').value, dd: document.getElementById('i_dd').value,
-        sp: document.getElementById('i_sp').value, photo: base64Photo, status: "CAD", ts: Date.now()
+        sp: document.getElementById('i_sp').value, photo: photoBase, status: "CAD", ts: Date.now()
     };
-    try {
-        await db.ref('orders/' + id).set(orderObj);
-        alert("PUNCHED!"); location.reload();
-    } catch(e) { alert("Error"); btn.disabled = false; }
+    await db.ref('orders/' + id).set(obj);
+    location.reload();
 }
 
-function shareOrder(id, party, wt, kt, sz, cad, notes) {
-    const msg = encodeURIComponent(`*SHANTI JEWEL ORDER*\n\nID: ${id}\nParty: ${party}\nWeight: ${wt}g\nPurity: ${kt}\nSize: ${sz}\nDesigner: ${cad}\nNotes: ${notes}`);
+function shareWA(id, p, w, k, s, c, n) {
+    const msg = encodeURIComponent(`*SHANTI JEWEL ORDER*\n\nID: ${id}\nParty: ${p}\nWT: ${w}g\nKT: ${k}\nSZ: ${s}\nCAD: ${c}\nNote: ${n}`);
     window.open(`https://wa.me/?text=${msg}`, '_blank');
 }
 
-function loadAll() {
+function loadData() {
     const search = document.getElementById('src').value.toLowerCase();
-    const pFilter = document.getElementById('pFil').value;
+    const filter = document.getElementById('pFil').value;
     db.ref('orders').on('value', snap => {
         const act = document.getElementById('activeList');
         const hist = document.getElementById('historyList');
+        const statsDiv = document.getElementById('stats');
+        const partyDiv = document.getElementById('partyList');
         act.innerHTML = ""; hist.innerHTML = "";
-        const all = Object.values(snap.val() || {}).reverse();
-        all.forEach(o => {
+        const data = snap.val() ? Object.values(snap.val()).reverse() : [];
+        const counts = {}; stages.forEach(s => counts[s] = 0);
+        const partySums = {};
+
+        data.forEach(o => {
+            counts[o.status]++;
+            if(!partySums[o.party]) partySums[o.party] = { c: 0, w: 0 };
+            partySums[o.party].c++; partySums[o.party].w += parseFloat(o.wt || 0);
+
             const card = `<div class="card" onclick="this.classList.toggle('expanded')">
                 <div style="display:flex; justify-content:space-between; align-items:start;">
                     <div style="display:flex; gap:12px; align-items:center;">
@@ -208,42 +218,31 @@ function loadAll() {
                 </div>
                 <div class="timeline">${stages.map((s,i)=>`<div class="t-step ${stages.indexOf(o.status)>=i?'active':''}"><span class="t-label">${s}</span></div>`).join('')}</div>
                 <div class="details">
-                    <div style="background:var(--cream); padding:12px; border-radius:10px; font-size:12px; border:1px solid #eee;">
-                        <b>CAD:</b> ${o.cad || '-'} | <b>WT:</b> ${o.wt}g | <b>KT:</b> ${o.kt} | <b>SZ:</b> ${o.sz}<br>
-                        <b>NOTES:</b> ${o.sp || '-'}
+                    <div style="background:var(--cream); padding:12px; border-radius:10px; font-size:11px; border:1px solid #eee;">
+                        <b>CAD:</b> ${o.cad} | <b>WT:</b> ${o.wt}g | <b>KT:</b> ${o.kt} | <b>SZ:</b> ${o.sz}<br><b>NOTES:</b> ${o.sp || '-'}
                     </div>
-                    <button class="btn-whatsapp" onclick="event.stopPropagation(); shareOrder('${o.id}','${o.party}','${o.wt}','${o.kt}','${o.sz}','${o.cad}','${o.sp}')">SEND ORDER DETAILS</button>
-                    ${o.status!=='READY'?`<button class="btn-gold" style="padding:10px; font-size:11px;" onclick="event.stopPropagation(); move('${o.id}','${o.status}')">NEXT STAGE</button>`:''}
-                    <button class="btn-red" onclick="event.stopPropagation(); del('${o.id}')">DELETE</button>
+                    <button class="btn-whatsapp" onclick="event.stopPropagation(); shareWA('${o.id}','${o.party}','${o.wt}','${o.kt}','${o.sz}','${o.cad}','${o.sp}')">SEND TO WHATSAPP</button>
+                    ${o.status!=='READY'?`<button class="btn-gold" style="padding:10px; font-size:10px;" onclick="event.stopPropagation(); move('${o.id}','${o.status}')">NEXT STAGE</button>`:''}
+                    <button class="btn-red" style="padding:5px; font-size:9px;" onclick="event.stopPropagation(); del('${o.id}')">REMOVE</button>
                 </div></div>`;
+            
             if(o.status !== 'READY') {
-                if((!search || o.id.toLowerCase().includes(search)) && (!pFilter || o.party === pFilter)) act.innerHTML += card;
+                if((!search || o.id.toLowerCase().includes(search)) && (!filter || o.party === filter)) act.innerHTML += card;
             } else { hist.innerHTML += card; }
         });
+        statsDiv.innerHTML = stages.map(s => `<div class="stat-box"><h2>${counts[s]}</h2><small>${s}</small></div>`).join('');
+        partyDiv.innerHTML = Object.keys(partySums).map(p => `<div style="display:flex; justify-content:space-between; padding:12px; border-bottom:1px solid #eee; font-size:12px; font-weight:800;"><span>${p}</span><span>${partySums[p].c} Pcs | ${partySums[p].w.toFixed(3)}g</span></div>`).join('');
     });
 }
 
-function loadDashSummary() {
-    db.ref('orders').on('value', snap => {
-        const all = Object.values(snap.val() || {});
-        const stats = {}; stages.forEach(s => stats[s] = 0);
-        const partyData = {};
-        all.forEach(o => {
-            stats[o.status]++;
-            if(!partyData[o.party]) partyData[o.party] = { count: 0, wt: 0 };
-            partyData[o.party].count++;
-            partyData[o.party].wt += parseFloat(o.wt || 0);
-        });
-        document.getElementById('stats').innerHTML = stages.map(s => `<div class="stat-box"><h2>${stats[s]}</h2><small>${s}</small></div>`).join('');
-        document.getElementById('partyList').innerHTML = Object.keys(partyData).map(p => `<div class="party-row"><span>${p}</span><span>${partyData[p].count} Pcs | ${partyData[p].wt.toFixed(3)}g</span></div>`).join('');
-    });
+function move(id, cur) { const nxt = stages[stages.indexOf(cur)+1]; if(nxt) db.ref('orders/'+id).update({status: nxt}); }
+function del(id) { if(confirm("Delete Order?")) db.ref('orders/'+id).remove(); }
+function wipeData() { if(confirm("ERASE ALL DATA?")) db.ref('orders').remove(); }
+function nav(p, el) { 
+    document.querySelectorAll('.page, .tab').forEach(x => x.classList.remove('active')); 
+    document.getElementById(p+'Page').classList.add('active'); 
+    el.classList.add('active'); 
 }
-
-function move(id, cur) { const nextIdx = stages.indexOf(cur) + 1; if(nextIdx < stages.length) db.ref('orders/'+id).update({status: stages[nextIdx]}); }
-function del(id) { if(confirm("Remove order?")) db.ref('orders/'+id).remove(); }
-function wipeout() { if(confirm("ERASE ALL DATA?")) db.ref('orders').remove(); }
-function nav(p, el) { document.querySelectorAll('.page, .tab').forEach(x => x.classList.remove('active')); document.getElementById(p+'Page').classList.add('active'); el.classList.add('active'); }
-window.onload = loadAll;
 </script>
 </body>
 </html>
