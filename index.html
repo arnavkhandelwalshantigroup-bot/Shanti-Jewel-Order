@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+
+    <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -60,7 +61,7 @@
         .canvas-table { width: 100%; font-size: 24px; border-collapse: collapse; }
         .canvas-table td { padding: 15px 0; border-bottom: 2px solid #f0f0f0; }
         #toast { visibility: hidden; min-width: 200px; background-color: #333; color: #fff; text-align: center; border-radius: 10px; padding: 16px; position: fixed; z-index: 10001; left: 50%; top: 30px; transform: translateX(-50%); font-weight: bold; border: 2px solid var(--gold); }
-        .loader { display:none; color: var(--gold); font-weight: bold; margin-top: 10px; }
+        .loader { display:none; color: var(--gold); font-weight: bold; margin-top: 10px; text-align: center; }
     </style>
 </head>
 <body>
@@ -108,7 +109,7 @@
         <textarea id="i_sp" rows="3" placeholder="Instructions"></textarea>
         
         <button class="btn btn-gold" id="saveBtn" onclick="saveOrder()">SAVE & PROCESS</button>
-        <div id="uploadLoader" class="loader">UPLOADING & COMPRESSING...</div>
+        <div id="uploadLoader" class="loader">COMPRESSING & FAST UPLOADING...</div>
     </div>
 </div>
 
@@ -149,9 +150,9 @@ const storage = firebase.storage();
 const depts=["CAD","CAM","CASTING","POLISH","HUID","READY"];
 let photoFiles=[null,null,null,null];
 
-// Compression Config
-const MAX_WIDTH = 1200;
-const IMAGE_QUALITY = 0.7;
+// High-Speed Compression Config
+const MAX_WIDTH = 1000; 
+const IMAGE_QUALITY = 0.6; 
 
 function checkPass(){if(document.getElementById('passInput').value==='1008'){document.getElementById('loginOverlay').style.display='none';loadOrders();}else{alert("Wrong Pass");}}
 function unlockWipeout(){if(document.getElementById('wipeoutPass').value==='2215'){document.getElementById('wipeoutLock').style.display='none';document.getElementById('wipeoutContent').style.display='block';}}
@@ -161,22 +162,16 @@ function showToast(msg="Stage Updated!"){const t=document.getElementById("toast"
 function handleSingle(input, pId, idx) {
     const file = input.files[0];
     if (!file) return;
-
     const reader = new FileReader();
     reader.onload = (e) => {
         const img = new Image();
         img.onload = () => {
-            let width = img.width;
-            let height = img.height;
-            if (width > MAX_WIDTH) {
-                height *= MAX_WIDTH / width;
-                width = MAX_WIDTH;
-            }
+            let w = img.width, h = img.height;
+            if (w > MAX_WIDTH) { h *= MAX_WIDTH / w; w = MAX_WIDTH; }
             const canvas = document.createElement('canvas');
-            canvas.width = width;
-            canvas.height = height;
+            canvas.width = w; canvas.height = h;
             const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, width, height);
+            ctx.drawImage(img, 0, 0, w, h);
             canvas.toBlob((blob) => {
                 photoFiles[idx] = blob;
                 document.getElementById(pId).innerHTML = `<img src="${URL.createObjectURL(blob)}">`;
@@ -195,16 +190,15 @@ async function saveOrder(){
     document.getElementById('saveBtn').style.display = 'none';
     document.getElementById('uploadLoader').style.display = 'block';
 
-    let uploadedUrls = [];
     try {
-        for(let i=0; i<photoFiles.length; i++){
-            if(photoFiles[i]){
-                const ref = storage.ref(`orders/${id}/photo_${i}_${Date.now()}.jpg`);
-                await ref.put(photoFiles[i]);
-                const url = await ref.getDownloadURL();
-                uploadedUrls.push(url);
-            }
-        }
+        // FAST: Parallel uploading all images at once
+        const uploadPromises = photoFiles.map((file, i) => {
+            if(!file) return Promise.resolve(null);
+            const ref = storage.ref(`orders/${id}/photo_${i}_${Date.now()}.jpg`);
+            return ref.put(file, {contentType: 'image/jpeg'}).then(snap => snap.ref.getDownloadURL());
+        });
+
+        const uploadedUrls = (await Promise.all(uploadPromises)).filter(url => url !== null);
 
         await db.ref('orders/'+id).set({
             id:id,
@@ -221,7 +215,7 @@ async function saveOrder(){
         });
         location.reload();
     } catch (e) {
-        alert("Error: " + e.message);
+        alert("Upload Error: " + e.message);
         document.getElementById('saveBtn').style.display = 'block';
         document.getElementById('uploadLoader').style.display = 'none';
     }
@@ -235,7 +229,7 @@ function renderLists(data){
     const pL=document.getElementById('prodList'),aL=document.getElementById('activeList'),pastL=document.getElementById('pastList');
     pL.innerHTML="";aL.innerHTML="";pastL.innerHTML="";
     data.sort((a,b)=>new Date(a.deliveryDate)-new Date(b.deliveryDate)).forEach(o=>{
-        const h=`<div class="card"><button class="cancel-btn-corner" onclick="cancelOrder('${o.id}')">X</button><div style="display:flex;gap:12px;"><img src="${(o.imgs && o.imgs[0])?o.imgs[0]:''}" style="width:65px;height:65px;object-fit:cover;border-radius:8px;"><div><b>${o.id}</b> | <span style="color:var(--gold)">${o.status}</span><br><small>${o.party}</small><br><span style="font-size:9px;color:var(--red);font-weight:bold;">DELIVERY: ${o.deliveryDate}</span></div></div>${generateTimeline(o.status)}<div style="display:flex;gap:5px;margin-top:15px;">${o.status!=='READY'?`<button class="btn btn-out" style="flex:1" onclick="moveNext('${o.id}','${o.status}')">NEXT</button>`:''}<button class="btn btn-out" style="flex:1;color:green;border-color:green;" onclick="downloadForm('${o.id}')">SHARE</button></div></div>`;
+        const h=`<div class="card"><button class="cancel-btn-corner" onclick="cancelOrder('${o.id}')">X</button><div style="display:flex;gap:12px;"><img src="${(o.imgs && o.imgs[0])?o.imgs[0]:''}" style="width:65px;height:65px;object-fit:cover;border-radius:8px;"><div><b>${o.id}</b> | <span style="color:var(--gold)">${o.status}</span><br><small>${o.party}</small><br><span style="font-size:9px;color:var(--red);font-weight:bold;">DELV: ${o.deliveryDate}</span></div></div>${generateTimeline(o.status)}<div style="display:flex;gap:5px;margin-top:15px;">${o.status!=='READY'?`<button class="btn btn-out" style="flex:1" onclick="moveNext('${o.id}','${o.status}')">NEXT</button>`:''}<button class="btn btn-out" style="flex:1;color:green;border-color:green;" onclick="downloadForm('${o.id}')">SHARE</button></div></div>`;
         if(o.status==="READY")pastL.innerHTML+=h;
         else{pL.innerHTML+=h;aL.innerHTML+=h;}
     });
@@ -268,7 +262,7 @@ function nav(p,el){document.querySelectorAll('.page, .tab').forEach(x=>x.classLi
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').then(reg => console.log('SW registered')).catch(err => console.log('SW failed', err));
+    navigator.serviceWorker.register('sw.js').catch(err => console.log('SW failed', err));
   });
 }
 </script>
