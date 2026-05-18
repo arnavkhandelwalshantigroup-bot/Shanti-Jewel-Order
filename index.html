@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SHANTI JEWEL</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+    
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
 
     <style>
         :root { --gold: #D4AF37; --brown: #3E2723; --cream: #FFFDE7; --text: #212121; --red: #c62828; }
@@ -18,7 +20,7 @@
         .header { background: var(--brown); color: var(--gold); text-align: center; padding: 25px 10px; border-bottom: 5px solid var(--gold); }
         .header h1 { font-family: 'Cinzel', serif; margin: 0; font-size: 24px; letter-spacing: 4px; }
 
-        /* Digital Order Form Popup */
+        /* Job Card Popup */
         #jobCardOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:5000; overflow-y:auto; padding:15px; box-sizing:border-box; }
         .digital-form { background: #fff; border: 6px double var(--gold); padding: 20px; max-width: 400px; margin: 20px auto; color: var(--brown); border-radius: 2px; }
         .df-header { text-align: center; border-bottom: 2px solid var(--gold); padding-bottom: 12px; margin-bottom: 18px; }
@@ -145,11 +147,16 @@
 </div>
 
 <script>
+// CONFIG
 const firebaseConfig = { apiKey: "AIzaSyBnvmQBPkJmJcjXf71vEUY91B2_2P9oAgU", databaseURL: "https://shanti-jewel-order-default-rtdb.firebaseio.com/", projectId: "shanti-jewel-order" };
 firebase.initializeApp(firebaseConfig);
+
 const db = firebase.database();
+const storage = firebase.storage();
 const stages = ["CAD", "CAM", "CASTING", "POLISH", "HUID", "READY"];
-let photoBase = "";
+
+// Image state for preview
+let selectedFile = null;
 
 function unlockMain() {
     if(document.getElementById('entryPin').value === '1008') {
@@ -168,74 +175,58 @@ function unlockDash() {
 
 function processPhoto(input) {
     if(!input.files[0]) return;
+    selectedFile = input.files[0];
     const reader = new FileReader();
     reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-            const cvs = document.createElement('canvas');
-            // Reducing width further to 350px for guaranteed Firebase acceptance
-            const max = 350; 
-            let w=img.width, h=img.height;
-            if(w>max){ h *= max/w; w=max; }
-            cvs.width=w; cvs.height=h;
-            cvs.getContext('2d').drawImage(img,0,0,w,h);
-            
-            // Extreme compression (0.4) to keep string length short
-            photoBase = cvs.toDataURL('image/jpeg', 0.4); 
-            document.getElementById('p1').innerHTML=`<img src="${photoBase}" style="width:100%; height:100%; object-fit:contain;">`;
-        };
-        img.src = e.target.result;
+        document.getElementById('p1').innerHTML=`<img src="${e.target.result}" style="width:100%; height:100%; object-fit:contain;">`;
     };
-    reader.readAsDataURL(input.files[0]);
+    reader.readAsDataURL(selectedFile);
 }
 
 async function saveOrder() {
     const btn = document.getElementById('punchBtn');
     const id = document.getElementById('i_id').value.trim();
     
-    if(!id) return alert("Please enter Order ID");
-    if(!photoBase) return alert("Please capture/select a Photo");
+    if(!id) return alert("Enter Order ID");
+    if(!selectedFile) return alert("Select Photo");
     
-    btn.innerText = "UPLOADING...";
+    btn.innerText = "UPLOADING PHOTO...";
     btn.disabled = true;
 
-    const obj = { 
-        id: id, 
-        party: document.getElementById('i_pa').value, 
-        cad: document.getElementById('i_cad').value, 
-        wt: parseFloat(document.getElementById('i_wt').value) || 0, 
-        kt: document.getElementById('i_kt').value, 
-        sz: document.getElementById('i_sz').value, 
-        dd: document.getElementById('i_dd').value, 
-        sp: document.getElementById('i_sp').value, 
-        photo: photoBase, 
-        status: "CAD", 
-        ts: Date.now() 
-    };
+    try {
+        // 1. Upload to Storage
+        const photoPath = `order_photos/${id}_${Date.now()}.jpg`;
+        const storageRef = storage.ref(photoPath);
+        const uploadTask = await storageRef.put(selectedFile);
+        const photoURL = await uploadTask.ref.getDownloadURL();
 
-    // Use set() with a callback to catch specific errors
-    db.ref('orders/' + id).set(obj, (error) => {
-        if (error) {
-            console.error(error);
-            alert("Upload Failed: Data too large or permission denied.");
-            btn.innerText = "RETRY PUNCH";
-            btn.disabled = false;
-        } else {
-            alert("Order " + id + " Punched Successfully!");
-            // Full Reset
-            document.getElementById('i_id').value = "";
-            document.getElementById('i_wt').value = "";
-            document.getElementById('i_kt').value = "";
-            document.getElementById('i_sz').value = "";
-            document.getElementById('i_dd').value = "";
-            document.getElementById('i_sp').value = "";
-            photoBase = "";
-            document.getElementById('p1').innerHTML = "TAP TO CAPTURE PHOTO";
-            btn.innerText = "PUNCH ORDER";
-            btn.disabled = false;
-            loadData();
-        }
-    });
+        btn.innerText = "SAVING ORDER...";
+
+        // 2. Save to Database
+        const obj = { 
+            id, 
+            party: document.getElementById('i_pa').value, 
+            cad: document.getElementById('i_cad').value, 
+            wt: parseFloat(document.getElementById('i_wt').value) || 0, 
+            kt: document.getElementById('i_kt').value, 
+            sz: document.getElementById('i_sz').value, 
+            dd: document.getElementById('i_dd').value, 
+            sp: document.getElementById('i_sp').value, 
+            photo: photoURL, // Saves the small link instead of heavy text
+            status: "CAD", 
+            ts: Date.now() 
+        };
+
+        await db.ref('orders/' + id).set(obj);
+        
+        alert("Punched Successfully!");
+        location.reload(); // Refresh to ensure next order is clean
+    } catch (e) {
+        console.error(e);
+        alert("Error: " + e.message);
+        btn.innerText = "RETRY PUNCH";
+        btn.disabled = false;
+    }
 }
 
 function openJobCard(orderID) {
