@@ -4,58 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Shanti Jewel Portal</title>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
     <style>
-        :root { --gold: #D4AF37; --brown: #5d4037; --bg: #f4f7f6; --red: #d32f2f; }
-        body { font-family: sans-serif; background: var(--bg); margin: 0; padding-bottom: 90px; }
-        #loginOverlay, .admin-lock { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--brown); z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .login-box { background: white; padding: 30px; border-radius: 15px; width: 80%; text-align: center; }
-        .header { background: var(--brown); color: white; text-align: center; padding: 15px; border-bottom: 3px solid var(--gold); }
+        :root { --gold: #D4AF37; --brown: #5d4037; --bg: #f4f7f6; }
+        body { font-family: sans-serif; background: var(--bg); margin: 0; padding-bottom: 80px; }
+        .header { background: var(--brown); color: white; text-align: center; padding: 15px; border-bottom: 3px solid var(--gold); font-weight: bold; letter-spacing: 1px; }
+        #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--brown); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .login-box { background: white; padding: 30px; border-radius: 12px; width: 80%; text-align: center; }
         .page { display: none; padding: 15px; }
         .page.active { display: block; }
-        .card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; }
-        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        .btn { padding: 15px; border: none; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .card { background: white; padding: 15px; border-radius: 10px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
+        .btn { padding: 15px; border: none; border-radius: 6px; width: 100%; font-weight: bold; cursor: pointer; }
         .btn-gold { background: var(--gold); color: white; }
-        .btn-red { background: var(--red); color: white; margin-top: 10px; }
-        .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .dash-item { background: white; padding: 15px; border-radius: 8px; text-align: center; border-left: 4px solid var(--gold); }
-        .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        .photo-box { height: 80px; background: #eee; border: 2px dashed #ccc; display: flex; align-items: center; justify-content: center; font-size: 10px; border-radius: 8px; overflow: hidden; }
+        .tab-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; border-top: 1px solid #ddd; height: 65px; }
+        .tab { flex: 1; text-align: center; padding: 22px 0; font-size: 10px; color: #888; font-weight: bold; text-transform: uppercase; }
+        .tab.active { color: var(--brown); border-top: 4px solid var(--gold); }
+        .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+        .photo-box { height: 70px; background: #f0f0f0; border: 1px dashed #bbb; border-radius: 6px; display: flex; align-items: center; justify-content: center; overflow: hidden; font-size: 10px; }
         .photo-box img { width: 100%; height: 100%; object-fit: cover; }
-        .tab-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; border-top: 1px solid #ddd; height: 70px; z-index: 1000; }
-        .tab { flex: 1; text-align: center; padding: 20px 0; font-size: 9px; color: #999; font-weight: bold; text-transform: uppercase; }
-        .tab.active { color: var(--brown); border-top: 3px solid var(--gold); }
+        .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .dash-item { background: white; padding: 15px; border-radius: 8px; text-align: center; border-left: 5px solid var(--gold); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
     </style>
 </head>
 <body>
 
 <div id="loginOverlay">
     <div class="login-box">
-        <h3>SHANTI JEWEL</h3>
+        <h3>SHANTI JEWEL LOGIN</h3>
         <input type="password" id="passInput" placeholder="Enter PIN">
-        <button class="btn btn-gold" onclick="checkPass()">LOGIN</button>
+        <button class="btn btn-gold" onclick="checkPass()">ENTER PORTAL</button>
     </div>
 </div>
 
-<div class="header">SHANTI JEWEL PORTAL</div>
+<div class="header">SHANTI JEWEL</div>
 
 <div id="punchPage" class="page active">
     <div class="card">
         <div class="photo-grid">
-            <div class="photo-box" id="p1" onclick="document.getElementById('f1').click()">+ PHOTO 1</div>
-            <div class="photo-box" id="p2" onclick="document.getElementById('f2').click()">+ PHOTO 2</div>
-            <div class="photo-box" id="p3" onclick="document.getElementById('f3').click()">+ PHOTO 3</div>
-            <div class="photo-box" id="p4" onclick="document.getElementById('f4').click()">+ PHOTO 4</div>
+            <div class="photo-box" id="p1" onclick="document.getElementById('f1').click()">PHOTO 1</div>
+            <div class="photo-box" id="p2" onclick="document.getElementById('f2').click()">PHOTO 2</div>
+            <div class="photo-box" id="p3" onclick="document.getElementById('f3').click()">PHOTO 3</div>
+            <div class="photo-box" id="p4" onclick="document.getElementById('f4').click()">PHOTO 4</div>
         </div>
-        <input type="file" id="f1" accept="image/*" style="display:none" onchange="handleImg(this,'p1',0)">
-        <input type="file" id="f2" accept="image/*" style="display:none" onchange="handleImg(this,'p2',1)">
-        <input type="file" id="f3" accept="image/*" style="display:none" onchange="handleImg(this,'p3',2)">
-        <input type="file" id="f4" accept="image/*" style="display:none" onchange="handleImg(this,'p4',3)">
-        
-        <input type="text" id="i_id" placeholder="Order ID">
+        <input type="file" id="f1" accept="image/*" style="display:none" onchange="cmp(this, 'p1', 0)">
+        <input type="file" id="f2" accept="image/*" style="display:none" onchange="cmp(this, 'p2', 1)">
+        <input type="file" id="f3" accept="image/*" style="display:none" onchange="handleImg(this,'p3',2)"> <input type="file" id="f4" accept="image/*" style="display:none" onchange="handleImg(this,'p4',3)"> <input type="text" id="i_id" placeholder="Order ID (Mandatory)">
         <select id="i_pa">
             <option value="">Select Party</option>
             <option value="Shree Gajanan">Shree Gajanan</option>
@@ -70,35 +66,24 @@
         <input type="text" id="i_sz" placeholder="Size">
         <input type="date" id="i_dd">
         <select id="i_cad">
-            <option value="">Designer</option>
+            <option value="">Select Designer</option>
             <option value="DYE">DYE</option>
             <option value="SHINDE">SHINDE</option>
             <option value="ALAUDDIN">ALAUDDIN</option>
         </select>
         <textarea id="i_sp" placeholder="Instructions"></textarea>
-        <button class="btn btn-gold" id="saveBtn" onclick="saveOrder()">SAVE IMMEDIATELY</button>
+        <button class="btn btn-gold" id="saveBtn" onclick="save()">SAVE ORDER</button>
     </div>
 </div>
 
-<div id="activePage" class="page">
-    <input type="text" id="srch" placeholder="🔍 Search Order ID..." onkeyup="filter()">
-    <div id="activeList"></div>
-</div>
+<div id="activePage" class="page"><div id="activeList"></div></div>
+
 <div id="productionPage" class="page"><div id="prodList"></div></div>
+
 <div id="pastPage" class="page"><div id="pastList"></div></div>
 
 <div id="dashPage" class="page">
-    <div id="adminLock" class="admin-lock" style="position:relative; height: 300px; background: #eee; border-radius:12px;">
-        <div style="text-align:center;">
-            <h4>ADMIN LOCK</h4>
-            <input type="password" id="adminPin" placeholder="Admin PIN" style="width:120px;">
-            <button class="btn btn-gold" onclick="unlockDash()">UNLOCK</button>
-        </div>
-    </div>
-    <div id="dashContent" style="display:none;">
-        <div id="dashStats" class="dash-grid"></div>
-        <button class="btn btn-red" onclick="wipeout()">WIPEOUT ALL DATA</button>
-    </div>
+    <div id="dashStats" class="dash-grid"></div>
 </div>
 
 <div class="tab-bar">
@@ -106,35 +91,40 @@
     <div class="tab" onclick="nav('active',this)">ACTIVE</div>
     <div class="tab" onclick="nav('production',this)">PROD</div>
     <div class="tab" onclick="nav('past',this)">PAST</div>
-    <div class="tab" onclick="nav('dash',this)">DASHBOARD</div>
+    <div class="tab" onclick="nav('dash',this)">DASH</div>
 </div>
 
 <script>
-const firebaseConfig={apiKey:"AIzaSyBnvmQBPkJmJcjXf71vEUY91B2_2P9oAgU",authDomain:"shanti-jewel-order.firebaseapp.com",projectId:"shanti-jewel-order",databaseURL:"https://shanti-jewel-order-default-rtdb.firebaseio.com/",storageBucket: "shanti-jewel-order.appspot.com"};
+// CONFIG
+const firebaseConfig = {
+    apiKey: "AIzaSyBnvmQBPkJmJcjXf71vEUY91B2_2P9oAgU",
+    authDomain: "shanti-jewel-order.firebaseapp.com",
+    projectId: "shanti-jewel-order",
+    databaseURL: "https://shanti-jewel-order-default-rtdb.firebaseio.com/",
+    storageBucket: "shanti-jewel-order.appspot.com"
+};
 firebase.initializeApp(firebaseConfig);
-const db=firebase.database(), storage=firebase.storage();
-const depts=["CAD","CAM","CASTING","POLISH","HUID","READY"];
-let photoFiles=[null,null,null,null];
+const db = firebase.database(), storage = firebase.storage();
+const depts = ["CAD", "CAM", "CASTING", "POLISH", "HUID", "READY"];
+let photos = [null, null, null, null];
 
-function checkPass(){ if(document.getElementById('passInput').value==='1008') { document.getElementById('loginOverlay').style.display='none'; loadOrders(); } }
-function unlockDash(){ if(document.getElementById('adminPin').value==='2215') { document.getElementById('adminLock').style.display='none'; document.getElementById('dashContent').style.display='block'; } }
+function checkPass() { if(document.getElementById('passInput').value === '1008') { document.getElementById('loginOverlay').style.display='none'; load(); } }
 
-function handleImg(input, pId, idx) {
+// COMPRESSION
+function cmp(input, pId, idx) {
     const file = input.files[0];
-    if(!file) return;
     const reader = new FileReader();
     reader.onload = (e) => {
         const img = new Image();
         img.onload = () => {
             const canvas = document.createElement('canvas');
-            const MAX = 600; 
-            let w = img.width, h = img.height;
-            if(w>MAX){ h *= MAX/w; w=MAX; }
-            canvas.width=w; canvas.height=h;
-            canvas.getContext('2d').drawImage(img,0,0,w,h);
+            const max = 500; let w = img.width, h = img.height;
+            if(w > max) { h *= max/w; w = max; }
+            canvas.width = w; canvas.height = h;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
             canvas.toBlob(b => { 
-                photoFiles[idx]=b; 
-                document.getElementById(pId).innerHTML=`<img src="${URL.createObjectURL(b)}">`;
+                photos[idx] = b; 
+                document.getElementById(pId).innerHTML = `<img src="${URL.createObjectURL(b)}">`;
             }, 'image/jpeg', 0.5);
         };
         img.src = e.target.result;
@@ -142,7 +132,8 @@ function handleImg(input, pId, idx) {
     reader.readAsDataURL(file);
 }
 
-async function saveOrder() {
+// SAVE
+async function save() {
     const id = document.getElementById('i_id').value;
     if(!id) return alert("Enter ID");
     const btn = document.getElementById('saveBtn');
@@ -152,57 +143,45 @@ async function saveOrder() {
         id:id, party:document.getElementById('i_pa').value, weight:document.getElementById('i_wt').value,
         kt:document.getElementById('i_kt').value, size:document.getElementById('i_sz').value,
         deliveryDate:document.getElementById('i_dd').value, cad:document.getElementById('i_cad').value,
-        specs:document.getElementById('i_sp').value, status:"CAD", ts:Date.now(), imgs:[]
+        specs:document.getElementById('i_sp').value, status:"CAD", ts:Date.now()
     };
 
     try {
         await db.ref('orders/'+id).set(data);
-        btn.innerText = "TEXT SAVED! UPLOADING PHOTOS...";
-        let urls = [];
-        for(let i=0; i<4; i++){
-            if(photoFiles[i]){
+        for(let i=0; i<4; i++) {
+            if(photos[i]) {
                 const ref = storage.ref(`orders/${id}/p${i}.jpg`);
-                await ref.put(photoFiles[i]);
-                urls.push(await ref.getDownloadURL());
+                await ref.put(photos[i]);
+                const url = await ref.getDownloadURL();
+                await db.ref(`orders/${id}/imgs/${i}`).set(url);
             }
         }
-        if(urls.length > 0) await db.ref('orders/'+id).update({imgs: urls});
-        alert("Success!"); location.reload();
-    } catch(e) { alert("Error: " + e.message); btn.disabled=false; }
+        alert("Saved!"); location.reload();
+    } catch(e) { alert("Error: " + e.message); btn.disabled = false; btn.innerText = "TRY AGAIN"; }
 }
 
-function loadOrders(){
+// LOAD & RENDER
+function load() {
     db.ref('orders').on('value', s => {
-        const data = Object.values(s.val()||{});
-        render(data);
-        updateDash(data);
+        const all = Object.values(s.val() || {});
+        const act = document.getElementById('activeList'), prd = document.getElementById('prodList'), pst = document.getElementById('pastList');
+        act.innerHTML = ""; prd.innerHTML = ""; pst.innerHTML = "";
+        
+        let stats = {}; depts.forEach(d => stats[d] = 0);
+        
+        all.forEach(o => {
+            stats[o.status]++;
+            const h = `<div class="card"><b>${o.id}</b> | ${o.status}<br><small>${o.party}</small></div>`;
+            if(o.status === "READY") pst.innerHTML += h;
+            else { act.innerHTML += h; prd.innerHTML += h; }
+        });
+        
+        document.getElementById('dashStats').innerHTML = depts.map(d => `<div class="dash-item"><b>${stats[d]}</b><br>${d}</div>`).join('');
     });
 }
 
-function updateDash(data){
-    let stats = {}; depts.forEach(d => stats[d] = 0);
-    data.forEach(o => { if(stats[o.status] !== undefined) stats[o.status]++; });
-    document.getElementById('dashStats').innerHTML = depts.map(d => `<div class="dash-item"><b>${stats[d]}</b><br><small>${d}</small></div>`).join('');
-}
-
-function render(data){
-    const active = document.getElementById('activeList'), prod = document.getElementById('prodList'), past = document.getElementById('pastList');
-    active.innerHTML = ""; prod.innerHTML = ""; past.innerHTML = "";
-    data.forEach(o => {
-        const html = `<div class="card"><b>ID: ${o.id}</b> | ${o.status}<br><small>${o.party}</small><br><button class="btn btn-gold" style="padding:5px; margin-top:5px;" onclick="next('${o.id}','${o.status}')">MOVE NEXT</button></div>`;
-        if(o.status === "READY") past.innerHTML += html;
-        else { active.innerHTML += html; prod.innerHTML += html; }
-    });
-}
-
-function next(id, cur){
-    const nextIdx = depts.indexOf(cur) + 1;
-    if(nextIdx < depts.length) db.ref('orders/'+id).update({status: depts[nextIdx]});
-}
-
-function wipeout(){ if(confirm("Clear All?")) db.ref('orders').remove(); }
-function nav(p, el){
-    document.querySelectorAll('.page, .tab').forEach(x=>x.classList.remove('active'));
+function nav(p, el) {
+    document.querySelectorAll('.page, .tab').forEach(x => x.classList.remove('active'));
     document.getElementById(p+'Page').classList.add('active');
     el.classList.add('active');
 }
