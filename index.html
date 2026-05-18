@@ -23,6 +23,16 @@
         input, select, textarea { width: 100%; padding: 14px; margin: 8px 0; border: 1.5px solid #eee; border-radius: 12px; font-family: 'Montserrat', sans-serif; font-weight: 600; box-sizing: border-box; background: #fff; font-size: 14px; }
         .photo-box { height: 160px; background: #fdfbf7; border: 3px dashed var(--gold); border-radius: 15px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 15px; color: var(--gold); font-weight: 800; font-family: 'Cinzel'; font-size: 12px; }
 
+        /* Digital Order Form Style */
+        .digital-form { background: #fff; border: 6px double var(--gold); padding: 20px; border-radius: 0; color: var(--brown); max-width: 450px; margin: auto; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .df-header { text-align: center; border-bottom: 2px solid var(--gold); padding-bottom: 10px; margin-bottom: 15px; }
+        .df-header h2 { font-family: 'Cinzel'; margin: 0; font-size: 20px; letter-spacing: 2px; }
+        .df-row { display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid #f2f2f2; padding-bottom: 4px; }
+        .df-label { font-weight: 800; font-size: 10px; text-transform: uppercase; color: #999; }
+        .df-value { font-weight: 700; font-size: 13px; color: var(--brown); }
+        .df-photo-area { width: 100%; height: 220px; border: 1px solid var(--gold); background: #fafafa; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .df-photo-area img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
         /* Tabs & Navigation */
         .tab-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; height: 75px; border-top: 2px solid var(--gold); z-index: 1000; }
         .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 8px; font-weight: 800; color: #999; text-transform: uppercase; }
@@ -30,14 +40,13 @@
         .page { display: none; padding: 15px; }
         .page.active { display: block; }
 
-        /* Lock Screen for Dashboard (2215) */
+        /* Dashboard Lock (2215) */
         .dash-lock { text-align: center; padding: 50px 20px; background: var(--brown); border-radius: 20px; color: white; border: 1px solid var(--gold); margin-top: 20px; }
 
         .btn-gold { background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728); border: none; padding: 16px; border-radius: 12px; color: #3E2723; font-weight: 800; width: 100%; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
         .btn-whatsapp { background: var(--green); color: white; border: none; padding: 10px; border-radius: 8px; width: 100%; font-weight: bold; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; font-size: 12px; }
         .btn-red { background: var(--red); color: white; border: none; padding: 8px; border-radius: 8px; width: 100%; font-weight: bold; margin-top: 15px; }
 
-        /* Timeline */
         .card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px; border: 1px solid #eee; }
         .details { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #ddd; }
         .card.expanded .details { display: block; }
@@ -46,8 +55,7 @@
         .t-step { width: 10px; height: 10px; border-radius: 50%; background: #ddd; z-index: 2; position: relative; }
         .t-step.active { background: var(--gold); box-shadow: 0 0 8px var(--gold); }
         .t-label { position: absolute; top: 15px; font-size: 7px; transform: translateX(-40%); white-space: nowrap; font-weight: 800; color: #bbb; text-transform: uppercase; }
-        .t-step.active .t-label { color: var(--brown); }
-
+        
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .stat-box { background: var(--brown); color: var(--gold); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid var(--gold); }
     </style>
@@ -93,6 +101,36 @@
         </div>
     </div>
 
+    <div id="formPage" class="page">
+        <div class="digital-form">
+            <div class="df-header">
+                <small style="letter-spacing:4px; font-weight:800;">॥ श्री ॥</small>
+                <h2>SHANTI JEWEL</h2>
+                <small style="font-weight:700; color:var(--gold);">ORDER FORM</small>
+            </div>
+            
+            <div id="df_img_box" class="df-photo-area">
+                <span style="color:#ddd; font-family:'Cinzel'; font-size:10px;">PHOTO PREVIEW</span>
+            </div>
+
+            <div class="df-row"><span class="df-label">Order ID</span><span class="df-value" id="v_id">---</span></div>
+            <div class="df-row"><span class="df-label">CAD Designer</span><span class="df-value" id="v_cad">---</span></div>
+            <div class="df-row">
+                <div><span class="df-label">Weight</span><br><span class="df-value" id="v_wt">0.000g</span></div>
+                <div style="text-align:center;"><span class="df-label">Purity</span><br><span class="df-value" id="v_kt">---</span></div>
+                <div style="text-align:right;"><span class="df-label">Size</span><br><span class="df-value" id="v_sz">---</span></div>
+            </div>
+            <div style="margin-top:10px;">
+                <span class="df-label">Special Instructions:</span><br>
+                <p id="v_sp" style="font-size:12px; font-weight:600; margin:4px 0; line-height:1.4;">---</p>
+            </div>
+            <div style="text-align:center; margin-top:15px; border-top:1px solid var(--gold); padding-top:8px;">
+                <small style="font-family:'Cinzel'; letter-spacing:2px; color:var(--gold); font-size:9px;">Quality & Trust</small>
+            </div>
+        </div>
+        <p style="text-align:center; font-size:10px; color:#999; margin-top:15px;">Take a screenshot of this form to share.</p>
+    </div>
+
     <div id="activePage" class="page">
         <div style="display:flex; gap:8px; margin-bottom:15px;">
             <input type="text" id="src" placeholder="Search ID..." onkeyup="loadData()" style="margin:0; flex:1.2;">
@@ -103,10 +141,6 @@
             </select>
         </div>
         <div id="activeList"></div>
-    </div>
-
-    <div id="historyPage" class="page">
-        <div id="historyList"></div>
     </div>
 
     <div id="dashPage" class="page">
@@ -124,8 +158,8 @@
 
     <div class="tab-bar">
         <div class="tab active" onclick="nav('punch', this)">Punch</div>
+        <div class="tab" onclick="nav('form', this)">Form</div>
         <div class="tab" onclick="nav('active', this)">Active</div>
-        <div class="tab" onclick="nav('history', this)">History</div>
         <div class="tab" onclick="nav('dash', this)">Dash</div>
     </div>
 </div>
@@ -164,23 +198,27 @@ function processPhoto(input) {
             cvs.getContext('2d').drawImage(img,0,0,w,h);
             photoBase = cvs.toDataURL('image/jpeg', 0.6);
             document.getElementById('p1').innerHTML=`<img src="${photoBase}" style="width:100%; height:100%; object-fit:contain;">`;
+            document.getElementById('df_img_box').innerHTML=`<img src="${photoBase}">`;
         };
         img.src = e.target.result;
     };
     reader.readAsDataURL(input.files[0]);
 }
 
+// Live Sync for the Digital Form Tab
+document.getElementById('i_id').addEventListener('input', (e) => document.getElementById('v_id').innerText = e.target.value || "---");
+document.getElementById('i_cad').addEventListener('change', (e) => document.getElementById('v_cad').innerText = e.target.value || "---");
+document.getElementById('i_wt').addEventListener('input', (e) => document.getElementById('v_wt').innerText = (e.target.value || "0.000") + "g");
+document.getElementById('i_kt').addEventListener('input', (e) => document.getElementById('v_kt').innerText = e.target.value || "---");
+document.getElementById('i_sz').addEventListener('input', (e) => document.getElementById('v_sz').innerText = e.target.value || "---");
+document.getElementById('i_sp').addEventListener('input', (e) => document.getElementById('v_sp').innerText = e.target.value || "---");
+
 async function saveOrder() {
     const id = document.getElementById('i_id').value;
     const btn = document.getElementById('saveBtn');
     if(!id || !photoBase) return alert("Photo & ID Required");
     btn.disabled = true; btn.innerText = "SAVING...";
-    const obj = {
-        id, party: document.getElementById('i_pa').value, cad: document.getElementById('i_cad').value,
-        wt: parseFloat(document.getElementById('i_wt').value || 0), kt: document.getElementById('i_kt').value,
-        sz: document.getElementById('i_sz').value, dd: document.getElementById('i_dd').value,
-        sp: document.getElementById('i_sp').value, photo: photoBase, status: "CAD", ts: Date.now()
-    };
+    const obj = { id, party: document.getElementById('i_pa').value, cad: document.getElementById('i_cad').value, wt: parseFloat(document.getElementById('i_wt').value || 0), kt: document.getElementById('i_kt').value, sz: document.getElementById('i_sz').value, dd: document.getElementById('i_dd').value, sp: document.getElementById('i_sp').value, photo: photoBase, status: "CAD", ts: Date.now() };
     await db.ref('orders/' + id).set(obj);
     location.reload();
 }
@@ -195,10 +233,9 @@ function loadData() {
     const filter = document.getElementById('pFil').value;
     db.ref('orders').on('value', snap => {
         const act = document.getElementById('activeList');
-        const hist = document.getElementById('historyList');
         const statsDiv = document.getElementById('stats');
         const partyDiv = document.getElementById('partyList');
-        act.innerHTML = ""; hist.innerHTML = "";
+        act.innerHTML = "";
         const data = snap.val() ? Object.values(snap.val()).reverse() : [];
         const counts = {}; stages.forEach(s => counts[s] = 0);
         const partySums = {};
@@ -208,36 +245,29 @@ function loadData() {
             if(!partySums[o.party]) partySums[o.party] = { c: 0, w: 0 };
             partySums[o.party].c++; partySums[o.party].w += parseFloat(o.wt || 0);
 
-            const card = `<div class="card" onclick="this.classList.toggle('expanded')">
-                <div style="display:flex; justify-content:space-between; align-items:start;">
-                    <div style="display:flex; gap:12px; align-items:center;">
-                        <img src="${o.photo}" style="width:60px; height:60px; border-radius:10px; object-fit:cover; border:1px solid var(--gold);">
-                        <div><b style="color:var(--brown); font-size:15px;">${o.id}</b><br><small style="font-weight:700;">${o.party}</small></div>
-                    </div>
-                    <div style="text-align:right;"><small style="color:var(--gold); font-weight:800;">DELIVERY:<br>${o.dd || 'TBD'}</small></div>
-                </div>
-                <div class="timeline">${stages.map((s,i)=>`<div class="t-step ${stages.indexOf(o.status)>=i?'active':''}"><span class="t-label">${s}</span></div>`).join('')}</div>
-                <div class="details">
-                    <div style="background:var(--cream); padding:12px; border-radius:10px; font-size:11px; border:1px solid #eee;">
-                        <b>CAD:</b> ${o.cad} | <b>WT:</b> ${o.wt}g | <b>KT:</b> ${o.kt} | <b>SZ:</b> ${o.sz}<br><b>NOTES:</b> ${o.sp || '-'}
-                    </div>
-                    <button class="btn-whatsapp" onclick="event.stopPropagation(); shareWA('${o.id}','${o.party}','${o.wt}','${o.kt}','${o.sz}','${o.cad}','${o.sp}')">SEND TO WHATSAPP</button>
-                    ${o.status!=='READY'?`<button class="btn-gold" style="padding:10px; font-size:10px;" onclick="event.stopPropagation(); move('${o.id}','${o.status}')">NEXT STAGE</button>`:''}
-                    <button class="btn-red" style="padding:5px; font-size:9px;" onclick="event.stopPropagation(); del('${o.id}')">REMOVE</button>
-                </div></div>`;
-            
             if(o.status !== 'READY') {
-                if((!search || o.id.toLowerCase().includes(search)) && (!filter || o.party === filter)) act.innerHTML += card;
-            } else { hist.innerHTML += card; }
+                if((!search || o.id.toLowerCase().includes(search)) && (!filter || o.party === filter)) {
+                    act.innerHTML += `<div class="card" onclick="this.classList.toggle('expanded')">
+                        <div style="display:flex; gap:12px; align-items:center;">
+                            <img src="${o.photo}" style="width:50px; height:50px; border-radius:8px; object-fit:cover;">
+                            <div><b>${o.id}</b><br><small>${o.party}</small></div>
+                        </div>
+                        <div class="timeline">${stages.map((s,i)=>`<div class="t-step ${stages.indexOf(o.status)>=i?'active':''}"></div>`).join('')}</div>
+                        <div class="details">
+                            <small>CAD: ${o.cad} | WT: ${o.wt}g | KT: ${o.kt}</small><br>
+                            <button class="btn-whatsapp" onclick="event.stopPropagation(); shareWA('${o.id}','${o.party}','${o.wt}','${o.kt}','${o.sz}','${o.cad}','${o.sp}')">WHATSAPP</button>
+                            <button class="btn-gold" style="padding:8px; font-size:10px;" onclick="event.stopPropagation(); move('${o.id}','${o.status}')">NEXT STAGE</button>
+                        </div></div>`;
+                }
+            }
         });
         statsDiv.innerHTML = stages.map(s => `<div class="stat-box"><h2>${counts[s]}</h2><small>${s}</small></div>`).join('');
-        partyDiv.innerHTML = Object.keys(partySums).map(p => `<div style="display:flex; justify-content:space-between; padding:12px; border-bottom:1px solid #eee; font-size:12px; font-weight:800;"><span>${p}</span><span>${partySums[p].c} Pcs | ${partySums[p].w.toFixed(3)}g</span></div>`).join('');
+        partyDiv.innerHTML = Object.keys(partySums).map(p => `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee;"><span>${p}</span><span>${partySums[p].c} Pcs</span></div>`).join('');
     });
 }
 
 function move(id, cur) { const nxt = stages[stages.indexOf(cur)+1]; if(nxt) db.ref('orders/'+id).update({status: nxt}); }
-function del(id) { if(confirm("Delete Order?")) db.ref('orders/'+id).remove(); }
-function wipeData() { if(confirm("ERASE ALL DATA?")) db.ref('orders').remove(); }
+function wipeData() { if(confirm("ERASE ALL?")) db.ref('orders').remove(); }
 function nav(p, el) { 
     document.querySelectorAll('.page, .tab').forEach(x => x.classList.remove('active')); 
     document.getElementById(p+'Page').classList.add('active'); 
