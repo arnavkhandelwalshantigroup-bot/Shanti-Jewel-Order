@@ -12,7 +12,7 @@
         :root { --gold: #D4AF37; --brown: #3E2723; --cream: #FFFDE7; --text: #212121; --red: #c62828; --green: #2e7d32; }
         body { font-family: 'Montserrat', sans-serif; background: #fdfbf7; margin: 0; padding-bottom: 90px; color: var(--text); -webkit-tap-highlight-color: transparent; overflow-x: hidden; }
         
-        /* Lock Screens */
+        /* Lock Screen */
         #mainLock { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--brown); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; box-sizing: border-box; color: white; }
         .lock-container { background: rgba(255,255,255,0.05); padding: 30px; border-radius: 25px; border: 1px solid var(--gold); width: 85%; max-width: 320px; text-align: center; box-sizing: border-box; }
 
@@ -23,7 +23,7 @@
         #jobCardOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.92); z-index:2000; overflow-y:auto; padding:15px; box-sizing:border-box; }
         .digital-form { background: #fff; border: 6px double var(--gold); padding: 20px; max-width: 400px; margin: 20px auto; color: var(--brown); box-sizing: border-box; border-radius: 2px; }
         .df-header { text-align: center; border-bottom: 2px solid var(--gold); padding-bottom: 12px; margin-bottom: 18px; }
-        .df-row { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid #f8f8f8; padding-bottom: 5px; }
+        .df-row { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1.5px solid #f8f8f8; padding-bottom: 5px; }
         .df-label { font-weight: 800; font-size: 10px; text-transform: uppercase; color: #aaa; }
         .df-value { font-weight: 700; font-size: 14px; }
         .df-img { width: 100%; height: 260px; object-fit: contain; background: #fcfcfc; margin-bottom: 15px; border-radius: 5px; }
@@ -40,7 +40,7 @@
         .page.active { display: block; }
 
         /* Order Cards */
-        .card { background: white; border-radius: 18px; padding: 18px; margin-bottom: 15px; border: 1px solid #f0f0f0; box-shadow: 0 4px 8px rgba(0,0,0,0.05); transition: 0.3s; }
+        .card { background: white; border-radius: 18px; padding: 18px; margin-bottom: 15px; border: 1px solid #f0f0f0; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
         .details { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #ddd; }
         .card.expanded .details { display: block; }
         
@@ -104,6 +104,7 @@
             <input type="text" id="i_id" placeholder="ORDER ID">
             <select id="i_pa">
                 <option value="">SELECT PARTY</option>
+                <option>Annapurna Gold</option>
                 <option>REVA DIAMONDS</option>
                 <option>Shree Gajanan Jewellers</option>
                 <option>P.N.GADGIL & SONS</option>
