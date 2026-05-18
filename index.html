@@ -9,49 +9,65 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <style>
-        :root { --gold: #D4AF37; --brown: #3E2723; --cream: #FFFDE7; --text: #212121; --red: #c62828; }
+        :root { --gold: #D4AF37; --brown: #3E2723; --cream: #FFFDE7; --text: #212121; --red: #c62828; --green: #2e7d32; }
         body { font-family: 'Montserrat', sans-serif; background: #fdfbf7; margin: 0; padding-bottom: 90px; color: var(--text); -webkit-tap-highlight-color: transparent; overflow-x: hidden; }
         
-        /* Locks */
-        #mainLock { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--brown); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
-        .lock-container { background: rgba(255,255,255,0.05); padding: 30px; border-radius: 25px; border: 1px solid var(--gold); width: 85%; max-width: 320px; text-align: center; }
+        /* Lock Screen */
+        #mainLock { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--brown); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; box-sizing: border-box; color: white; }
+        .lock-container { background: rgba(255,255,255,0.05); padding: 30px; border-radius: 25px; border: 1px solid var(--gold); width: 85%; max-width: 320px; text-align: center; box-sizing: border-box; }
 
         .header { background: var(--brown); color: var(--gold); text-align: center; padding: 25px 10px; border-bottom: 5px solid var(--gold); }
         .header h1 { font-family: 'Cinzel', serif; margin: 0; font-size: 24px; letter-spacing: 4px; }
 
-        /* Multi-Photo Grid */
+        /* Order Form Popup */
+        #jobCardOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.92); z-index:2000; overflow-y:auto; padding:15px; box-sizing:border-box; }
+        .digital-form { background: #fff; border: 6px double var(--gold); padding: 20px; max-width: 400px; margin: 20px auto; color: var(--brown); box-sizing: border-box; border-radius: 2px; }
+        .df-header { text-align: center; border-bottom: 2px solid var(--gold); padding-bottom: 12px; margin-bottom: 18px; }
+        .df-row { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid #f8f8f8; padding-bottom: 5px; }
+        .df-label { font-weight: 800; font-size: 10px; text-transform: uppercase; color: #aaa; }
+        .df-value { font-weight: 700; font-size: 14px; }
+        .df-img { width: 100%; height: 260px; object-fit: contain; background: #fcfcfc; margin-bottom: 10px; border-radius: 5px; }
+
+        /* Multi-Photo Grid in Punch */
         .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .photo-box { height: 100px; background: #fdfbf7; border: 2px dashed var(--gold); border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden; color: var(--gold); font-size: 10px; font-weight: 800; text-align: center; }
         .photo-box img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* Expanded Details */
-        .full-details { background: #f9f9f9; padding: 15px; border-radius: 12px; margin-top: 10px; border: 1px solid #eee; display: none; }
-        .card.expanded .full-details { display: block; }
-        .detail-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #eee; font-size: 13px; }
-        .detail-row b { color: var(--brown); }
-        .img-strip { display: flex; gap: 5px; overflow-x: auto; margin-top: 10px; padding-bottom: 5px; }
-        .img-strip img { height: 80px; width: 80px; object-fit: cover; border-radius: 8px; border: 1px solid var(--gold); }
+        /* UI Elements */
+        .punch-card { background: white; border-radius: 20px; padding: 20px; border: 1px solid var(--gold); }
+        input, select, textarea { width: 100%; padding: 12px; margin: 6px 0; border: 1.5px solid #eee; border-radius: 12px; font-family: 'Montserrat'; font-weight: 600; box-sizing: border-box; font-size: 14px; }
 
-        /* Order Form Popup (Workshop) */
-        #jobCardOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:2000; overflow-y:auto; padding:15px; }
-        .digital-form { background: #fff; border: 6px double var(--gold); padding: 20px; max-width: 400px; margin: 20px auto; }
-        .df-header { text-align: center; border-bottom: 2px solid var(--gold); padding-bottom: 12px; margin-bottom: 15px; }
-        .df-img-main { width: 100%; height: 250px; object-fit: contain; background: #fcfcfc; margin-bottom: 10px; }
-
-        /* Tabs & Buttons */
         .tab-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; height: 75px; border-top: 2px solid var(--gold); z-index: 1000; }
         .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 8px; font-weight: 800; color: #bbb; text-transform: uppercase; }
         .tab.active { color: var(--brown); background: var(--cream); border-top: 5px solid var(--gold); }
-        .page { display: none; padding: 15px; }
+        .page { display: none; padding: 15px; box-sizing: border-box; }
         .page.active { display: block; }
-        .btn-gold { background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728); border: none; padding: 15px; border-radius: 12px; color: #3E2723; font-weight: 800; width: 100%; text-transform: uppercase; margin-top: 10px; }
-        .btn-red { background: var(--red); color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; font-weight: 800; }
-        .card { background: white; border-radius: 18px; padding: 15px; margin-bottom: 15px; border: 1px solid #f0f0f0; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
 
-        /* Dashboard Table */
-        .party-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
-        .party-table th { background: var(--brown); color: var(--gold); padding: 8px; text-align: left; }
-        .party-table td { padding: 8px; border-bottom: 1px solid #eee; }
+        /* Cards and Details */
+        .card { background: white; border-radius: 18px; padding: 18px; margin-bottom: 15px; border: 1px solid #f0f0f0; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
+        .card-main-info { display: flex; flex-direction: column; gap: 4px; }
+        .details { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #ddd; }
+        .card.expanded .details { display: block; }
+        .img-strip { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; }
+        .img-strip img { width: 70px; height: 70px; object-fit: cover; border-radius: 8px; border: 1px solid #eee; flex-shrink: 0; }
+
+        /* Timeline */
+        .timeline { display: flex; justify-content: space-between; margin: 25px 0 15px 0; position: relative; padding: 0 10px; }
+        .timeline::before { content: ""; position: absolute; top: 5px; left: 15px; right: 15px; height: 2px; background: #f0f0f0; z-index: 1; }
+        .t-step { width: 10px; height: 10px; border-radius: 50%; background: #ddd; z-index: 2; position: relative; }
+        .t-step.active { background: var(--gold); }
+        .t-label { position: absolute; top: 15px; font-size: 7px; transform: translateX(-40%); font-weight: 800; color: #ccc; text-transform: uppercase; }
+        .t-step.active .t-label { color: var(--brown); }
+
+        /* Dashboard */
+        .party-table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; font-size: 12px; border: 1px solid var(--gold); margin-top: 15px; }
+        .party-table th { background: var(--brown); color: var(--gold); padding: 10px; text-align: left; }
+        .party-table td { padding: 10px; border-bottom: 1px solid #eee; font-weight: 600; }
+
+        /* Buttons */
+        .btn-gold { background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728); border: none; padding: 16px; border-radius: 12px; color: #3E2723; font-weight: 800; width: 100%; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
+        .btn-jobcard { background: var(--brown); color: var(--gold); border: 1px solid var(--gold); padding: 12px; border-radius: 10px; font-weight: 800; margin-top: 10px; width: 100%; }
+        .btn-red { background: var(--red); color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; font-weight: 800; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -59,7 +75,7 @@
 <div id="mainLock">
     <h1 style="font-family:'Cinzel'; color:var(--gold); letter-spacing:5px; margin-bottom: 20px;">SHANTI JEWEL</h1>
     <div class="lock-container">
-        <input type="password" id="entryPin" placeholder="PIN" style="text-align:center; letter-spacing:15px; font-size:24px; width:100%; margin-bottom:15px; border-radius:12px; border:none; padding:10px;">
+        <input type="password" id="entryPin" placeholder="PIN" style="text-align:center; letter-spacing:15px; font-size:24px; color:black; width:100%; margin-bottom:15px;">
         <button class="btn-gold" onclick="unlockMain()">ENTER APP</button>
     </div>
 </div>
@@ -69,17 +85,22 @@
         <div class="df-header">
             <small>॥ श्री ॥</small>
             <h2 style="font-family:'Cinzel'; margin:5px 0;">SHANTI JEWEL</h2>
-            <small style="color:var(--gold); letter-spacing:2px;">ORDER FORM</small>
+            <small style="font-weight:700; color:var(--gold); letter-spacing:2px;">ORDER FORM</small>
         </div>
-        <img id="jc_img" class="df-img-main" src="">
+        <img id="jc_img" class="df-img" src="">
         <div id="jc_strip" class="img-strip"></div>
-        <div style="display:flex; justify-content:space-between; margin-top:10px; border-top:1px solid #eee; padding-top:10px;">
-            <div><small>WT</small><br><b id="jc_wt"></b></div>
-            <div><small>KT</small><br><b id="jc_kt"></b></div>
-            <div><small>SZ</small><br><b id="jc_sz"></b></div>
+        <div class="df-row"><span class="df-label">Party</span><span class="df-value" id="jc_pa"></span></div>
+        <div class="df-row"><span class="df-label">Order ID</span><span class="df-value" id="jc_id"></span></div>
+        <div class="df-row">
+            <div><span class="df-label">Weight</span><br><span class="df-value" id="jc_wt"></span></div>
+            <div><span class="df-label">Purity</span><br><span class="df-value" id="jc_kt"></span></div>
+            <div><span class="df-label">Size</span><br><span class="df-value" id="jc_sz"></span></div>
         </div>
-        <p id="jc_sp" style="font-size:12px; margin-top:15px; background:#f9f9f9; padding:10px;"></p>
-        <button class="btn-red" onclick="document.getElementById('jobCardOverlay').style.display='none'">CLOSE</button>
+        <div style="margin-top:15px; background:#fdfbf7; padding:12px; border-radius:8px;">
+            <span class="df-label">Instructions:</span><br>
+            <p id="jc_sp" style="font-size:13px; font-weight:600; line-height:1.4; margin:5px 0;"></p>
+        </div>
+        <button class="btn-red" onclick="document.getElementById('jobCardOverlay').style.display='none'">CLOSE PREVIEW</button>
     </div>
 </div>
 
@@ -87,33 +108,35 @@
     <div class="header"><h1>SHANTI JEWEL</h1></div>
 
     <div id="punchPage" class="page active">
-        <div class="photo-grid">
-            <div class="photo-box" onclick="triggerImg(0)" id="pb0">IMG 1</div>
-            <div class="photo-box" onclick="triggerImg(1)" id="pb1">IMG 2</div>
-            <div class="photo-box" onclick="triggerImg(2)" id="pb2">IMG 3</div>
-            <div class="photo-box" onclick="triggerImg(3)" id="pb3">IMG 4</div>
+        <div class="punch-card">
+            <div class="photo-grid">
+                <div class="photo-box" onclick="triggerImg(0)" id="pb0">IMG 1</div>
+                <div class="photo-box" onclick="triggerImg(1)" id="pb1">IMG 2</div>
+                <div class="photo-box" onclick="triggerImg(2)" id="pb2">IMG 3</div>
+                <div class="photo-box" onclick="triggerImg(3)" id="pb3">IMG 4</div>
+            </div>
+            <input type="file" id="fileInput" hidden onchange="processMultiPhoto(this)">
+            
+            <input type="text" id="i_id" placeholder="ORDER ID">
+            <select id="i_pa">
+                <option value="">SELECT PARTY</option>
+                <option>REVA DIAMONDS</option>
+                <option>Shree Gajanan Jewellers</option>
+                <option>P.N.GADGIL & SONS</option>
+                <option>PNG Brothers</option>
+                <option>Neelkanth Jewellers</option>
+                <option>Inhouse Production</option>
+            </select>
+            <select id="i_cad"><option value="">DESIGNER</option><option>DYE</option><option>SHINDE</option><option>ALAUDDIN</option></select>
+            <div style="display:flex; gap:10px;"><input type="number" step="0.001" id="i_wt" placeholder="WT"><input type="text" id="i_kt" placeholder="KT"></div>
+            <div style="display:flex; gap:10px;"><input type="text" id="i_sz" placeholder="Size"><input type="date" id="i_dd"></div>
+            <textarea id="i_sp" rows="2" placeholder="Instructions..."></textarea>
+            <button class="btn-gold" onclick="saveOrder()">PUNCH ORDER</button>
         </div>
-        <input type="file" id="fileInput" hidden onchange="processMultiPhoto(this)">
-        
-        <input type="text" id="i_id" placeholder="ORDER ID">
-        <select id="i_pa">
-            <option value="">SELECT PARTY</option>
-            <option>REVA DIAMONDS</option>
-            <option>Shree Gajanan Jewellers</option>
-            <option>P.N.GADGIL & SONS</option>
-            <option>PNG Brothers</option>
-            <option>Neelkanth Jewellers</option>
-            <option>Inhouse Production</option>
-        </select>
-        <select id="i_cad"><option value="">DESIGNER</option><option>DYE</option><option>SHINDE</option><option>ALAUDDIN</option></select>
-        <div style="display:flex; gap:10px;"><input type="number" step="0.001" id="i_wt" placeholder="WT"><input type="text" id="i_kt" placeholder="KT"></div>
-        <div style="display:flex; gap:10px;"><input type="text" id="i_sz" placeholder="Size"><input type="date" id="i_dd"></div>
-        <textarea id="i_sp" rows="2" placeholder="Special Instructions..."></textarea>
-        <button class="btn-gold" onclick="saveOrder()">PUNCH ORDER</button>
     </div>
 
     <div id="activePage" class="page">
-        <input type="text" id="src" placeholder="Search ID..." onkeyup="loadData()">
+        <input type="text" id="src" placeholder="Search ID..." onkeyup="loadData()" style="margin-bottom:15px;">
         <div id="activeList"></div>
     </div>
 
@@ -122,15 +145,15 @@
     </div>
 
     <div id="dashPage" class="page">
-        <div id="dashLock" style="text-align:center; padding:40px 10px; background:var(--brown); border-radius:20px; color:white;">
-            <h3 style="font-family:'Cinzel';">ADMIN DASH</h3>
-            <input type="password" id="dashPinInput" placeholder="PIN" style="text-align:center; letter-spacing:10px; width:150px; padding:10px; margin-bottom:10px;">
-            <button class="btn-gold" onclick="unlockDash()">UNLOCK</button>
+        <div id="dashLock" style="text-align:center; padding:40px 20px; background:var(--brown); border-radius:20px; color:white;">
+            <h2 style="font-family: 'Cinzel';">ADMIN DASHBOARD</h2>
+            <input type="password" id="dashPinInput" placeholder="PIN" style="text-align:center; letter-spacing:10px; max-width:200px; color:black;">
+            <button class="btn-gold" onclick="unlockDash()" style="margin-top:10px;">UNLOCK</button>
         </div>
         <div id="dashBody" style="display:none;">
             <div id="stats" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;"></div>
             <div id="partyAnalysis"></div>
-            <button class="btn-red" style="margin-top:20px;" onclick="wipeData()">WIPEOUT DATABASE</button>
+            <button class="btn-red" style="margin-top: 30px;" onclick="wipeData()">WIPEOUT DATABASE</button>
         </div>
     </div>
 
@@ -198,14 +221,16 @@ async function saveOrder() {
     location.reload();
 }
 
-function openOrderForm(o) {
+function openJobCard(o) {
     document.getElementById('jc_img').src = o.photos[0];
+    document.getElementById('jc_id').innerText = o.id;
+    document.getElementById('jc_pa').innerText = o.party;
+    document.getElementById('jc_cad').innerText = o.cad;
     document.getElementById('jc_wt').innerText = o.wt + "g";
     document.getElementById('jc_kt').innerText = o.kt;
     document.getElementById('jc_sz').innerText = o.sz;
-    document.getElementById('jc_sp').innerText = o.sp || "No instructions";
-    const strip = document.getElementById('jc_strip');
-    strip.innerHTML = o.photos.map(p => `<img src="${p}">`).join('');
+    document.getElementById('jc_sp').innerText = o.sp || "None";
+    document.getElementById('jc_strip').innerHTML = o.photos.map(p => `<img src="${p}">`).join('');
     document.getElementById('jobCardOverlay').style.display = 'block';
 }
 
@@ -226,24 +251,27 @@ function loadData() {
             partyDist[o.party].pcs++; partyDist[o.party].wt += o.wt;
 
             const card = `<div class="card" onclick="this.classList.toggle('expanded')">
-                <div style="display:flex; justify-content:space-between;">
-                    <div style="display:flex; gap:10px;">
-                        <img src="${o.photos[0]}" style="width:50px; height:50px; border-radius:8px; object-fit:cover;">
-                        <div><b style="color:var(--brown);">${o.id}</b><br><small>${o.party}</small></div>
+                <div style="display:flex; justify-content:space-between; align-items:start;">
+                    <div style="display:flex; gap:12px; align-items:center;">
+                        <img src="${o.photos[0]}" style="width:65px; height:65px; border-radius:10px; object-fit:cover;">
+                        <div class="card-main-info">
+                            <b style="color:var(--brown); font-size:16px;">${o.id}</b>
+                            <small style="font-weight:700;">${o.party}</small>
+                            <small style="color:var(--red); font-weight:800;">DUE: ${o.dd || 'N/A'}</small>
+                        </div>
                     </div>
-                    <div style="text-align:right;"><small>Status</small><br><b style="color:var(--gold); font-size:10px;">${o.status}</b></div>
+                    <div style="text-align:right;"><b style="color:var(--gold); font-size:10px;">${o.status}</b></div>
                 </div>
-                <div class="full-details">
+                <div class="timeline">${stages.map((s,i)=>`<div class="t-step ${stages.indexOf(o.status)>=i?'active':''}"><span class="t-label">${s}</span></div>`).join('')}</div>
+                <div class="details">
                     <div class="img-strip">${o.photos.map(p => `<img src="${p}">`).join('')}</div>
-                    <div class="detail-row"><span>Party:</span><b>${o.party}</b></div>
-                    <div class="detail-row"><span>Designer:</span><b>${o.cad}</b></div>
-                    <div class="detail-row"><span>Weight:</span><b>${o.wt}g</b></div>
-                    <div class="detail-row"><span>Purity:</span><b>${o.kt}</b></div>
-                    <div class="detail-row"><span>Size:</span><b>${o.sz}</b></div>
-                    <div class="detail-row"><span>Delivery:</span><b style="color:red;">${o.dd || 'TBD'}</b></div>
-                    <div style="margin-top:10px;"><small>Instructions:</small><p style="margin:5px 0; font-size:12px;">${o.sp || 'None'}</p></div>
-                    <button class="btn-gold" style="height:40px; font-size:11px;" onclick="event.stopPropagation(); openOrderForm(${JSON.stringify(o).replace(/"/g, '&quot;')})">VIEW ORDER FORM</button>
-                    ${o.status!=='READY'?`<button class="btn-gold" style="background:var(--brown); color:var(--gold); height:40px;" onclick="event.stopPropagation(); move('${o.id}','${o.status}')">NEXT STAGE</button>`:''}
+                    <div class="df-row"><span class="df-label">Designer</span><span class="df-value">${o.cad}</span></div>
+                    <div class="df-row"><span class="df-label">Weight/Purity</span><span class="df-value">${o.wt}g / ${o.kt}</span></div>
+                    <div class="df-row"><span class="df-label">Size</span><span class="df-value">${o.sz}</span></div>
+                    <p style="font-size:12px; background:#f9f9f9; padding:8px; border-radius:5px;"><b>Note:</b> ${o.sp || 'No instructions'}</p>
+                    <button class="btn-jobcard" onclick="event.stopPropagation(); openJobCard(${JSON.stringify(o).replace(/"/g, '&quot;')})">VIEW ORDER FORM</button>
+                    ${o.status!=='READY'?`<button class="btn-gold" style="font-size:11px;" onclick="event.stopPropagation(); move('${o.id}','${o.status}')">MOVE TO NEXT STAGE</button>`:''}
+                    <button class="btn-red" style="font-size:10px; opacity:0.8;" onclick="event.stopPropagation(); del('${o.id}')">DELETE</button>
                 </div></div>`;
             
             if(o.status !== 'READY') {
@@ -252,13 +280,14 @@ function loadData() {
         });
 
         statsDiv.innerHTML = stages.map(s => `<div style="background:var(--brown); color:var(--gold); padding:10px; border-radius:10px; text-align:center;"><h3>${counts[s]}</h3><small>${s}</small></div>`).join('');
-        let tbl = `<table class="party-table"><thead><tr><th>Party</th><th>Pcs</th><th>Wt</th></tr></thead><tbody>`;
+        let tbl = `<table class="party-table"><thead><tr><th>Party Name</th><th>Pcs</th><th>Total Wt</th></tr></thead><tbody>`;
         for (const p in partyDist) tbl += `<tr><td>${p}</td><td>${partyDist[p].pcs}</td><td>${partyDist[p].wt.toFixed(3)}g</td></tr>`;
         document.getElementById('partyAnalysis').innerHTML = tbl + `</tbody></table>`;
     });
 }
 
 function move(id, cur) { const nxt = stages[stages.indexOf(cur)+1]; if(nxt) db.ref('orders/'+id).update({status: nxt}); }
+function del(id) { if(confirm("Delete Order?")) db.ref('orders/'+id).remove(); }
 function wipeData() { if(confirm("ERASE ALL DATA?")) db.ref('orders').remove(); }
 function nav(p, el) { 
     document.querySelectorAll('.page, .tab').forEach(x => x.classList.remove('active')); 
