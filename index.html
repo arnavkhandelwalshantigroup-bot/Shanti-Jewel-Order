@@ -12,14 +12,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
-        :root { --gold: #D4AF37; --brown: #3E2723; --cream: #FFFDE7; --text: #212121; }
+        :root { --gold: #D4AF37; --brown: #3E2723; --cream: #FFFDE7; --text: #212121; --red: #d32f2f; }
         body { font-family: 'Montserrat', sans-serif; background: #fdfbf7; margin: 0; padding-bottom: 90px; color: var(--text); }
         
-        .header { background: var(--brown); color: var(--gold); text-align: center; padding: 25px 10px; border-bottom: 5px solid var(--gold); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        .header { background: var(--brown); color: var(--gold); text-align: center; padding: 25px 10px; border-bottom: 5px solid var(--gold); }
         .header h1 { font-family: 'Cinzel', serif; margin: 0; font-size: 26px; letter-spacing: 5px; }
         .header span { font-size: 12px; letter-spacing: 8px; display: block; margin-bottom: 8px; opacity: 0.9; }
 
-        #loginOverlay { position: fixed; inset: 0; background: var(--brown); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        #loginOverlay, #dashLockOverlay { position: fixed; inset: 0; background: var(--brown); z-index: 9999; display: flex; align-items: center; justify-content: center; }
         .login-card { background: white; padding: 40px; border-radius: 25px; text-align: center; border: 3px solid var(--gold); width: 85%; max-width: 350px; }
         
         .tab-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; height: 75px; border-top: 2px solid var(--gold); z-index: 1000; }
@@ -29,25 +29,16 @@
         .page { display: none; padding: 15px; }
         .page.active { display: block; }
         
-        .card { background: white; border-radius: 18px; padding: 20px; margin-bottom: 20px; border: 1px solid #eee; box-shadow: 0 6px 12px rgba(0,0,0,0.06); position: relative; }
+        .card { background: white; border-radius: 18px; padding: 20px; margin-bottom: 20px; border: 1px solid #eee; box-shadow: 0 6px 12px rgba(0,0,0,0.06); }
         
-        /* Form Styling */
-        input, select, textarea { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 12px; font-size: 15px; box-sizing: border-box; font-family: inherit; }
-        .btn-gold { background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728); border: none; padding: 18px; border-radius: 12px; color: #3E2723; font-weight: bold; width: 100%; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        .btn-share { background: var(--brown); color: var(--gold); border: 1px solid var(--gold); margin-top: 10px; }
+        input, select, textarea { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 12px; font-size: 15px; box-sizing: border-box; }
+        .btn-gold { background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728); border: none; padding: 18px; border-radius: 12px; color: #3E2723; font-weight: bold; width: 100%; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-red { background: var(--red); color: white; border: none; padding: 15px; border-radius: 12px; width: 100%; margin-top: 20px; font-weight: bold; }
 
-        /* Single Photo Slot */
-        .single-photo-box { height: 180px; background: #fdfdfd; border: 2px dashed var(--gold); border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--gold); font-weight: bold; overflow: hidden; margin-bottom: 15px; text-align: center; }
+        .single-photo-box { height: 180px; background: #fdfdfd; border: 2px dashed var(--gold); border-radius: 15px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 15px; cursor: pointer; color: var(--gold); font-weight: bold; }
         .single-photo-box img { width: 100%; height: 100%; object-fit: contain; }
 
-        /* Timeline Display */
-        .timeline { display: flex; justify-content: space-between; margin: 30px 0 10px 0; position: relative; }
-        .timeline::before { content: ""; position: absolute; top: 6px; left: 0; right: 0; height: 2px; background: #eee; }
-        .t-step { width: 12px; height: 12px; border-radius: 50%; background: #ddd; z-index: 2; position: relative; }
-        .t-step.active { background: var(--gold); box-shadow: 0 0 8px var(--gold); }
-        .t-label { position: absolute; top: 20px; font-size: 7px; transform: translateX(-40%); white-space: nowrap; font-weight: 800; color: #bbb; text-transform: uppercase; }
-        .t-step.active .t-label { color: var(--brown); }
-
+        .party-row { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; font-size: 13px; }
         #shareCanvas { position: fixed; left: -9999px; width: 500px; background: #FFF; padding: 30px; border: 8px solid var(--gold); }
     </style>
 </head>
@@ -57,16 +48,15 @@
     <div style="text-align:center; color:var(--brown);">
         <span style="letter-spacing:10px; font-weight:bold;">॥ श्री ॥</span>
         <h1 style="font-family:'Cinzel'; font-size:36px; margin:10px 0;">SHANTI JEWEL</h1>
-        <div style="height:3px; background:var(--gold); width:60%; margin: 10px auto;"></div>
     </div>
-    <div id="canvasBody" style="font-family:'Montserrat'; padding:20px;"></div>
+    <div id="canvasBody" style="padding:20px;"></div>
 </div>
 
 <div id="loginOverlay">
     <div class="login-card">
-        <span style="letter-spacing: 5px; color: var(--gold); font-weight: bold;">॥ श्री ॥</span>
-        <h2 style="font-family: 'Cinzel'; color: var(--brown); margin-top: 10px;">SHANTI JEWEL</h2>
-        <input type="password" id="passInput" placeholder="PIN" style="text-align:center; letter-spacing: 10px;">
+        <span>॥ श्री ॥</span>
+        <h2 style="font-family: 'Cinzel'; color: var(--brown);">SHANTI JEWEL</h2>
+        <input type="password" id="passInput" placeholder="PIN" style="text-align:center;">
         <button class="btn-gold" onclick="auth()">ACCESS</button>
     </div>
 </div>
@@ -78,11 +68,8 @@
 
 <div id="punchPage" class="page active">
     <div class="card">
-        <div class="single-photo-box" id="p1" onclick="document.getElementById('f1').click()">
-            TAP TO UPLOAD PRODUCT IMAGE
-        </div>
+        <div class="single-photo-box" id="p1" onclick="document.getElementById('f1').click()">TAP TO ADD PRODUCT IMAGE</div>
         <input type="file" id="f1" accept="image/*" hidden onchange="cmp(this, 0, 'p1')">
-
         <input type="text" id="i_id" placeholder="ORDER ID">
         <select id="i_pa">
             <option value="">SELECT PARTY</option>
@@ -93,32 +80,35 @@
             <option>Annapurna Gold</option>
             <option>Inhouse Production</option>
         </select>
-        <div style="display:flex; gap:10px;">
-            <input type="number" step="0.001" id="i_wt" placeholder="WT (gms)">
-            <input type="text" id="i_kt" placeholder="PURITY">
-        </div>
-        <div style="display:flex; gap:10px;">
-            <input type="text" id="i_sz" placeholder="SIZE">
-            <input type="date" id="i_dd">
-        </div>
-        <select id="i_cad">
-            <option value="">DESIGNER</option>
-            <option>DYE</option>
-            <option>SHINDE</option>
-            <option>ALAUDDIN</option>
-        </select>
-        <textarea id="i_sp" rows="2" placeholder="SPECIFICATIONS"></textarea>
+        <div style="display:flex; gap:10px;"><input type="number" step="0.001" id="i_wt" placeholder="WT"><input type="text" id="i_kt" placeholder="KT"></div>
+        <div style="display:flex; gap:10px;"><input type="text" id="i_sz" placeholder="SIZE"><input type="date" id="i_dd"></div>
+        <textarea id="i_sp" rows="2" placeholder="INSTRUCTIONS"></textarea>
         <button class="btn-gold" id="saveBtn" onclick="save()">PUNCH ORDER</button>
     </div>
 </div>
 
 <div id="activePage" class="page">
-    <input type="text" id="src" placeholder="SEARCH ID..." onkeyup="filter()" style="margin-bottom:15px; border: 2px solid var(--gold);">
+    <input type="text" id="src" placeholder="SEARCH ID..." onkeyup="filter()" style="margin-bottom:15px; border:2px solid var(--gold);">
     <div id="activeList"></div>
 </div>
 
 <div id="dashPage" class="page">
-    <div id="statList" style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;"></div>
+    <div id="dashContent" style="display:none;">
+        <h3 style="font-family:'Cinzel'; color:var(--brown);">STOCK SUMMARY</h3>
+        <div id="statList" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;"></div>
+        
+        <h3 style="font-family:'Cinzel'; color:var(--brown);">PARTY WISE</h3>
+        <div class="card" id="partyList" style="padding:10px;"></div>
+
+        <button class="btn-red" onclick="wipeout()">WIPEOUT ALL DATA</button>
+    </div>
+    
+    <div id="innerLock" style="text-align:center; padding-top:50px;">
+        <div style="font-size:50px;">🔒</div>
+        <p>Dashboard is Locked</p>
+        <input type="password" id="dashPin" placeholder="ENTER PIN" style="width:150px; text-align:center;">
+        <button class="btn-gold" onclick="unlockDash()">UNLOCK</button>
+    </div>
 </div>
 
 <div class="tab-bar">
@@ -141,6 +131,7 @@ const stages = ["CAD", "CAM", "CASTING", "POLISH", "HUID", "READY"];
 let blobs = [null];
 
 function auth(){ if(document.getElementById('passInput').value==='1008'){ document.getElementById('loginOverlay').remove(); load(); } }
+function unlockDash(){ if(document.getElementById('dashPin').value==='1008'){ document.getElementById('innerLock').style.display='none'; document.getElementById('dashContent').style.display='block'; } }
 
 function cmp(input, idx, pId) {
     const file = input.files[0];
@@ -153,10 +144,7 @@ function cmp(input, idx, pId) {
             if(w>MAX){ h *= MAX/w; w=MAX; }
             canvas.width=w; canvas.height=h;
             canvas.getContext('2d').drawImage(img,0,0,w,h);
-            canvas.toBlob(b => { 
-                blobs[idx]=b; 
-                document.getElementById(pId).innerHTML=`<img src="${URL.createObjectURL(b)}">`;
-            }, 'image/jpeg', 0.7);
+            canvas.toBlob(b => { blobs[idx]=b; document.getElementById(pId).innerHTML=`<img src="${URL.createObjectURL(b)}">`; }, 'image/jpeg', 0.7);
         };
         img.src = e.target.result;
     };
@@ -165,15 +153,14 @@ function cmp(input, idx, pId) {
 
 async function save() {
     const id = document.getElementById('i_id').value;
-    if(!id) return alert("Enter ID");
+    if(!id) return alert("ID Required");
     const btn = document.getElementById('saveBtn');
     btn.disabled = true; btn.innerText = "UPLOADING...";
 
     const data = {
         id: id, party: document.getElementById('i_pa').value,
-        wt: document.getElementById('i_wt').value, kt: document.getElementById('i_kt').value,
+        wt: parseFloat(document.getElementById('i_wt').value || 0), kt: document.getElementById('i_kt').value,
         sz: document.getElementById('i_sz').value, dd: document.getElementById('i_dd').value,
-        cad: document.getElementById('i_cad').value, sp: document.getElementById('i_sp').value,
         status: "CAD", ts: Date.now()
     };
 
@@ -181,73 +168,68 @@ async function save() {
         await db.ref('orders/'+id).set(data);
         if(blobs[0]){
             const ref = storage.ref(`orders/${id}/p0.jpg`);
-            await ref.put(blobs[0]);
-            const url = await ref.getDownloadURL();
-            await db.ref(`orders/${id}/imgs/0`).set(url);
-        }
-        alert("PUNCHED SUCCESSFULLY!"); location.reload();
+            const task = ref.put(blobs[0]);
+            task.on('state_changed', null, null, async () => {
+                const url = await ref.getDownloadURL();
+                await db.ref(`orders/${id}/imgs/0`).set(url);
+                alert("SUCCESS: Live Now!"); location.reload();
+            });
+        } else { location.reload(); }
     } catch(e) { alert(e.message); btn.disabled=false; }
 }
 
 function load() {
     db.ref('orders').on('value', snap => {
         const all = Object.values(snap.val() || {});
+        const act = document.getElementById('activeList'), partBox = document.getElementById('partyList');
         const stats = {}; stages.forEach(s => stats[s] = 0);
-        const act = document.getElementById('activeList');
+        const partyData = {};
+
         act.innerHTML = "";
-        
         all.reverse().forEach(o => {
             stats[o.status]++;
+            // Party Wise Logic
+            if(!partyData[o.party]) partyData[o.party] = { count: 0, wt: 0 };
+            partyData[o.party].count++;
+            partyData[o.party].wt += o.wt;
+
             const img = (o.imgs && o.imgs[0]) ? o.imgs[0] : '';
             if(o.status !== 'READY') {
                 act.innerHTML += `<div class="card">
-                    <div style="display:flex; gap:15px; align-items:center;">
-                        <img src="${img}" style="width:70px; height:70px; object-fit:cover; border-radius:12px; border:1px solid var(--gold); background:#eee;">
-                        <div><b style="font-size:18px; color:var(--brown);">${o.id}</b><br><small style="font-weight:600; color:#666;">${o.party}</small></div>
-                    </div>
-                    <div class="timeline">
-                        ${stages.map((s,i) => `<div class="t-step ${stages.indexOf(o.status) >= i ? 'active' : ''}"><span class="t-label">${s}</span></div>`).join('')}
-                    </div>
-                    <button class="btn-gold" style="padding:10px; font-size:11px; margin-top:25px;" onclick="move('${o.id}', '${o.status}')">NEXT STAGE</button>
-                    <button class="btn-gold btn-share" style="padding:10px; font-size:11px;" onclick='shareCAD(${JSON.stringify(o)})'>SHARE CAD FORM</button>
+                    <div style="display:flex; gap:10px;"><img src="${img}" style="width:60px; height:60px; object-fit:cover; border-radius:10px;">
+                    <div><b>${o.id}</b><br><small>${o.party}</small></div></div>
+                    <button class="btn-gold" style="margin-top:10px; padding:10px; font-size:10px;" onclick='shareCAD(${JSON.stringify(o)})'>SHARE CAD FORM</button>
                 </div>`;
             }
         });
-        document.getElementById('statList').innerHTML = stages.map(s => `<div class="stat-box" style="background:var(--brown); color:var(--gold); padding:20px; border-radius:15px; text-align:center;"><h2>${stats[s]}</h2><small>${s}</small></div>`).join('');
+
+        document.getElementById('statList').innerHTML = stages.map(s => `<div style="background:var(--brown); color:var(--gold); padding:15px; border-radius:12px; text-align:center;"><b>${stats[s]}</b><br><small>${s}</small></div>`).join('');
+        
+        partBox.innerHTML = Object.keys(partyData).map(p => `
+            <div class="party-row">
+                <span><b>${p || 'Unknown'}</b></span>
+                <span>${partyData[p].count} Pcs | ${partyData[p].wt.toFixed(3)}g</span>
+            </div>
+        `).join('');
     });
 }
 
-function move(id, cur) {
-    const nextIdx = stages.indexOf(cur) + 1;
-    if(nextIdx < stages.length) db.ref('orders/'+id).update({status: stages[nextIdx]});
+function wipeout() {
+    if(confirm("DANGER: This will delete ALL orders. Continue?")) {
+        db.ref('orders').remove();
+        alert("System Wiped.");
+        location.reload();
+    }
 }
 
 function shareCAD(o) {
     const body = document.getElementById('canvasBody');
-    const imgUrl = (o.imgs && o.imgs[0]) ? o.imgs[0] : '';
-    body.innerHTML = `
-        <div style="border:2px solid var(--gold); border-radius:15px; overflow:hidden; margin-bottom:20px;">
-            <img src="${imgUrl}" style="width:100%; height:350px; object-fit:contain; background:#f9f9f9;">
-        </div>
-        <div style="font-size:22px; line-height:1.8; color:#333;">
-            <b style="color:var(--brown);">ORDER ID:</b> ${o.id}<br>
-            <b style="color:var(--brown);">WEIGHT:</b> ${o.wt} gms<br>
-            <b style="color:var(--brown);">PURITY:</b> ${o.kt}<br>
-            <b style="color:var(--brown);">SIZE:</b> ${o.sz}<br>
-            <b style="color:var(--brown);">DESIGNER:</b> ${o.cad}<br><br>
-            <b style="color:var(--brown);">INSTRUCTIONS:</b><br>
-            <div style="background:#f4f4f4; padding:15px; border-radius:10px; font-size:20px;">${o.sp || 'None'}</div>
-        </div>
-    `;
-    
-    html2canvas(document.getElementById('shareCanvas'), {useCORS: true, scale: 2}).then(canvas => {
-        canvas.toBlob(blob => {
-            const file = new File([blob], `CAD_${o.id}.png`, {type: 'image/png'});
-            if (navigator.share) {
-                navigator.share({files: [file], title: 'CAD Order Form'});
-            } else {
-                alert("Please screenshot this form.");
-            }
+    body.innerHTML = `<img src="${o.imgs[0]}" style="width:100%; border-radius:10px;"><br>
+    <h2>ID: ${o.id}</h2><b>WT:</b> ${o.wt}g | <b>KT:</b> ${o.kt}<br><b>SIZE:</b> ${o.sz}<br><b>DESC:</b> ${o.sp || '-'}`;
+    html2canvas(document.getElementById('shareCanvas'), {useCORS: true}).then(cvs => {
+        cvs.toBlob(b => {
+            const f = new File([b], 'CAD.png', {type:'image/png'});
+            if(navigator.share) navigator.share({files:[f]});
         });
     });
 }
