@@ -11,30 +11,40 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
 
     <style>
-        :root { --gold: #D4AF37; --brown: #3E2723; --cream: #FFFDE7; --text: #212121; }
+        :root { --gold: #D4AF37; --brown: #3E2723; --cream: #FFFDE7; --text: #212121; --red: #c62828; }
         body { font-family: 'Montserrat', sans-serif; background: #fdfbf7; margin: 0; padding-bottom: 90px; color: var(--text); }
+        
         .header { background: var(--brown); color: var(--gold); text-align: center; padding: 25px 10px; border-bottom: 5px solid var(--gold); }
-        .header h1 { font-family: 'Cinzel', serif; margin: 0; font-size: 26px; letter-spacing: 5px; }
+        .header h1 { font-family: 'Cinzel', serif; margin: 0; font-size: 24px; letter-spacing: 5px; }
         .header span { font-size: 10px; letter-spacing: 8px; display: block; margin-bottom: 5px; }
+
         .premium-overlay { position: fixed; inset: 0; background: var(--brown); z-index: 9999; display: flex; align-items: center; justify-content: center; }
         .login-card { background: white; padding: 30px; border-radius: 20px; text-align: center; border: 3px solid var(--gold); width: 85%; max-width: 350px; }
-        .tab-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; height: 70px; border-top: 2px solid var(--gold); z-index: 1000; }
-        .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #999; text-transform: uppercase; }
+        
+        .tab-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; height: 75px; border-top: 2px solid var(--gold); z-index: 1000; }
+        .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 8px; font-weight: 700; color: #999; text-transform: uppercase; }
         .tab.active { color: var(--brown); background: var(--cream); border-top: 5px solid var(--gold); }
+
         .page { display: none; padding: 15px; }
         .page.active { display: block; }
         .card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px; border: 1px solid #eee; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; font-family: inherit; box-sizing: border-box; }
-        .btn-gold { background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728); border: none; padding: 14px; border-radius: 10px; color: #3E2723; font-weight: bold; width: 100%; cursor: pointer; text-transform: uppercase; }
         
-        /* Timeline */
+        /* Detail View Logic */
+        .detail-view { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #ddd; }
+        .card.expanded .detail-view { display: block; }
+        
+        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; font-family: inherit; box-sizing: border-box; }
+        .btn-gold { background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728); border: none; padding: 14px; border-radius: 10px; color: #3E2723; font-weight: bold; width: 100%; cursor: pointer; text-transform: uppercase; font-size: 12px; }
+        .btn-red { background: var(--red); color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; font-weight: bold; margin-top: 25px; }
+
         .timeline { display: flex; justify-content: space-between; margin: 25px 0 10px 0; position: relative; padding: 0 5px; }
         .timeline::before { content: ""; position: absolute; top: 5px; left: 10px; right: 10px; height: 2px; background: #eee; z-index: 1; }
         .t-step { width: 10px; height: 10px; border-radius: 50%; background: #ddd; z-index: 2; position: relative; }
         .t-step.active { background: var(--gold); box-shadow: 0 0 5px var(--gold); }
         .t-label { position: absolute; top: 15px; font-size: 6.5px; transform: translateX(-40%); white-space: nowrap; font-weight: bold; color: #aaa; text-transform: uppercase;}
         .t-step.active .t-label { color: var(--brown); }
-        .party-row { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; font-size: 13px; font-weight: 600; }
+
+        .party-row { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #eee; font-size: 13px; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -56,7 +66,7 @@
 <div id="punchPage" class="page active">
     <div class="card">
         <div id="p1" style="height:140px; background:#fdfdfd; border:2px dashed var(--gold); border-radius:12px; display:flex; align-items:center; justify-content:center; overflow:hidden; margin-bottom:10px;" onclick="document.getElementById('f1').click()">ADD PHOTO</div>
-        <input type="file" id="f1" accept="image/*" hidden onchange="cmp(this, 0, 'p1')">
+        <input type="file" id="f1" accept="image/*" hidden onchange="compressImg(this, 0, 'p1')">
         <input type="text" id="i_id" placeholder="ORDER ID">
         <select id="i_pa">
             <option value="">SELECT PARTY</option>
@@ -70,14 +80,14 @@
         <div style="display:flex; gap:10px;"><input type="number" step="0.001" id="i_wt" placeholder="WT"><input type="text" id="i_kt" placeholder="KT"></div>
         <div style="display:flex; gap:10px;"><input type="text" id="i_sz" placeholder="SIZE"><input type="date" id="i_dd"></div>
         <textarea id="i_sp" rows="2" placeholder="NOTES"></textarea>
-        <button class="btn-gold" id="saveBtn" onclick="save()">PUNCH ORDER</button>
+        <button class="btn-gold" id="saveBtn" onclick="saveOrder()">PUNCH ORDER</button>
     </div>
 </div>
 
 <div id="activePage" class="page">
     <div style="display:flex; gap:8px; margin-bottom:12px;">
-        <input type="text" id="src" placeholder="SEARCH ID..." onkeyup="loadOrders()" style="margin:0; flex:1.2;">
-        <select id="partyFilter" onchange="loadOrders()" style="margin:0; flex:1;">
+        <input type="text" id="src" placeholder="SEARCH ID..." onkeyup="loadAllData()" style="margin:0; flex:1.2;">
+        <select id="partyFilter" onchange="loadAllData()" style="margin:0; flex:1;">
             <option value="">ALL PARTIES</option>
             <option>Shree Gajanan Jewellers</option>
             <option>P.N.GADGIL & SONS</option>
@@ -90,23 +100,30 @@
     <div id="activeList"></div>
 </div>
 
+<div id="historyPage" class="page">
+    <h3 style="font-family:'Cinzel'; color:var(--brown);">LAST 30 DAYS</h3>
+    <div id="historyList"></div>
+</div>
+
 <div id="dashPage" class="page">
     <div id="dashLock" class="card" style="text-align:center; padding:50px 20px; background:var(--brown); color:white; border-radius:20px;">
         <h2 style="font-family:'Cinzel'; color:var(--gold);">DASHBOARD</h2>
         <input type="password" id="dpin" placeholder="PIN" style="text-align:center; letter-spacing:10px; max-width:200px;">
-        <button class="btn-gold" onclick="unlockD()">UNLOCK</button>
+        <button class="btn-gold" onclick="unlockDash()">UNLOCK</button>
     </div>
     <div id="dashBody" style="display:none;">
         <h3 style="font-family:'Cinzel'; color:var(--brown);">STAGE SUMMARY</h3>
         <div id="stats" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;"></div>
         <h3 style="font-family:'Cinzel'; color:var(--brown);">PARTY WISE</h3>
         <div class="card" id="partyList" style="padding:5px;"></div>
+        <button class="btn-red" onclick="wipeout()">WIPEOUT ALL DATA</button>
     </div>
 </div>
 
 <div class="tab-bar">
     <div class="tab active" onclick="nav('punch', this)">Punch</div>
     <div class="tab" onclick="nav('active', this)">Active</div>
+    <div class="tab" onclick="nav('history', this)">History</div>
     <div class="tab" onclick="nav('dash', this)">Dash</div>
 </div>
 
@@ -123,20 +140,10 @@ const db = firebase.database(), storage = firebase.storage();
 const stages = ["CAD", "CAM", "CASTING", "POLISH", "HUID", "READY"];
 let blobs = [null];
 
-function auth(){ if(document.getElementById('passInput').value==='1008'){ document.getElementById('loginOverlay').remove(); loadOrders(); } }
+function auth(){ if(document.getElementById('passInput').value==='1008'){ document.getElementById('loginOverlay').remove(); loadAllData(); } }
+function unlockDash(){ if(document.getElementById('dpin').value==='2215'){ document.getElementById('dashLock').style.display='none'; document.getElementById('dashBody').style.display='block'; loadDashSummary(); } }
 
-// FIXED: This now triggers the data loading immediately after PIN
-function unlockD(){ 
-    if(document.getElementById('dpin').value==='2215'){ 
-        document.getElementById('dashLock').style.display='none'; 
-        document.getElementById('dashBody').style.display='block';
-        loadDashData(); // Force load dashboard stats
-    } else {
-        alert("Incorrect Pin");
-    }
-}
-
-function cmp(input, idx, pId) {
+function compressImg(input, idx, pId) {
     const file = input.files[0];
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -154,7 +161,7 @@ function cmp(input, idx, pId) {
     reader.readAsDataURL(file);
 }
 
-async function save() {
+async function saveOrder() {
     const id = document.getElementById('i_id').value;
     if(!id) return alert("ID Required");
     const btn = document.getElementById('saveBtn');
@@ -176,63 +183,76 @@ async function save() {
     } catch(e) { alert(e.message); btn.disabled=false; }
 }
 
-function loadOrders() {
+function loadAllData() {
     const search = document.getElementById('src').value.toLowerCase();
     const pFilter = document.getElementById('partyFilter').value;
+    const thirtyDays = Date.now() - (30 * 24 * 60 * 60 * 1000);
+
     db.ref('orders').on('value', snap => {
         const all = Object.values(snap.val() || {});
         const act = document.getElementById('activeList');
-        act.innerHTML = "";
+        const hist = document.getElementById('historyList');
+        act.innerHTML = ""; hist.innerHTML = "";
+
         all.reverse().forEach(o => {
-            if((!search || o.id.toLowerCase().includes(search)) && (!pFilter || o.party === pFilter)) {
-                if(o.status !== 'READY') {
-                    const img = (o.imgs && o.imgs[0]) ? o.imgs[0] : '';
-                    act.innerHTML += `<div class="card">
-                        <div style="display:flex; justify-content:space-between; align-items:start;">
-                            <div style="display:flex; gap:10px; align-items:center;">
-                                <img src="${img}" style="width:50px; height:50px; border-radius:8px; border:1px solid var(--gold); object-fit:cover; background:#eee;">
-                                <div><b>${o.id}</b><br><small>${o.party}</small></div>
-                            </div>
-                            <div style="text-align:right;"><small style="color:var(--gold); font-weight:bold;">${o.dd || 'TBD'}</small></div>
-                        </div>
-                        <div class="timeline">${stages.map((s,i) => `<div class="t-step ${stages.indexOf(o.status) >= i ? 'active' : ''}"><span class="t-label">${s}</span></div>`).join('')}</div>
-                        <button class="btn-gold" style="padding:8px; font-size:10px; margin-top:20px;" onclick="move('${o.id}', '${o.status}')">MOVE NEXT STAGE</button>
-                    </div>`;
-                }
+            const img = (o.imgs && o.imgs[0]) ? o.imgs[0] : 'https://via.placeholder.com/60?text=No+Img';
+            const cardHTML = `
+            <div class="card" onclick="this.classList.toggle('expanded')">
+                <div style="display:flex; justify-content:space-between; align-items:start;">
+                    <div style="display:flex; gap:12px; align-items:center;">
+                        <img src="${img}" style="width:55px; height:55px; border-radius:8px; border:1px solid var(--gold); object-fit:cover; background:#eee;">
+                        <div><b style="color:var(--brown);">${o.id}</b><br><small style="font-weight:600;">${o.party}</small></div>
+                    </div>
+                    <div style="text-align:right;"><small style="color:var(--gold); font-weight:bold;">DELIVERY:<br>${o.dd || 'TBD'}</small></div>
+                </div>
+                <div class="timeline">${stages.map((s,i) => `<div class="t-step ${stages.indexOf(o.status) >= i ? 'active' : ''}"><span class="t-label">${s}</span></div>`).join('')}</div>
+                
+                <div class="detail-view">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:12px; background:#f9f9f9; padding:10px; border-radius:8px;">
+                        <span><b>WEIGHT:</b> ${o.wt}g</span><span><b>PURITY:</b> ${o.kt}</span>
+                        <span><b>SIZE:</b> ${o.sz}</span><span><b>STATUS:</b> ${o.status}</span>
+                    </div>
+                    <p style="margin:10px 0; font-size:12px; color:#555;"><b>NOTES:</b> ${o.sp || 'No instructions'}</p>
+                    ${o.status !== 'READY' ? `<button class="btn-gold" style="padding:10px; font-size:10px;" onclick="event.stopPropagation(); moveStage('${o.id}', '${o.status}')">MOVE TO NEXT STAGE</button>` : ''}
+                </div>
+            </div>`;
+
+            if(o.status !== 'READY') {
+                if((!search || o.id.toLowerCase().includes(search)) && (!pFilter || o.party === pFilter)) { act.innerHTML += cardHTML; }
+            } else if (o.ts > thirtyDays) {
+                hist.innerHTML += cardHTML;
             }
         });
     });
 }
 
-function loadDashData() {
+function loadDashSummary() {
     db.ref('orders').once('value', snap => {
         const all = Object.values(snap.val() || {});
         const stats = {}; stages.forEach(s => stats[s] = 0);
         const partyData = {};
-
         all.forEach(o => {
             stats[o.status]++;
             if(!partyData[o.party]) partyData[o.party] = { count: 0, wt: 0 };
             partyData[o.party].count++;
             partyData[o.party].wt += parseFloat(o.wt || 0);
         });
-
         document.getElementById('stats').innerHTML = stages.map(s => `
             <div style="background:var(--brown); color:var(--gold); padding:15px; border-radius:12px; text-align:center; border:1px solid var(--gold);">
                 <h2 style="margin:0;">${stats[s]}</h2><small>${s}</small>
             </div>`).join('');
-            
         document.getElementById('partyList').innerHTML = Object.keys(partyData).map(p => `
-            <div class="party-row">
-                <span>${p || 'General'}</span>
-                <span>${partyData[p].count} Pcs | ${partyData[p].wt.toFixed(3)}g</span>
-            </div>`).join('');
+            <div class="party-row"><span>${p || 'General'}</span><span>${partyData[p].count} Pcs | ${partyData[p].wt.toFixed(3)}g</span></div>`).join('');
     });
 }
 
-function move(id, cur) {
+function moveStage(id, cur) {
     const nextIdx = stages.indexOf(cur) + 1;
     if(nextIdx < stages.length) db.ref('orders/'+id).update({status: stages[nextIdx]});
+}
+
+function wipeout() {
+    if(confirm("Delete ALL database records?")) { db.ref('orders').remove(); location.reload(); }
 }
 
 function nav(p, el) {
