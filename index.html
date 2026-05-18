@@ -12,14 +12,13 @@
         :root { --gold: #D4AF37; --brown: #3E2723; --cream: #FFFDE7; --text: #212121; --red: #c62828; }
         body { font-family: 'Montserrat', sans-serif; background: #fdfbf7; margin: 0; padding-bottom: 90px; color: var(--text); -webkit-tap-highlight-color: transparent; overflow-x: hidden; }
         
-        /* Lock Screen */
-        #mainLock { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--brown); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; box-sizing: border-box; color: white; }
+        #mainLock { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--brown); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
         .lock-container { background: rgba(255,255,255,0.05); padding: 30px; border-radius: 25px; border: 1px solid var(--gold); width: 85%; max-width: 320px; text-align: center; }
 
         .header { background: var(--brown); color: var(--gold); text-align: center; padding: 25px 10px; border-bottom: 5px solid var(--gold); }
         .header h1 { font-family: 'Cinzel', serif; margin: 0; font-size: 24px; letter-spacing: 4px; }
 
-        /* Digital Order Form Popup (CLEAN VERSION) */
+        /* Digital Order Form Popup */
         #jobCardOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:5000; overflow-y:auto; padding:15px; box-sizing:border-box; }
         .digital-form { background: #fff; border: 6px double var(--gold); padding: 20px; max-width: 400px; margin: 20px auto; color: var(--brown); border-radius: 2px; }
         .df-header { text-align: center; border-bottom: 2px solid var(--gold); padding-bottom: 12px; margin-bottom: 18px; }
@@ -28,10 +27,9 @@
         .df-value { font-weight: 700; font-size: 14px; }
         .df-img { width: 100%; height: auto; max-height: 350px; object-fit: contain; background: #fcfcfc; margin-bottom: 15px; border-radius: 5px; }
 
-        /* UI Elements */
         .punch-card { background: white; border-radius: 20px; padding: 20px; border: 1px solid var(--gold); }
         input, select, textarea { width: 100%; padding: 12px; margin: 6px 0; border: 1.5px solid #eee; border-radius: 12px; font-family: 'Montserrat'; font-weight: 600; box-sizing: border-box; font-size: 14px; }
-        .photo-box { height: 150px; background: #fdfbf7; border: 3px dashed var(--gold); border-radius: 15px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 15px; color: var(--gold); font-family: 'Cinzel'; font-size: 12px; text-align: center; }
+        .photo-box { height: 150px; background: #fdfbf7; border: 3px dashed var(--gold); border-radius: 15px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 15px; color: var(--gold); font-family: 'Cinzel'; font-size: 10px; text-align: center; padding: 5px; }
 
         .tab-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; height: 75px; border-top: 2px solid var(--gold); z-index: 1000; }
         .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 8px; font-weight: 800; color: #bbb; text-transform: uppercase; }
@@ -39,7 +37,6 @@
         .page { display: none; padding: 15px; box-sizing: border-box; }
         .page.active { display: block; }
 
-        /* Dashboard Cards */
         .card { background: white; border-radius: 18px; padding: 18px; margin-bottom: 15px; border: 1px solid #f0f0f0; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
         .details { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #ddd; }
         .card.expanded .details { display: block; }
@@ -49,14 +46,13 @@
         .t-step { width: 10px; height: 10px; border-radius: 50%; background: #ddd; z-index: 2; position: relative; }
         .t-step.active { background: var(--gold); }
         .t-label { position: absolute; top: 15px; font-size: 7px; transform: translateX(-40%); font-weight: 800; color: #ccc; }
-        .t-step.active .t-label { color: var(--brown); }
 
-        .party-table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; font-size: 12px; border: 1px solid var(--gold); margin-top: 15px; }
+        .party-table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; font-size: 12px; border: 1px solid var(--gold); margin-top: 15px; }
         .party-table th { background: var(--brown); color: var(--gold); padding: 10px; text-align: left; }
         .party-table td { padding: 10px; border-bottom: 1px solid #eee; font-weight: 600; }
 
         .btn-gold { background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728); border: none; padding: 16px; border-radius: 12px; color: #3E2723; font-weight: 800; width: 100%; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
-        .btn-jobcard { background: var(--brown); color: var(--gold); border: 1px solid var(--gold); padding: 12px; border-radius: 10px; font-weight: 800; margin-top: 10px; width: 100%; display: block; text-align: center; text-decoration: none; cursor: pointer; }
+        .btn-jobcard { background: var(--brown); color: var(--gold); border: 1px solid var(--gold); padding: 12px; border-radius: 10px; font-weight: 800; margin-top: 10px; width: 100%; display: block; text-align: center; cursor: pointer; }
         .btn-red { background: var(--red); color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; font-weight: 800; margin-top: 10px; }
     </style>
 </head>
@@ -75,7 +71,7 @@
         <div class="df-header">
             <small>॥ श्री ॥</small>
             <h2 style="font-family:'Cinzel'; margin:5px 0;">SHANTI JEWEL</h2>
-            <small style="font-weight:700; color:var(--gold); letter-spacing:2px;">ORDER FORM</small>
+            <small style="font-weight:700; color:var(--gold); letter-spacing:2px;">WORKSHOP SPECIFICATIONS</small>
         </div>
         <img id="jc_img" class="df-img" src="">
         <div class="df-row">
@@ -85,10 +81,10 @@
         </div>
         <div class="df-row"><span class="df-label">Designer</span><span class="df-value" id="jc_cad"></span></div>
         <div style="margin-top:15px; background:#fdfbf7; padding:12px; border-radius:8px; border: 1px solid #eee;">
-            <span class="df-label">Special Instructions:</span><br>
+            <span class="df-label">Instructions:</span><br>
             <p id="jc_sp" style="font-size:13px; font-weight:600; line-height:1.4; margin:5px 0;"></p>
         </div>
-        <button class="btn-red" onclick="document.getElementById('jobCardOverlay').style.display='none'">CLOSE FORM</button>
+        <button class="btn-red" onclick="document.getElementById('jobCardOverlay').style.display='none'">CLOSE</button>
     </div>
 </div>
 
@@ -114,7 +110,7 @@
             <div style="display:flex; gap:10px;"><input type="number" step="0.001" id="i_wt" placeholder="WT"><input type="text" id="i_kt" placeholder="KT"></div>
             <div style="display:flex; gap:10px;"><input type="text" id="i_sz" placeholder="Size"><input type="date" id="i_dd"></div>
             <textarea id="i_sp" rows="2" placeholder="Instructions..."></textarea>
-            <button class="btn-gold" onclick="saveOrder()">PUNCH ORDER</button>
+            <button id="punchBtn" class="btn-gold" onclick="saveOrder()">PUNCH ORDER</button>
         </div>
     </div>
 
@@ -128,15 +124,13 @@
     </div>
 
     <div id="dashPage" class="page">
-        <div id="dashLock" style="text-align:center; padding:40px 20px; background:var(--brown); border-radius:20px; color:white;">
-            <h2 style="font-family: 'Cinzel';">ADMIN DASHBOARD</h2>
-            <input type="password" id="dashPinInput" placeholder="PIN" style="text-align:center; letter-spacing:10px; max-width:200px; color:black;">
+        <div id="dashLock" style="text-align:center; padding:40px; background:var(--brown); border-radius:20px; color:white;">
+            <h2>ADMIN</h2>
+            <input type="password" id="dashPinInput" placeholder="PIN" style="text-align:center; max-width:150px; color:black;">
             <button class="btn-gold" onclick="unlockDash()">UNLOCK</button>
         </div>
         <div id="dashBody" style="display:none;">
-            <h3 style="color:var(--brown);">Production Pipeline</h3>
             <div id="stats" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;"></div>
-            <h3 style="color:var(--brown);">Party Distribution</h3>
             <div id="partyAnalysis"></div>
             <button class="btn-red" style="margin-top: 30px;" onclick="wipeData()">WIPEOUT DATABASE</button>
         </div>
@@ -178,11 +172,12 @@ function processPhoto(input) {
         const img = new Image();
         img.onload = () => {
             const cvs = document.createElement('canvas');
-            const max = 500; let w=img.width, h=img.height;
+            const max = 450; 
+            let w=img.width, h=img.height;
             if(w>max){ h *= max/w; w=max; }
             cvs.width=w; cvs.height=h;
             cvs.getContext('2d').drawImage(img,0,0,w,h);
-            photoBase = cvs.toDataURL('image/jpeg', 0.7);
+            photoBase = cvs.toDataURL('image/jpeg', 0.6); // Higher compression for speed
             document.getElementById('p1').innerHTML=`<img src="${photoBase}" style="width:100%; height:100%; object-fit:contain;">`;
         };
         img.src = e.target.result;
@@ -191,23 +186,53 @@ function processPhoto(input) {
 }
 
 async function saveOrder() {
+    const btn = document.getElementById('punchBtn');
     const id = document.getElementById('i_id').value;
     if(!id || !photoBase) return alert("Photo & ID Required");
-    const obj = { id, party: document.getElementById('i_pa').value, cad: document.getElementById('i_cad').value, wt: parseFloat(document.getElementById('i_wt').value) || 0, kt: document.getElementById('i_kt').value, sz: document.getElementById('i_sz').value, dd: document.getElementById('i_dd').value, sp: document.getElementById('i_sp').value, photo: photoBase, status: "CAD", ts: Date.now() };
-    await db.ref('orders/' + id).set(obj);
-    location.reload();
+    
+    btn.innerText = "UPLOADING...";
+    btn.disabled = true;
+
+    const obj = { 
+        id, 
+        party: document.getElementById('i_pa').value, 
+        cad: document.getElementById('i_cad').value, 
+        wt: parseFloat(document.getElementById('i_wt').value) || 0, 
+        kt: document.getElementById('i_kt').value, 
+        sz: document.getElementById('i_sz').value, 
+        dd: document.getElementById('i_dd').value, 
+        sp: document.getElementById('i_sp').value, 
+        photo: photoBase, 
+        status: "CAD", 
+        ts: Date.now() 
+    };
+
+    try {
+        await db.ref('orders/' + id).set(obj);
+        alert("Punched Successfully!");
+        // Resetting form for next order
+        document.querySelectorAll('input, select, textarea').forEach(el => { if(el.id !== 'entryPin' && el.id !== 'dashPinInput') el.value = ''; });
+        photoBase = "";
+        document.getElementById('p1').innerHTML = "TAP TO CAPTURE PHOTO";
+        btn.innerText = "PUNCH ORDER";
+        btn.disabled = false;
+        loadData();
+    } catch (e) {
+        alert("Upload Failed. Check Internet.");
+        btn.innerText = "RETRY PUNCH";
+        btn.disabled = false;
+    }
 }
 
 function openJobCard(orderID) {
     db.ref('orders/' + orderID).once('value').then(snap => {
         const o = snap.val();
         if(!o) return;
-        // Data populated but Order ID, Party, and Due Date removed from display elements
         document.getElementById('jc_cad').innerText = o.cad;
         document.getElementById('jc_wt').innerText = o.wt + "g";
         document.getElementById('jc_kt').innerText = o.kt;
         document.getElementById('jc_sz').innerText = o.sz;
-        document.getElementById('jc_sp').innerText = o.sp || "No specific instructions";
+        document.getElementById('jc_sp').innerText = o.sp || "No instructions";
         document.getElementById('jc_img').src = o.photo;
         document.getElementById('jobCardOverlay').style.display = 'block';
     });
@@ -232,25 +257,20 @@ function loadData() {
 
             const card = `<div class="card" onclick="this.classList.toggle('expanded')">
                 <div style="display:flex; gap:12px; align-items:center;">
-                    <img src="${o.photo}" style="width:65px; height:65px; border-radius:12px; object-fit:cover; border:1px solid #eee;">
+                    <img src="${o.photo}" style="width:60px; height:60px; border-radius:12px; object-fit:cover; border:1px solid #eee;">
                     <div style="flex:1;">
                         <div style="display:flex; justify-content:space-between;">
                             <b style="color:var(--brown); font-size:16px;">${o.id}</b>
-                            <small style="color:var(--red); font-weight:800;">DUE: ${o.dd || 'N/A'}</small>
+                            <small style="color:var(--red); font-weight:800;">${o.dd || ''}</small>
                         </div>
                         <div style="font-weight:700; font-size:13px; color:#555;">${o.party}</div>
-                        <small style="text-transform:uppercase; color:var(--gold); font-weight:800; font-size:10px;">Stage: ${o.status}</small>
+                        <small style="text-transform:uppercase; color:var(--gold); font-weight:800; font-size:10px;">${o.status}</small>
                     </div>
                 </div>
                 <div class="timeline">${stages.map((s,i)=>`<div class="t-step ${stages.indexOf(o.status)>=i?'active':''}"><span class="t-label">${s}</span></div>`).join('')}</div>
                 <div class="details">
-                    <div class="df-row"><span class="df-label">Designer</span><span class="df-value">${o.cad}</span></div>
-                    <div class="df-row"><span class="df-label">Weight</span><span class="df-value">${o.wt}g</span></div>
-                    <div class="df-row"><span class="df-label">Purity / Size</span><span class="df-value">${o.kt} / ${o.sz}</span></div>
-                    <div style="background:#f9f9f9; padding:10px; border-radius:8px; font-size:12px; margin-bottom:10px;">
-                        <b>Note:</b> ${o.sp || 'None'}
-                    </div>
-                    <button class="btn-jobcard" onclick="event.stopPropagation(); openJobCard('${o.id}')">VIEW WORKSHOP FORM</button>
+                    <div class="df-row"><span class="df-label">Wt / Purity</span><span class="df-value">${o.wt}g / ${o.kt}</span></div>
+                    <button class="btn-jobcard" onclick="event.stopPropagation(); openJobCard('${o.id}')">WORKSHOP FORM</button>
                     ${o.status!=='READY'?`<button class="btn-gold" style="font-size:11px;" onclick="event.stopPropagation(); move('${o.id}','${o.status}')">NEXT STAGE</button>`:''}
                     <button class="btn-red" style="font-size:10px; opacity:0.6;" onclick="event.stopPropagation(); del('${o.id}')">DELETE</button>
                 </div></div>`;
@@ -260,8 +280,8 @@ function loadData() {
             } else { hist.innerHTML += card; }
         });
 
-        statsDiv.innerHTML = stages.map(s => `<div style="background:var(--brown); color:var(--gold); padding:10px; border-radius:10px; text-align:center;"><h3>${counts[s]}</h3><small>${s}</small></div>`).join('');
-        let tableHTML = `<table class="party-table"><thead><tr><th>Party Name</th><th>Pcs</th><th>Total Wt</th></tr></thead><tbody>`;
+        statsDiv.innerHTML = stages.map(s => `<div style="background:var(--brown); color:var(--gold); padding:8px; border-radius:10px; text-align:center;"><h3>${counts[s]}</h3><small style="font-size:8px;">${s}</small></div>`).join('');
+        let tableHTML = `<table class="party-table"><thead><tr><th>Party</th><th>Pcs</th><th>Total Wt</th></tr></thead><tbody>`;
         for (const p in partyDist) tableHTML += `<tr><td>${p || "N/A"}</td><td>${partyDist[p].pcs}</td><td>${partyDist[p].wt.toFixed(3)}g</td></tr>`;
         document.getElementById('partyAnalysis').innerHTML = tableHTML + `</tbody></table>`;
     });
