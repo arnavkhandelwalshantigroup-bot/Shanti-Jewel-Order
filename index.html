@@ -12,62 +12,84 @@
         :root { --gold: #D4AF37; --brown: #3E2723; --cream: #FFFDE7; --text: #212121; --red: #c62828; --green: #2e7d32; }
         body { font-family: 'Montserrat', sans-serif; background: #fdfbf7; margin: 0; padding-bottom: 90px; color: var(--text); -webkit-tap-highlight-color: transparent; }
         
-        /* Global App Lock (1008) */
-        #mainLock { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--brown); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; color: white; }
-
+        /* App Locks */
+        #mainLock { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--brown); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; color: white; }
         .header { background: var(--brown); color: var(--gold); text-align: center; padding: 30px 10px; border-bottom: 5px solid var(--gold); }
         .header h1 { font-family: 'Cinzel', serif; margin: 0; font-size: 26px; letter-spacing: 4px; }
 
+        /* Job Card Overlay */
+        #jobCardOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.92); z-index:2000; overflow-y:auto; padding:20px; }
+        .digital-form { background: #fff; border: 6px double var(--gold); padding: 25px; max-width: 420px; margin: 30px auto; color: var(--brown); }
+        .df-header { text-align: center; border-bottom: 2px solid var(--gold); padding-bottom: 12px; margin-bottom: 18px; }
+        .df-row { display: flex; justify-content: space-between; margin-bottom: 14px; border-bottom: 1.5px solid #f8f8f8; }
+        .df-label { font-weight: 800; font-size: 10px; text-transform: uppercase; color: #aaa; }
+        .df-value { font-weight: 700; font-size: 15px; }
+        .df-img { width: 100%; height: 260px; object-fit: contain; background: #fcfcfc; margin-bottom: 18px; }
+
         /* General UI */
-        .punch-card { background: white; border-radius: 20px; padding: 20px; border: 2px solid var(--gold); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        input, select, textarea { width: 100%; padding: 14px; margin: 8px 0; border: 1.5px solid #eee; border-radius: 12px; font-family: 'Montserrat', sans-serif; font-weight: 600; box-sizing: border-box; background: #fff; font-size: 14px; }
-        .photo-box { height: 160px; background: #fdfbf7; border: 3px dashed var(--gold); border-radius: 15px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 15px; color: var(--gold); font-weight: 800; font-family: 'Cinzel'; font-size: 12px; }
+        .punch-card { background: white; border-radius: 20px; padding: 20px; border: 2px solid var(--gold); }
+        input, select, textarea { width: 100%; padding: 14px; margin: 8px 0; border: 1.5px solid #eee; border-radius: 12px; font-family: 'Montserrat'; font-weight: 600; box-sizing: border-box; }
+        .photo-box { height: 160px; background: #fdfbf7; border: 3px dashed var(--gold); border-radius: 15px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 15px; color: var(--gold); font-family: 'Cinzel'; }
 
-        /* Digital Order Form Style */
-        .digital-form { background: #fff; border: 6px double var(--gold); padding: 20px; border-radius: 0; color: var(--brown); max-width: 450px; margin: auto; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .df-header { text-align: center; border-bottom: 2px solid var(--gold); padding-bottom: 10px; margin-bottom: 15px; }
-        .df-header h2 { font-family: 'Cinzel'; margin: 0; font-size: 20px; letter-spacing: 2px; }
-        .df-row { display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid #f2f2f2; padding-bottom: 4px; }
-        .df-label { font-weight: 800; font-size: 10px; text-transform: uppercase; color: #999; }
-        .df-value { font-weight: 700; font-size: 13px; color: var(--brown); }
-        .df-photo-area { width: 100%; height: 220px; border: 1px solid var(--gold); background: #fafafa; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .df-photo-area img { max-width: 100%; max-height: 100%; object-fit: contain; }
-
-        /* Tabs & Navigation */
+        /* Tabs */
         .tab-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; height: 75px; border-top: 2px solid var(--gold); z-index: 1000; }
-        .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 8px; font-weight: 800; color: #999; text-transform: uppercase; }
+        .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 8px; font-weight: 800; color: #bbb; text-transform: uppercase; }
         .tab.active { color: var(--brown); background: var(--cream); border-top: 5px solid var(--gold); }
         .page { display: none; padding: 15px; }
         .page.active { display: block; }
 
-        /* Dashboard Lock (2215) */
-        .dash-lock { text-align: center; padding: 50px 20px; background: var(--brown); border-radius: 20px; color: white; border: 1px solid var(--gold); margin-top: 20px; }
+        /* Dashboard & Stats */
+        .dash-lock { text-align: center; padding: 50px 20px; background: var(--brown); border-radius: 20px; color: white; border: 1px solid var(--gold); }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .stat-box { background: var(--brown); color: var(--gold); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid var(--gold); }
 
-        .btn-gold { background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728); border: none; padding: 16px; border-radius: 12px; color: #3E2723; font-weight: 800; width: 100%; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
-        .btn-whatsapp { background: var(--green); color: white; border: none; padding: 10px; border-radius: 8px; width: 100%; font-weight: bold; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; font-size: 12px; }
-        .btn-red { background: var(--red); color: white; border: none; padding: 8px; border-radius: 8px; width: 100%; font-weight: bold; margin-top: 15px; }
+        /* Buttons */
+        .btn-gold { background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728); border: none; padding: 16px; border-radius: 12px; color: #3E2723; font-weight: 800; width: 100%; cursor: pointer; text-transform: uppercase; }
+        .btn-jobcard { background: var(--brown); color: var(--gold); border: 1px solid var(--gold); padding: 12px; border-radius: 10px; font-weight: 800; margin-top: 10px; width: 100%; }
+        .btn-red { background: var(--red); color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; font-weight: 800; margin-top: 20px; }
 
-        .card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px; border: 1px solid #eee; }
+        /* Timeline */
+        .card { background: white; border-radius: 18px; padding: 18px; margin-bottom: 15px; border: 1px solid #f0f0f0; }
         .details { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #ddd; }
         .card.expanded .details { display: block; }
         .timeline { display: flex; justify-content: space-between; margin: 30px 0 20px 0; position: relative; padding: 0 10px; }
-        .timeline::before { content: ""; position: absolute; top: 5px; left: 15px; right: 15px; height: 2px; background: #eee; z-index: 1; }
+        .timeline::before { content: ""; position: absolute; top: 5px; left: 15px; right: 15px; height: 2px; background: #f0f0f0; z-index: 1; }
         .t-step { width: 10px; height: 10px; border-radius: 50%; background: #ddd; z-index: 2; position: relative; }
-        .t-step.active { background: var(--gold); box-shadow: 0 0 8px var(--gold); }
-        .t-label { position: absolute; top: 15px; font-size: 7px; transform: translateX(-40%); white-space: nowrap; font-weight: 800; color: #bbb; text-transform: uppercase; }
-        
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .stat-box { background: var(--brown); color: var(--gold); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid var(--gold); }
+        .t-step.active { background: var(--gold); }
+        .t-label { position: absolute; top: 15px; font-size: 7px; transform: translateX(-40%); font-weight: 800; color: #ccc; }
+        .t-step.active .t-label { color: var(--brown); }
     </style>
 </head>
 <body>
 
 <div id="mainLock">
-    <h1 style="font-family:'Cinzel'; color:var(--gold); letter-spacing:5px; margin-bottom:20px;">SHANTI JEWEL</h1>
-    <div style="background:rgba(255,255,255,0.1); padding:30px; border-radius:20px; border:1px solid var(--gold); width:85%; max-width:320px; text-align:center;">
-        <p style="font-size:10px; letter-spacing:2px; margin-bottom:20px; font-weight:800;">WORKSHOP ACCESS</p>
-        <input type="password" id="entryPin" placeholder="PIN" style="text-align:center; letter-spacing:15px; font-size:24px; color:black;">
+    <h1 style="font-family:'Cinzel'; color:var(--gold); letter-spacing:5px;">SHANTI JEWEL</h1>
+    <div style="background:rgba(255,255,255,0.05); padding:35px; border-radius:25px; border:1px solid var(--gold); width:85%; max-width:320px; text-align:center;">
+        <input type="password" id="entryPin" placeholder="PIN" style="text-align:center; letter-spacing:15px; font-size:24px; color:black; width:100%; margin-bottom:15px;">
         <button class="btn-gold" onclick="unlockMain()">ENTER APP</button>
+    </div>
+</div>
+
+<div id="jobCardOverlay" onclick="this.style.display='none'">
+    <div class="digital-form" onclick="event.stopPropagation()">
+        <div class="df-header">
+            <small style="letter-spacing:5px; font-weight:800;">॥ श्री ॥</small>
+            <h2 style="font-family:'Cinzel'; margin:5px 0;">SHANTI JEWEL</h2>
+            <small style="font-weight:700; color:var(--gold);">WORKSHOP JOB CARD</small>
+        </div>
+        <img id="jc_img" class="df-img" src="">
+        <div class="df-row"><span class="df-label">Job ID</span><span class="df-value" id="jc_id"></span></div>
+        <div class="df-row"><span class="df-label">Designer</span><span class="df-value" id="jc_cad"></span></div>
+        <div class="df-row">
+            <div><span class="df-label">Weight</span><br><span class="df-value" id="jc_wt"></span></div>
+            <div style="text-align:center;"><span class="df-label">Purity</span><br><span class="df-value" id="jc_kt"></span></div>
+            <div style="text-align:right;"><span class="df-label">Size</span><br><span class="df-value" id="jc_sz"></span></div>
+        </div>
+        <div style="margin-top:15px; background:#fdfbf7; padding:10px;">
+            <span class="df-label">Instructions:</span><br>
+            <p id="jc_sp" style="font-size:13px; font-weight:600; line-height:1.4;"></p>
+        </div>
+        <button class="btn-red" onclick="document.getElementById('jobCardOverlay').style.display='none'">CLOSE</button>
     </div>
 </div>
 
@@ -76,24 +98,11 @@
 
     <div id="punchPage" class="page active">
         <div class="punch-card">
-            <div id="p1" class="photo-box" onclick="document.getElementById('f1').click()">TAP TO CAPTURE PHOTO</div>
+            <div id="p1" class="photo-box" onclick="document.getElementById('f1').click()">TAP PHOTO</div>
             <input type="file" id="f1" accept="image/*" hidden onchange="processPhoto(this)">
-            
-            <input type="text" id="i_id" placeholder="ORDER ID (SJ-101)">
-            <select id="i_pa">
-                <option value="">SELECT PARTY</option>
-                <option>REVA DIAMONDS</option>
-                <option>Shree Gajanan Jewellers</option>
-                <option>P.N.GADGIL & SONS</option>
-                <option>PNG Brothers</option>
-                <option>Inhouse Production</option>
-            </select>
-            <select id="i_cad">
-                <option value="">SELECT DESIGNER</option>
-                <option>DYE</option>
-                <option>SHINDE</option>
-                <option>ALAUDDIN</option>
-            </select>
+            <input type="text" id="i_id" placeholder="ORDER ID">
+            <select id="i_pa"><option value="">SELECT PARTY</option><option>REVA DIAMONDS</option><option>P.N.GADGIL & SONS</option><option>PNG Brothers</option></select>
+            <select id="i_cad"><option value="">DESIGNER</option><option>DYE</option><option>SHINDE</option></select>
             <div style="display:flex; gap:10px;"><input type="number" step="0.001" id="i_wt" placeholder="WT"><input type="text" id="i_kt" placeholder="KT"></div>
             <div style="display:flex; gap:10px;"><input type="text" id="i_sz" placeholder="Size"><input type="date" id="i_dd"></div>
             <textarea id="i_sp" rows="2" placeholder="Instructions..."></textarea>
@@ -101,65 +110,32 @@
         </div>
     </div>
 
-    <div id="formPage" class="page">
-        <div class="digital-form">
-            <div class="df-header">
-                <small style="letter-spacing:4px; font-weight:800;">॥ श्री ॥</small>
-                <h2>SHANTI JEWEL</h2>
-                <small style="font-weight:700; color:var(--gold);">ORDER FORM</small>
-            </div>
-            
-            <div id="df_img_box" class="df-photo-area">
-                <span style="color:#ddd; font-family:'Cinzel'; font-size:10px;">PHOTO PREVIEW</span>
-            </div>
-
-            <div class="df-row"><span class="df-label">Order ID</span><span class="df-value" id="v_id">---</span></div>
-            <div class="df-row"><span class="df-label">CAD Designer</span><span class="df-value" id="v_cad">---</span></div>
-            <div class="df-row">
-                <div><span class="df-label">Weight</span><br><span class="df-value" id="v_wt">0.000g</span></div>
-                <div style="text-align:center;"><span class="df-label">Purity</span><br><span class="df-value" id="v_kt">---</span></div>
-                <div style="text-align:right;"><span class="df-label">Size</span><br><span class="df-value" id="v_sz">---</span></div>
-            </div>
-            <div style="margin-top:10px;">
-                <span class="df-label">Special Instructions:</span><br>
-                <p id="v_sp" style="font-size:12px; font-weight:600; margin:4px 0; line-height:1.4;">---</p>
-            </div>
-            <div style="text-align:center; margin-top:15px; border-top:1px solid var(--gold); padding-top:8px;">
-                <small style="font-family:'Cinzel'; letter-spacing:2px; color:var(--gold); font-size:9px;">Quality & Trust</small>
-            </div>
-        </div>
-        <p style="text-align:center; font-size:10px; color:#999; margin-top:15px;">Take a screenshot of this form to share.</p>
+    <div id="activePage" class="page">
+        <input type="text" id="src" placeholder="Search ID..." onkeyup="loadData()" style="margin-bottom:15px;">
+        <div id="activeList"></div>
     </div>
 
-    <div id="activePage" class="page">
-        <div style="display:flex; gap:8px; margin-bottom:15px;">
-            <input type="text" id="src" placeholder="Search ID..." onkeyup="loadData()" style="margin:0; flex:1.2;">
-            <select id="pFil" onchange="loadData()" style="margin:0; flex:1;">
-                <option value="">ALL PARTIES</option>
-                <option>REVA DIAMONDS</option>
-                <option>Shree Gajanan Jewellers</option>
-            </select>
-        </div>
-        <div id="activeList"></div>
+    <div id="historyPage" class="page">
+        <div id="historyList"></div>
     </div>
 
     <div id="dashPage" class="page">
         <div id="dashLock" class="dash-lock">
-            <h2 style="font-family:'Cinzel'; color:var(--gold);">ADMIN ONLY</h2>
+            <h2>ADMIN ONLY</h2>
             <input type="password" id="dashPinInput" placeholder="PIN" style="text-align:center; letter-spacing:10px; max-width:200px; color:black;">
-            <button class="btn-gold" onclick="unlockDash()">UNLOCK DASHBOARD</button>
+            <button class="btn-gold" onclick="unlockDash()" style="margin-top:10px;">UNLOCK</button>
         </div>
         <div id="dashBody" style="display:none;">
             <div id="stats" class="stat-grid"></div>
-            <div class="card" id="partyList" style="padding:5px;"></div>
+            <div id="partyList" class="card" style="padding:10px;"></div>
             <button class="btn-red" onclick="wipeData()">WIPEOUT DATABASE</button>
         </div>
     </div>
 
     <div class="tab-bar">
         <div class="tab active" onclick="nav('punch', this)">Punch</div>
-        <div class="tab" onclick="nav('form', this)">Form</div>
         <div class="tab" onclick="nav('active', this)">Active</div>
+        <div class="tab" onclick="nav('history', this)">History</div>
         <div class="tab" onclick="nav('dash', this)">Dash</div>
     </div>
 </div>
@@ -176,7 +152,7 @@ function unlockMain() {
         document.getElementById('mainLock').style.display = 'none';
         document.getElementById('appContent').style.display = 'block';
         loadData();
-    } else { alert("ACCESS DENIED"); }
+    } else { alert("WRONG PIN"); }
 }
 
 function unlockDash() {
@@ -192,82 +168,78 @@ function processPhoto(input) {
         const img = new Image();
         img.onload = () => {
             const cvs = document.createElement('canvas');
-            const max = 450; let w=img.width, h=img.height;
+            const max = 500; let w=img.width, h=img.height;
             if(w>max){ h *= max/w; w=max; }
             cvs.width=w; cvs.height=h;
             cvs.getContext('2d').drawImage(img,0,0,w,h);
-            photoBase = cvs.toDataURL('image/jpeg', 0.6);
+            photoBase = cvs.toDataURL('image/jpeg', 0.7);
             document.getElementById('p1').innerHTML=`<img src="${photoBase}" style="width:100%; height:100%; object-fit:contain;">`;
-            document.getElementById('df_img_box').innerHTML=`<img src="${photoBase}">`;
         };
         img.src = e.target.result;
     };
     reader.readAsDataURL(input.files[0]);
 }
 
-// Live Sync for the Digital Form Tab
-document.getElementById('i_id').addEventListener('input', (e) => document.getElementById('v_id').innerText = e.target.value || "---");
-document.getElementById('i_cad').addEventListener('change', (e) => document.getElementById('v_cad').innerText = e.target.value || "---");
-document.getElementById('i_wt').addEventListener('input', (e) => document.getElementById('v_wt').innerText = (e.target.value || "0.000") + "g");
-document.getElementById('i_kt').addEventListener('input', (e) => document.getElementById('v_kt').innerText = e.target.value || "---");
-document.getElementById('i_sz').addEventListener('input', (e) => document.getElementById('v_sz').innerText = e.target.value || "---");
-document.getElementById('i_sp').addEventListener('input', (e) => document.getElementById('v_sp').innerText = e.target.value || "---");
-
 async function saveOrder() {
     const id = document.getElementById('i_id').value;
-    const btn = document.getElementById('saveBtn');
     if(!id || !photoBase) return alert("Photo & ID Required");
-    btn.disabled = true; btn.innerText = "SAVING...";
-    const obj = { id, party: document.getElementById('i_pa').value, cad: document.getElementById('i_cad').value, wt: parseFloat(document.getElementById('i_wt').value || 0), kt: document.getElementById('i_kt').value, sz: document.getElementById('i_sz').value, dd: document.getElementById('i_dd').value, sp: document.getElementById('i_sp').value, photo: photoBase, status: "CAD", ts: Date.now() };
+    const obj = { id, party: document.getElementById('i_pa').value, cad: document.getElementById('i_cad').value, wt: document.getElementById('i_wt').value, kt: document.getElementById('i_kt').value, sz: document.getElementById('i_sz').value, dd: document.getElementById('i_dd').value, sp: document.getElementById('i_sp').value, photo: photoBase, status: "CAD", ts: Date.now() };
     await db.ref('orders/' + id).set(obj);
     location.reload();
 }
 
-function shareWA(id, p, w, k, s, c, n) {
-    const msg = encodeURIComponent(`*SHANTI JEWEL ORDER*\n\nID: ${id}\nParty: ${p}\nWT: ${w}g\nKT: ${k}\nSZ: ${s}\nCAD: ${c}\nNote: ${n}`);
-    window.open(`https://wa.me/?text=${msg}`, '_blank');
+function openJobCard(id, cad, wt, kt, sz, sp, img) {
+    document.getElementById('jc_id').innerText = id;
+    document.getElementById('jc_cad').innerText = cad;
+    document.getElementById('jc_wt').innerText = wt + "g";
+    document.getElementById('jc_kt').innerText = kt;
+    document.getElementById('jc_sz').innerText = sz;
+    document.getElementById('jc_sp').innerText = sp || "No instructions";
+    document.getElementById('jc_img').src = img;
+    document.getElementById('jobCardOverlay').style.display = 'block';
 }
 
 function loadData() {
     const search = document.getElementById('src').value.toLowerCase();
-    const filter = document.getElementById('pFil').value;
     db.ref('orders').on('value', snap => {
         const act = document.getElementById('activeList');
+        const hist = document.getElementById('historyList');
         const statsDiv = document.getElementById('stats');
         const partyDiv = document.getElementById('partyList');
-        act.innerHTML = "";
+        act.innerHTML = ""; hist.innerHTML = "";
         const data = snap.val() ? Object.values(snap.val()).reverse() : [];
         const counts = {}; stages.forEach(s => counts[s] = 0);
         const partySums = {};
 
         data.forEach(o => {
             counts[o.status]++;
-            if(!partySums[o.party]) partySums[o.party] = { c: 0, w: 0 };
-            partySums[o.party].c++; partySums[o.party].w += parseFloat(o.wt || 0);
+            if(!partySums[o.party]) partySums[o.party] = { c: 0 };
+            partySums[o.party].c++;
 
+            const card = `<div class="card" onclick="this.classList.toggle('expanded')">
+                <div style="display:flex; justify-content:space-between; align-items:start;">
+                    <div style="display:flex; gap:12px; align-items:center;">
+                        <img src="${o.photo}" style="width:65px; height:65px; border-radius:12px; object-fit:cover;">
+                        <div><b style="color:var(--brown); font-size:16px;">${o.id}</b><br><small>${o.party}</small></div>
+                    </div>
+                </div>
+                <div class="timeline">${stages.map((s,i)=>`<div class="t-step ${stages.indexOf(o.status)>=i?'active':''}"><span class="t-label">${s}</span></div>`).join('')}</div>
+                <div class="details">
+                    <button class="btn-jobcard" onclick="event.stopPropagation(); openJobCard('${o.id}','${o.cad}','${o.wt}','${o.kt}','${o.sz}','${o.sp}','${o.photo}')">VIEW WORKSHOP JOB CARD</button>
+                    ${o.status!=='READY'?`<button class="btn-gold" style="margin-top:10px;" onclick="event.stopPropagation(); move('${o.id}','${o.status}')">NEXT STAGE</button>`:''}
+                </div></div>`;
+            
             if(o.status !== 'READY') {
-                if((!search || o.id.toLowerCase().includes(search)) && (!filter || o.party === filter)) {
-                    act.innerHTML += `<div class="card" onclick="this.classList.toggle('expanded')">
-                        <div style="display:flex; gap:12px; align-items:center;">
-                            <img src="${o.photo}" style="width:50px; height:50px; border-radius:8px; object-fit:cover;">
-                            <div><b>${o.id}</b><br><small>${o.party}</small></div>
-                        </div>
-                        <div class="timeline">${stages.map((s,i)=>`<div class="t-step ${stages.indexOf(o.status)>=i?'active':''}"></div>`).join('')}</div>
-                        <div class="details">
-                            <small>CAD: ${o.cad} | WT: ${o.wt}g | KT: ${o.kt}</small><br>
-                            <button class="btn-whatsapp" onclick="event.stopPropagation(); shareWA('${o.id}','${o.party}','${o.wt}','${o.kt}','${o.sz}','${o.cad}','${o.sp}')">WHATSAPP</button>
-                            <button class="btn-gold" style="padding:8px; font-size:10px;" onclick="event.stopPropagation(); move('${o.id}','${o.status}')">NEXT STAGE</button>
-                        </div></div>`;
-                }
-            }
+                if(!search || o.id.toLowerCase().includes(search)) act.innerHTML += card;
+            } else { hist.innerHTML += card; }
         });
         statsDiv.innerHTML = stages.map(s => `<div class="stat-box"><h2>${counts[s]}</h2><small>${s}</small></div>`).join('');
-        partyDiv.innerHTML = Object.keys(partySums).map(p => `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee;"><span>${p}</span><span>${partySums[p].c} Pcs</span></div>`).join('');
+        partyDiv.innerHTML = Object.keys(partySums).map(p => `<div style="padding:10px; border-bottom:1px solid #eee;">${p}: ${partySums[p].c} Pcs</div>`).join('');
     });
 }
 
 function move(id, cur) { const nxt = stages[stages.indexOf(cur)+1]; if(nxt) db.ref('orders/'+id).update({status: nxt}); }
-function wipeData() { if(confirm("ERASE ALL?")) db.ref('orders').remove(); }
+function wipeData() { if(confirm("ERASE ALL DATABASE DATA?")) db.ref('orders').remove(); }
 function nav(p, el) { 
     document.querySelectorAll('.page, .tab').forEach(x => x.classList.remove('active')); 
     document.getElementById(p+'Page').classList.add('active'); 
