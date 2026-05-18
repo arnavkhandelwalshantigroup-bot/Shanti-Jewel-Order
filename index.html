@@ -167,17 +167,21 @@ function unlockDash() {
 }
 
 function processPhoto(input) {
+    if(!input.files[0]) return;
     const reader = new FileReader();
     reader.onload = (e) => {
         const img = new Image();
         img.onload = () => {
             const cvs = document.createElement('canvas');
-            const max = 450; 
+            // Reducing width further to 350px for guaranteed Firebase acceptance
+            const max = 350; 
             let w=img.width, h=img.height;
             if(w>max){ h *= max/w; w=max; }
             cvs.width=w; cvs.height=h;
             cvs.getContext('2d').drawImage(img,0,0,w,h);
-            photoBase = cvs.toDataURL('image/jpeg', 0.6); // Higher compression for speed
+            
+            // Extreme compression (0.4) to keep string length short
+            photoBase = cvs.toDataURL('image/jpeg', 0.4); 
             document.getElementById('p1').innerHTML=`<img src="${photoBase}" style="width:100%; height:100%; object-fit:contain;">`;
         };
         img.src = e.target.result;
@@ -187,14 +191,16 @@ function processPhoto(input) {
 
 async function saveOrder() {
     const btn = document.getElementById('punchBtn');
-    const id = document.getElementById('i_id').value;
-    if(!id || !photoBase) return alert("Photo & ID Required");
+    const id = document.getElementById('i_id').value.trim();
+    
+    if(!id) return alert("Please enter Order ID");
+    if(!photoBase) return alert("Please capture/select a Photo");
     
     btn.innerText = "UPLOADING...";
     btn.disabled = true;
 
     const obj = { 
-        id, 
+        id: id, 
         party: document.getElementById('i_pa').value, 
         cad: document.getElementById('i_cad').value, 
         wt: parseFloat(document.getElementById('i_wt').value) || 0, 
@@ -207,21 +213,29 @@ async function saveOrder() {
         ts: Date.now() 
     };
 
-    try {
-        await db.ref('orders/' + id).set(obj);
-        alert("Punched Successfully!");
-        // Resetting form for next order
-        document.querySelectorAll('input, select, textarea').forEach(el => { if(el.id !== 'entryPin' && el.id !== 'dashPinInput') el.value = ''; });
-        photoBase = "";
-        document.getElementById('p1').innerHTML = "TAP TO CAPTURE PHOTO";
-        btn.innerText = "PUNCH ORDER";
-        btn.disabled = false;
-        loadData();
-    } catch (e) {
-        alert("Upload Failed. Check Internet.");
-        btn.innerText = "RETRY PUNCH";
-        btn.disabled = false;
-    }
+    // Use set() with a callback to catch specific errors
+    db.ref('orders/' + id).set(obj, (error) => {
+        if (error) {
+            console.error(error);
+            alert("Upload Failed: Data too large or permission denied.");
+            btn.innerText = "RETRY PUNCH";
+            btn.disabled = false;
+        } else {
+            alert("Order " + id + " Punched Successfully!");
+            // Full Reset
+            document.getElementById('i_id').value = "";
+            document.getElementById('i_wt').value = "";
+            document.getElementById('i_kt').value = "";
+            document.getElementById('i_sz').value = "";
+            document.getElementById('i_dd').value = "";
+            document.getElementById('i_sp').value = "";
+            photoBase = "";
+            document.getElementById('p1').innerHTML = "TAP TO CAPTURE PHOTO";
+            btn.innerText = "PUNCH ORDER";
+            btn.disabled = false;
+            loadData();
+        }
+    });
 }
 
 function openJobCard(orderID) {
