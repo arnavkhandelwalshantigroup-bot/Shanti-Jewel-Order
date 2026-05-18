@@ -39,6 +39,11 @@
         .page { display: none; padding: 15px; box-sizing: border-box; }
         .page.active { display: block; }
 
+        /* Dashboard Table */
+        .party-table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; font-size: 12px; border: 1px solid var(--gold); margin-top: 15px; }
+        .party-table th { background: var(--brown); color: var(--gold); padding: 10px; text-align: left; }
+        .party-table td { padding: 10px; border-bottom: 1px solid #eee; font-weight: 600; }
+
         /* Buttons */
         .btn-gold { background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728); border: none; padding: 16px; border-radius: 12px; color: #3E2723; font-weight: 800; width: 100%; cursor: pointer; text-transform: uppercase; }
         .btn-jobcard { background: var(--brown); color: var(--gold); border: 1px solid var(--gold); padding: 12px; border-radius: 10px; font-weight: 800; margin-top: 10px; width: 100%; }
@@ -74,7 +79,6 @@
             <small style="font-weight:700; color:var(--gold); letter-spacing:2px;">ORDER FORM</small>
         </div>
         <img id="jc_img" class="df-img" src="">
-        
         <div class="df-row"><span class="df-label">Designer</span><span class="df-value" id="jc_cad"></span></div>
         <div class="df-row">
             <div><span class="df-label">Weight</span><br><span class="df-value" id="jc_wt"></span></div>
@@ -103,6 +107,7 @@
                 <option>Shree Gajanan Jewellers</option>
                 <option>P.N.GADGIL & SONS</option>
                 <option>PNG Brothers</option>
+                <option>Neelkanth Jewellers</option>
                 <option>Inhouse Production</option>
             </select>
             <select id="i_cad"><option value="">DESIGNER</option><option>DYE</option><option>SHINDE</option><option>ALAUDDIN</option></select>
@@ -124,13 +129,18 @@
 
     <div id="dashPage" class="page">
         <div id="dashLock" style="text-align:center; padding:40px 20px; background:var(--brown); border-radius:20px; color:white;">
-            <h2>ADMIN</h2>
+            <h2 style="font-family: 'Cinzel';">ADMIN DASHBOARD</h2>
             <input type="password" id="dashPinInput" placeholder="PIN" style="text-align:center; letter-spacing:10px; max-width:200px; color:black;">
             <button class="btn-gold" onclick="unlockDash()" style="margin-top:10px;">UNLOCK</button>
         </div>
         <div id="dashBody" style="display:none;">
+            <h3 style="margin-bottom:10px; color: var(--brown);">Production Stats</h3>
             <div id="stats" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;"></div>
-            <button class="btn-red" onclick="wipeData()">WIPEOUT DATABASE</button>
+            
+            <h3 style="margin-bottom:10px; color: var(--brown);">Party Distribution</h3>
+            <div id="partyAnalysis"></div>
+
+            <button class="btn-red" style="margin-top: 30px;" onclick="wipeData()">WIPEOUT DATABASE</button>
         </div>
     </div>
 
@@ -185,7 +195,7 @@ function processPhoto(input) {
 async function saveOrder() {
     const id = document.getElementById('i_id').value;
     if(!id || !photoBase) return alert("Photo & ID Required");
-    const obj = { id, party: document.getElementById('i_pa').value, cad: document.getElementById('i_cad').value, wt: document.getElementById('i_wt').value, kt: document.getElementById('i_kt').value, sz: document.getElementById('i_sz').value, dd: document.getElementById('i_dd').value, sp: document.getElementById('i_sp').value, photo: photoBase, status: "CAD", ts: Date.now() };
+    const obj = { id, party: document.getElementById('i_pa').value, cad: document.getElementById('i_cad').value, wt: parseFloat(document.getElementById('i_wt').value) || 0, kt: document.getElementById('i_kt').value, sz: document.getElementById('i_sz').value, dd: document.getElementById('i_dd').value, sp: document.getElementById('i_sp').value, photo: photoBase, status: "CAD", ts: Date.now() };
     await db.ref('orders/' + id).set(obj);
     location.reload();
 }
@@ -206,12 +216,22 @@ function loadData() {
         const act = document.getElementById('activeList');
         const hist = document.getElementById('historyList');
         const statsDiv = document.getElementById('stats');
+        const partyAnalysisDiv = document.getElementById('partyAnalysis');
+        
         act.innerHTML = ""; hist.innerHTML = "";
         const data = snap.val() ? Object.values(snap.val()).reverse() : [];
         const counts = {}; stages.forEach(s => counts[s] = 0);
+        
+        const partyDist = {};
 
         data.forEach(o => {
             counts[o.status]++;
+            
+            // Calc Party Distribution
+            if(!partyDist[o.party]) partyDist[o.party] = { pcs: 0, wt: 0 };
+            partyDist[o.party].pcs += 1;
+            partyDist[o.party].wt += (parseFloat(o.wt) || 0);
+
             const card = `<div class="card" onclick="this.classList.toggle('expanded')">
                 <div style="display:flex; justify-content:space-between; align-items:start;">
                     <div style="display:flex; gap:12px; align-items:center;">
@@ -230,7 +250,17 @@ function loadData() {
                 if(!search || o.id.toLowerCase().includes(search)) act.innerHTML += card;
             } else { hist.innerHTML += card; }
         });
+
+        // Update Dashboard Stats
         statsDiv.innerHTML = stages.map(s => `<div style="background:var(--brown); color:var(--gold); padding:10px; border-radius:10px; text-align:center;"><h3>${counts[s]}</h3><small>${s}</small></div>`).join('');
+
+        // Update Party Distribution Table
+        let tableHTML = `<table class="party-table"><thead><tr><th>Party Name</th><th>Pcs</th><th>Total Wt</th></tr></thead><tbody>`;
+        for (const party in partyDist) {
+            tableHTML += `<tr><td>${party || "Unknown"}</td><td>${partyDist[party].pcs}</td><td>${partyDist[party].wt.toFixed(3)}g</td></tr>`;
+        }
+        tableHTML += `</tbody></table>`;
+        partyAnalysisDiv.innerHTML = tableHTML;
     });
 }
 
