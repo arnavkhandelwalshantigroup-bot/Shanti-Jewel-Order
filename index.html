@@ -6,6 +6,7 @@
     <title>SHANTI JEWEL</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
     
+    <link rel="manifest" href="./manifest.json?v=3">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="#3E2723">
@@ -387,7 +388,7 @@ function loadData() {
             if(o.photo) gridHTML += `<img src="${o.photo}" class="detail-thumb" onclick="event.stopPropagation(); window.open('${o.photo}', '_blank')">`;
             if(o.photo2) gridHTML += `<img src="${o.photo2}" class="detail-thumb" onclick="event.stopPropagation(); window.open('${o.photo2}', '_blank')">`;
             if(o.photo3) gridHTML += `<img src="${o.photo3}" class="detail-thumb" onclick="event.stopPropagation(); window.open('${o.photo3}', '_blank')">`;
-            if(o.photo4) gridHTML += `<img src="${o.photo4}" class="detail-thumb" onclick="event.summary; window.open('${o.photo4}', '_blank')">`;
+            if(o.photo4) gridHTML += `<img src="${o.photo4}" class="detail-thumb" onclick="event.stopPropagation(); window.open('${o.photo4}', '_blank')">`;
             gridHTML += `</div>`;
 
             const card = `<div class="card" onclick="this.classList.toggle('expanded')">
@@ -444,6 +445,18 @@ function nav(p, el) {
     document.querySelectorAll('.page, .tab').forEach(x => x.classList.remove('active')); 
     document.getElementById(p+'Page').classList.add('active'); 
     el.classList.add('active'); 
+}
+
+// AUTOMATIC BACKGROUND ENGINE ACTIVATION WITH VERSION CONTROL FORCING FRESH RE-SYNC
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js?v=3', { scope: './' })
+        .then(reg => {
+            console.log('App Core Framework Live');
+            reg.update();
+        })
+        .catch(err => console.log('PWA Registration Error:', err));
+    });
 }
 </script>
 </body>
