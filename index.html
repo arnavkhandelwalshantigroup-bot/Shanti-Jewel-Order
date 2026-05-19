@@ -20,7 +20,7 @@
         .header { background: var(--brown); color: var(--gold); text-align: center; padding: 25px 10px; border-bottom: 5px solid var(--gold); }
         .header h1 { font-family: 'Cinzel', serif; margin: 0; font-size: 24px; letter-spacing: 4px; }
 
-        /* Job Card Popup */
+        /* Workshop Clean Job Card Popup */
         #jobCardOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:5000; overflow-y:auto; padding:15px; box-sizing:border-box; }
         .digital-form { background: #fff; border: 6px double var(--gold); padding: 20px; max-width: 400px; margin: 20px auto; color: var(--brown); border-radius: 2px; }
         .df-header { text-align: center; border-bottom: 2px solid var(--gold); padding-bottom: 12px; margin-bottom: 18px; }
@@ -34,7 +34,7 @@
         .photo-box { height: 150px; background: #fdfbf7; border: 3px dashed var(--gold); border-radius: 15px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 15px; color: var(--gold); font-family: 'Cinzel'; font-size: 10px; text-align: center; padding: 5px; }
 
         .tab-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; height: 75px; border-top: 2px solid var(--gold); z-index: 1000; }
-        .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 8px; font-weight: 800; color: #bbb; text-transform: uppercase; }
+        .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 8px; font-weight: 800; color: #bbb; text-transform: uppercase; cursor: pointer; }
         .tab.active { color: var(--brown); background: var(--cream); border-top: 5px solid var(--gold); }
         .page { display: none; padding: 15px; box-sizing: border-box; }
         .page.active { display: block; }
@@ -127,7 +127,7 @@
 
     <div id="dashPage" class="page">
         <div id="dashLock" style="text-align:center; padding:40px; background:var(--brown); border-radius:20px; color:white;">
-            <h2>ADMIN</h2>
+            <h2>ADMIN panel</h2>
             <input type="password" id="dashPinInput" placeholder="PIN" style="text-align:center; max-width:150px; color:black;">
             <button class="btn-gold" onclick="unlockDash()">UNLOCK</button>
         </div>
@@ -147,17 +147,24 @@
 </div>
 
 <script>
-// CONFIG
-const firebaseConfig = { apiKey: "AIzaSyBnvmQBPkJmJcjXf71vEUY91B2_2P9oAgU", databaseURL: "https://shanti-jewel-order-default-rtdb.firebaseio.com/", projectId: "shanti-jewel-order" };
+// INTEGRATED FIREBASE CONFIGURATION (Both Database & Storage Bucket Included)
+const firebaseConfig = { 
+    apiKey: "AIzaSyBnvmQBPkJmJcjXf71vEUY91B2_2P9oAgU", 
+    databaseURL: "https://shanti-jewel-order-default-rtdb.firebaseio.com/", 
+    projectId: "shanti-jewel-order",
+    storageBucket: "shanti-jewel-order.firebasestorage.app"
+};
+
+// Initialize App Connection
 firebase.initializeApp(firebaseConfig);
 
 const db = firebase.database();
 const storage = firebase.storage();
 const stages = ["CAD", "CAM", "CASTING", "POLISH", "HUID", "READY"];
 
-// Image state for preview
 let selectedFile = null;
 
+// MAIN SECURITY ACCESS
 function unlockMain() {
     if(document.getElementById('entryPin').value === '1008') {
         document.getElementById('mainLock').style.display = 'none';
@@ -166,6 +173,7 @@ function unlockMain() {
     } else { alert("WRONG PIN"); }
 }
 
+// DASHBOARD PRIVATE ACCESS
 function unlockDash() {
     if(document.getElementById('dashPinInput').value === '2215') {
         document.getElementById('dashLock').style.display = 'none';
@@ -173,16 +181,18 @@ function unlockDash() {
     } else { alert("WRONG PIN"); }
 }
 
+// PROCESS SELECTED FILE FROM CAMERA OR GALLERY
 function processPhoto(input) {
     if(!input.files[0]) return;
     selectedFile = input.files[0];
     const reader = new FileReader();
     reader.onload = (e) => {
-        document.getElementById('p1').innerHTML=`<img src="${e.target.result}" style="width:100%; height:100%; object-fit:contain;">`;
+        document.getElementById('p1').innerHTML = `<img src="${e.target.result}" style="width:100%; height:100%; object-fit:contain;">`;
     };
     reader.readAsDataURL(selectedFile);
 }
 
+// UPLOAD TO STORAGE & SAVE METADATA TO REALTIME DB
 async function saveOrder() {
     const btn = document.getElementById('punchBtn');
     const id = document.getElementById('i_id').value.trim();
@@ -194,7 +204,7 @@ async function saveOrder() {
     btn.disabled = true;
 
     try {
-        // 1. Upload to Storage
+        // Step 1: Upload Photo directly to Dedicated Storage Container
         const photoPath = `order_photos/${id}_${Date.now()}.jpg`;
         const storageRef = storage.ref(photoPath);
         const uploadTask = await storageRef.put(selectedFile);
@@ -202,9 +212,9 @@ async function saveOrder() {
 
         btn.innerText = "SAVING ORDER...";
 
-        // 2. Save to Database
+        // Step 2: Assemble Complete Order Structure with direct photo download URL
         const obj = { 
-            id, 
+            id: id, 
             party: document.getElementById('i_pa').value, 
             cad: document.getElementById('i_cad').value, 
             wt: parseFloat(document.getElementById('i_wt').value) || 0, 
@@ -212,15 +222,16 @@ async function saveOrder() {
             sz: document.getElementById('i_sz').value, 
             dd: document.getElementById('i_dd').value, 
             sp: document.getElementById('i_sp').value, 
-            photo: photoURL, // Saves the small link instead of heavy text
+            photo: photoURL, 
             status: "CAD", 
             ts: Date.now() 
         };
 
+        // Write directly to core schema database
         await db.ref('orders/' + id).set(obj);
         
         alert("Punched Successfully!");
-        location.reload(); // Refresh to ensure next order is clean
+        location.reload(); 
     } catch (e) {
         console.error(e);
         alert("Error: " + e.message);
@@ -229,6 +240,7 @@ async function saveOrder() {
     }
 }
 
+// SECURELY RETRIEVE METADATA AND DISPLAY ONLY PRODUCT SPECIFICATIONS
 function openJobCard(orderID) {
     db.ref('orders/' + orderID).once('value').then(snap => {
         const o = snap.val();
@@ -243,6 +255,7 @@ function openJobCard(orderID) {
     });
 }
 
+// READ STRUCTURAL DATA STREAMS (Active & History Tracking + Admin Party Analysis)
 function loadData() {
     const search = document.getElementById('src').value.toLowerCase();
     db.ref('orders').on('value', snap => {
@@ -250,6 +263,7 @@ function loadData() {
         const hist = document.getElementById('historyList');
         const statsDiv = document.getElementById('stats');
         act.innerHTML = ""; hist.innerHTML = "";
+        
         const data = snap.val() ? Object.values(snap.val()).reverse() : [];
         const counts = {}; stages.forEach(s => counts[s] = 0);
         const partyDist = {};
@@ -285,16 +299,33 @@ function loadData() {
             } else { hist.innerHTML += card; }
         });
 
+        // Generate Stage Production Counters
         statsDiv.innerHTML = stages.map(s => `<div style="background:var(--brown); color:var(--gold); padding:8px; border-radius:10px; text-align:center;"><h3>${counts[s]}</h3><small style="font-size:8px;">${s}</small></div>`).join('');
+        
+        // Build Party Distribution Metrics Matrix Table
         let tableHTML = `<table class="party-table"><thead><tr><th>Party</th><th>Pcs</th><th>Total Wt</th></tr></thead><tbody>`;
         for (const p in partyDist) tableHTML += `<tr><td>${p || "N/A"}</td><td>${partyDist[p].pcs}</td><td>${partyDist[p].wt.toFixed(3)}g</td></tr>`;
         document.getElementById('partyAnalysis').innerHTML = tableHTML + `</tbody></table>`;
     });
 }
 
-function move(id, cur) { const nxt = stages[stages.indexOf(cur)+1]; if(nxt) db.ref('orders/'+id).update({status: nxt}); }
-function del(id) { if(confirm("Delete Order?")) db.ref('orders/'+id).remove(); }
-function wipeData() { if(confirm("ERASE ALL DATA?")) db.ref('orders').remove(); }
+// PIPELINE PROCESS PROGRESSION MANAGEMENT
+function move(id, cur) { 
+    const nxt = stages[stages.indexOf(cur)+1]; 
+    if(nxt) db.ref('orders/'+id).update({status: nxt}); 
+}
+
+// MANAGEMENT DELETIONS
+function del(id) { 
+    if(confirm("Delete Order?")) db.ref('orders/'+id).remove(); 
+}
+
+// ADMIN LEVEL CRITICAL WIPEOUTS
+function wipeData() { 
+    if(confirm("ERASE ALL DATA?")) db.ref('orders').remove(); 
+}
+
+// SYSTEM APP TABS SELECTION ROUTING NAVIGATION
 function nav(p, el) { 
     document.querySelectorAll('.page, .tab').forEach(x => x.classList.remove('active')); 
     document.getElementById(p+'Page').classList.add('active'); 
