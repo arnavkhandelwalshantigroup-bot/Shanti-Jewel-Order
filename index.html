@@ -6,6 +6,13 @@
     <title>SHANTI JEWEL</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
     
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#3E2723">
+    <meta name="theme-color" content="#3E2723">
+    <meta name="application-name" content="SHANTI JEWEL">
+    <meta name="apple-mobile-web-app-title" content="SHANTI JEWEL">
+    
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
@@ -308,7 +315,7 @@ async function saveOrder() {
     }
 }
 
-// ORDER FORM POPUP DISPLAY (Renamed)
+// ORDER FORM POPUP DISPLAY
 function openJobCard(orderID) {
     db.ref('orders/' + orderID).once('value').then(snap => {
         const o = snap.val();
@@ -333,7 +340,7 @@ function openJobCard(orderID) {
     });
 }
 
-// APP EMBEDDED CONFIRMATION TRIGGER (Bypasses default browser notification headers)
+// APP EMBEDDED CONFIRMATION TRIGGER
 function triggerMoveConfirm(id, cur) {
     pendingMoveId = id;
     pendingMoveCurStage = cur;
@@ -342,7 +349,6 @@ function triggerMoveConfirm(id, cur) {
     document.getElementById('confirmMsg').innerText = `Advance Order ${id} from ${cur} to ${nextStage}?`;
     document.getElementById('confirmOverlay').style.display = 'flex';
     
-    // Wire button execution
     document.getElementById('confirmYesBtn').onclick = function() {
         const nxt = stages[stages.indexOf(pendingMoveCurStage) + 1]; 
         if(nxt) {
@@ -381,7 +387,7 @@ function loadData() {
             if(o.photo) gridHTML += `<img src="${o.photo}" class="detail-thumb" onclick="event.stopPropagation(); window.open('${o.photo}', '_blank')">`;
             if(o.photo2) gridHTML += `<img src="${o.photo2}" class="detail-thumb" onclick="event.stopPropagation(); window.open('${o.photo2}', '_blank')">`;
             if(o.photo3) gridHTML += `<img src="${o.photo3}" class="detail-thumb" onclick="event.stopPropagation(); window.open('${o.photo3}', '_blank')">`;
-            if(o.photo4) gridHTML += `<img src="${o.photo4}" class="detail-thumb" onclick="event.stopPropagation(); window.open('${o.photo4}', '_blank')">`;
+            if(o.photo4) gridHTML += `<img src="${o.photo4}" class="detail-thumb" onclick="event.summary; window.open('${o.photo4}', '_blank')">`;
             gridHTML += `</div>`;
 
             const card = `<div class="card" onclick="this.classList.toggle('expanded')">
