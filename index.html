@@ -6,7 +6,7 @@
     <title>SHANTI JEWEL</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
     
-    <link rel="manifest" href="./manifest.json?v=6">
+    <link rel="manifest" href="./manifest.json?v=7">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="#3E2723">
@@ -17,6 +17,8 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
         :root { --gold: #D4AF37; --brown: #3E2723; --cream: #FFFDE7; --text: #212121; --red: #c62828; --green: #2e7d32; }
@@ -28,9 +30,9 @@
         .header { background: var(--brown); color: var(--gold); text-align: center; padding: 25px 10px; border-bottom: 5px solid var(--gold); }
         .header h1 { font-family: 'Cinzel', serif; margin: 0; font-size: 24px; letter-spacing: 4px; }
 
-        /* Order Form Specification Popup - LEGACY BOUNDS WITH SCROLLABLE 10-IMAGE GALLERY */
+        /* Order Form Specification Popup - CAPTURE OPTIMIZED BOUNDS */
         #jobCardOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:5000; overflow-y:auto; padding:15px; box-sizing:border-box; }
-        .digital-form { background: #fff; border: 6px double var(--gold); padding: 20px; max-width: 400px; margin: 20px auto; color: var(--brown); border-radius: 2px; box-sizing: border-box; }
+        .digital-form { background: #fff; border: 6px double var(--gold); padding: 20px; max-width: 400px; margin: 20px auto; color: var(--brown); border-radius: 2px; box-sizing: border-box; position: relative; }
         .df-header { text-align: center; border-bottom: 2px solid var(--gold); padding-bottom: 12px; margin-bottom: 18px; }
         
         /* 10 Image Layout Grid for Popup Form */
@@ -55,7 +57,7 @@
         input, select, textarea { width: 100%; padding: 12px; margin: 6px 0; border: 1.5px solid #eee; border-radius: 12px; font-family: 'Montserrat'; font-weight: 600; box-sizing: border-box; font-size: 14px; }
         input:focus, select:focus, textarea:focus { border-color: var(--gold); outline: none; background: #fffdf9; }
         
-        /* 10 Photo Layout Engine - 5 Slots per Row horizontally scrollable/compact */
+        /* 10 Photo Layout Engine */
         .photo-grid-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; scrollbar-width: thin; -webkit-overflow-scrolling: touch; }
         .photo-box { min-width: 75px; height: 75px; flex-shrink: 0; background: #fdfbf7; border: 2px dashed var(--gold); border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; color: var(--gold); font-family: 'Cinzel'; font-size: 8px; text-align: center; padding: 3px; cursor: pointer; box-sizing: border-box; }
 
@@ -82,8 +84,8 @@
         .btn-gold { background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728); border: none; padding: 16px; border-radius: 12px; color: #3E2723; font-weight: 800; width: 100%; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
         .btn-jobcard { background: var(--brown); color: var(--gold); border: 1px solid var(--gold); padding: 12px; border-radius: 10px; font-weight: 800; margin-top: 10px; width: 100%; display: block; text-align: center; cursor: pointer; }
         .btn-red { background: var(--red); color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; font-weight: 800; margin-top: 10px; }
+        .btn-green { background: var(--green); color: white; border: none; padding: 14px; border-radius: 10px; width: 100%; font-weight: 800; margin-top: 15px; text-transform: uppercase; cursor: pointer; display: block; text-align: center; box-sizing: border-box; }
         
-        /* Expanded 10 Item Thumbnail Grid Layout inside active cards */
         .detail-img-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-top: 10px; }
         .detail-thumb { width: 100%; height: 50px; object-fit: cover; border-radius: 6px; border: 1px solid #eee; background: #fafafa; }
     </style>
@@ -101,7 +103,7 @@
 </div>
 
 <div id="jobCardOverlay" onclick="this.style.display='none'">
-    <div class="digital-form" onclick="event.stopPropagation()">
+    <div class="digital-form" id="captureTarget" onclick="event.stopPropagation()">
         <div class="df-header">
             <small>॥ श्री ॥</small>
             <h2 style="font-family:'Cinzel'; margin:5px 0;">SHANTI JEWEL</h2>
@@ -109,29 +111,35 @@
         </div>
         
         <div class="jc-grid">
-            <img id="jc_img1" class="df-img" src="">
-            <img id="jc_img2" class="df-img" src="">
-            <img id="jc_img3" class="df-img" src="">
-            <img id="jc_img4" class="df-img" src="">
-            <img id="jc_img5" class="df-img" src="">
-            <img id="jc_img6" class="df-img" src="">
-            <img id="jc_img7" class="df-img" src="">
-            <img id="jc_img8" class="df-img" src="">
-            <img id="jc_img9" class="df-img" src="">
-            <img id="jc_img10" class="df-img" src="">
+            <img id="jc_img1" class="df-img" src="" crossorigin="anonymous">
+            <img id="jc_img2" class="df-img" src="" crossorigin="anonymous">
+            <img id="jc_img3" class="df-img" src="" crossorigin="anonymous">
+            <img id="jc_img4" class="df-img" src="" crossorigin="anonymous">
+            <img id="jc_img5" class="df-img" src="" crossorigin="anonymous">
+            <img id="jc_img6" class="df-img" src="" crossorigin="anonymous">
+            <img id="jc_img7" class="df-img" src="" crossorigin="anonymous">
+            <img id="jc_img8" class="df-img" src="" crossorigin="anonymous">
+            <img id="jc_img9" class="df-img" src="" crossorigin="anonymous">
+            <img id="jc_img10" class="df-img" src="" crossorigin="anonymous">
         </div>
 
         <div class="df-row">
+            <div><span class="df-label">Order ID</span><br><span class="df-value" id="jc_id" style="color:var(--red);"></span></div>
             <div><span class="df-label">Weight</span><br><span class="df-value" id="jc_wt"></span></div>
             <div><span class="df-label">Purity</span><br><span class="df-value" id="jc_kt"></span></div>
             <div><span class="df-label">Size</span><br><span class="df-value" id="jc_sz"></span></div>
         </div>
+        <div class="df-row"><span class="df-label">Party Name</span><span class="df-value" id="jc_party"></span></div>
         <div class="df-row"><span class="df-label">Designer</span><span class="df-value" id="jc_cad"></span></div>
         <div style="margin-top:15px; background:#fdfbf7; padding:12px; border-radius:8px; border: 1px solid #eee; box-sizing: border-box; width: 100%;">
             <span class="df-label">Instructions:</span><br>
             <p id="jc_sp" style="font-size:13px; font-weight:600; line-height:1.4; margin:5px 0; word-break: break-word;"></p>
         </div>
-        <button class="btn-red" onclick="document.getElementById('jobCardOverlay').style.display='none'">CLOSE</button>
+        
+        <div data-html2canvas-ignore="true">
+            <button class="btn-green" id="downloadBtn" onclick="downloadJobCard()"> Download Image</button>
+            <button class="btn-red" onclick="document.getElementById('jobCardOverlay').style.display='none'">CLOSE</button>
+        </div>
     </div>
 </div>
 
@@ -175,7 +183,7 @@
             <input type="file" id="f3" accept="image/*" hidden onchange="processPhoto(this, 'p3', 2)">
             <input type="file" id="f4" accept="image/*" hidden onchange="processPhoto(this, 'p4', 3)">
             <input type="file" id="f5" accept="image/*" hidden onchange="processPhoto(this, 'p5', 4)">
-            <input type="file" id="f6" accept="image/*" hidden onchange="processPhoto(this, 'p6', 5)">
+            <input type="file" id="f6" accept="image/*" hidden onchange="processPhoto(this, 'f6', 5)">
             <input type="file" id="f7" accept="image/*" hidden onchange="processPhoto(this, 'p7', 6)">
             <input type="file" id="f8" accept="image/*" hidden onchange="processPhoto(this, 'p8', 7)">
             <input type="file" id="f9" accept="image/*" hidden onchange="processPhoto(this, 'p9', 8)">
@@ -244,7 +252,6 @@ const db = firebase.database();
 const storage = firebase.storage();
 const stages = ["CAD", "CAM", "CASTING", "POLISH", "HUID", "READY"];
 
-// Initialize array with 10 slots
 let selectedFiles = new Array(10).fill(null);
 let pendingMoveId = null;
 let pendingMoveCurStage = null;
@@ -311,7 +318,6 @@ function processPhoto(input, boxId, index) {
     reader.readAsDataURL(file);
 }
 
-// 10 SLOT VERIFICATION ENGINE
 async function saveOrder() {
     const btn = document.getElementById('punchBtn');
     
@@ -376,7 +382,7 @@ async function saveOrder() {
 
         await db.ref('orders/' + id).set(obj);
         
-        showToast(" ORDER PUNCHED SUCCESSFULLY ", "success");
+        showToast("ORDER PUNCHED SUCCESSFULLY ", "success");
         
         setTimeout(() => {
             location.reload(); 
@@ -390,15 +396,16 @@ async function saveOrder() {
     }
 }
 
-// POPUP FORM SHOWING DYNAMIC ALLOCATED IMAGES (UP TO 10)
 function openJobCard(orderID) {
     db.ref('orders/' + orderID).once('value').then(snap => {
         const o = snap.val();
         if(!o) return;
-        document.getElementById('jc_cad').innerText = o.cad;
+        document.getElementById('jc_id').innerText = o.id;
+        document.getElementById('jc_party').innerText = o.party || "N/A";
+        document.getElementById('jc_cad').innerText = o.cad || "N/A";
         document.getElementById('jc_wt').innerText = o.wt + "g";
-        document.getElementById('jc_kt').innerText = o.kt;
-        document.getElementById('jc_sz').innerText = o.sz;
+        document.getElementById('jc_kt').innerText = o.kt || "N/A";
+        document.getElementById('jc_sz').innerText = o.sz || "N/A";
         document.getElementById('jc_sp').innerText = o.sp || "No instructions";
         
         for(let i=1; i<=10; i++) {
@@ -412,6 +419,41 @@ function openJobCard(orderID) {
             }
         }
         document.getElementById('jobCardOverlay').style.display = 'block';
+    });
+}
+
+// SECURE AUTO-RENDER HIGH FI DOWNLOAD ENGINE
+function downloadJobCard() {
+    const target = document.getElementById('captureTarget');
+    const dlBtn = document.getElementById('downloadBtn');
+    const orderID = document.getElementById('jc_id').innerText || "ORDER";
+    
+    dlBtn.innerText = "GENERATING IMAGE...";
+    dlBtn.disabled = true;
+
+    // Direct Canvas Snapshot Processing
+    html2canvas(target, {
+        useCORS: true, 
+        allowTaint: true,
+        scale: 2, // High resolution crisp text rendering
+        backgroundColor: "#ffffff"
+    }).then(canvas => {
+        const imageURI = canvas.toDataURL("image/jpeg", 0.9);
+        const link = document.createElement('a');
+        link.download = `SHANTI_JEWEL_${orderID}.jpg`;
+        link.href = imageURI;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        dlBtn.innerText = "Download Image";
+        dlBtn.disabled = false;
+        showToast("Form Image Saved Successfully", "success");
+    }).catch(err => {
+        console.error(err);
+        showToast("Capture Failed: Try Again", "error");
+        dlBtn.innerText = "Download Image";
+        dlBtn.disabled = false;
     });
 }
 
@@ -457,7 +499,6 @@ function loadData() {
             partyDist[o.party].pcs++;
             partyDist[o.party].wt += (parseFloat(o.wt) || 0);
 
-            // Constructing 10-column display grid inside the expandable cards
             let gridHTML = `<div class="detail-img-grid">`;
             const imageFields = ['photo', 'photo2', 'photo3', 'photo4', 'photo5', 'photo6', 'photo7', 'photo8', 'photo9', 'photo10'];
             imageFields.forEach(f => {
@@ -537,7 +578,7 @@ function nav(p, el) {
 
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./service-worker.js?v=6', { scope: './' })
+        navigator.serviceWorker.register('./service-worker.js?v=7', { scope: './' })
         .then(reg => {
             console.log('App Core Framework Live');
             reg.update();
