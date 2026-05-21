@@ -40,8 +40,8 @@
         .df-img { width: 100%; height: 130px; object-fit: contain; background: #fcfcfc; border-radius: 5px; border: 1px solid #eee; display: none; box-sizing: border-box; }
 
         .df-row { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid #f8f8f8; padding-bottom: 5px; gap: 10px; width: 100%; }
-        .df-label { font-weight: 800; font-size: 10px; text-transform: uppercase; color: #aaa; }
-        .df-value { font-weight: 700; font-size: 14px; color: var(--brown); }
+        .df-label { font-family: 'Montserrat'; font-weight: 800; font-size: 10px; text-transform: uppercase; color: #aaa; }
+        .df-value { font-family: 'Montserrat'; font-weight: 700; font-size: 14px; color: var(--brown); }
         
         /* Custom Clean Confirmation Overlay */
         #confirmOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:6000; align-items:center; justify-content:center; }
@@ -57,12 +57,12 @@
         input, select, textarea { width: 100%; padding: 12px; margin: 6px 0; border: 1.5px solid #eee; border-radius: 12px; font-family: 'Montserrat'; font-weight: 600; box-sizing: border-box; font-size: 14px; }
         input:focus, select:focus, textarea:focus { border-color: var(--gold); outline: none; background: #fffdf9; }
         
-        /* Stable High-Speed 4 Photo Layout System */
+        /* Photo Layout System */
         .photo-grid-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; scrollbar-width: thin; -webkit-overflow-scrolling: touch; }
         .photo-box { min-width: 75px; height: 75px; flex-shrink: 0; background: #fdfbf7; border: 2px dashed var(--gold); border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; color: var(--gold); font-family: 'Cinzel'; font-size: 8px; text-align: center; padding: 3px; cursor: pointer; box-sizing: border-box; }
 
         .tab-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; height: 75px; border-top: 2px solid var(--gold); z-index: 1000; }
-        .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 8px; font-weight: 800; color: #bbb; text-transform: uppercase; cursor: pointer; }
+        .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Montserrat'; font-size: 8px; font-weight: 800; color: #bbb; text-transform: uppercase; cursor: pointer; }
         .tab.active { color: var(--brown); background: var(--cream); border-top: 5px solid var(--gold); }
         .page { display: none; padding: 15px; box-sizing: border-box; }
         .page.active { display: block; }
@@ -75,16 +75,16 @@
         .timeline::before { content: ""; position: absolute; top: 5px; left: 15px; right: 15px; height: 2px; background: #f0f0f0; z-index: 1; }
         .t-step { width: 10px; height: 10px; border-radius: 50%; background: #ddd; z-index: 2; position: relative; }
         .t-step.active { background: var(--gold); }
-        .t-label { position: absolute; top: 15px; font-size: 7px; transform: translateX(-40%); font-weight: 800; color: #ccc; }
+        .t-label { position: absolute; top: 15px; font-family: 'Montserrat'; font-size: 7px; transform: translateX(-40%); font-weight: 800; color: #ccc; }
 
-        .party-table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; font-size: 12px; border: 1px solid var(--gold); margin-top: 15px; }
+        .party-table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; font-family: 'Montserrat'; font-size: 12px; border: 1px solid var(--gold); margin-top: 15px; }
         .party-table th { background: var(--brown); color: var(--gold); padding: 10px; text-align: left; }
         .party-table td { padding: 10px; border-bottom: 1px solid #eee; font-weight: 600; }
 
-        .btn-gold { background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728); border: none; padding: 16px; border-radius: 12px; color: #3E2723; font-weight: 800; width: 100%; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
-        .btn-jobcard { background: var(--brown); color: var(--gold); border: 1px solid var(--gold); padding: 12px; border-radius: 10px; font-weight: 800; margin-top: 10px; width: 100%; display: block; text-align: center; cursor: pointer; }
-        .btn-red { background: var(--red); color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; font-weight: 800; margin-top: 10px; }
-        .btn-green { background: var(--green); color: white; border: none; padding: 14px; border-radius: 10px; width: 100%; font-weight: 800; margin-top: 15px; text-transform: uppercase; cursor: pointer; display: block; text-align: center; box-sizing: border-box; }
+        .btn-gold { background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728); border: none; padding: 16px; border-radius: 12px; color: #3E2723; font-family: 'Montserrat'; font-weight: 800; width: 100%; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
+        .btn-jobcard { background: var(--brown); color: var(--gold); border: 1px solid var(--gold); padding: 12px; border-radius: 10px; font-family: 'Montserrat'; font-weight: 800; margin-top: 10px; width: 100%; display: block; text-align: center; cursor: pointer; }
+        .btn-red { background: var(--red); color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; font-family: 'Montserrat'; font-weight: 800; margin-top: 10px; }
+        .btn-green { background: var(--green); color: white; border: none; padding: 14px; border-radius: 10px; width: 100%; font-family: 'Montserrat'; font-weight: 800; margin-top: 15px; text-transform: uppercase; cursor: pointer; display: block; text-align: center; box-sizing: border-box; }
         
         .detail-img-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 10px; }
         .detail-thumb { width: 100%; height: 50px; object-fit: cover; border-radius: 6px; border: 1px solid #eee; background: #fafafa; }
@@ -105,9 +105,9 @@
 <div id="jobCardOverlay" onclick="this.style.display='none'">
     <div class="digital-form" id="captureTarget" onclick="event.stopPropagation()">
         <div class="df-header">
-            <small>॥ श्री ॥</small>
+            <small style="font-family:'Montserrat'; font-weight:600;">॥ श्री ॥</small>
             <h2 style="font-family:'Cinzel'; margin:5px 0;">SHANTI JEWEL</h2>
-            <small style="font-weight:700; color:var(--gold); letter-spacing:2px;">ORDER FORM SPECIFICATIONS</small>
+            <small style="font-family:'Montserrat'; font-weight:700; color:var(--gold); letter-spacing:2px;">ORDER FORM SPECIFICATIONS</small>
         </div>
         
         <div class="jc-grid">
@@ -125,7 +125,7 @@
         <div class="df-row"><span class="df-label">Designer</span><span class="df-value" id="jc_cad"></span></div>
         <div style="margin-top:15px; background:#fdfbf7; padding:12px; border-radius:8px; border: 1px solid #eee; box-sizing: border-box; width: 100%;">
             <span class="df-label">Instructions:</span><br>
-            <p id="jc_sp" style="font-size:13px; font-weight:600; line-height:1.4; margin:5px 0; word-break: break-word;"></p>
+            <p id="jc_sp" style="font-family:'Montserrat'; font-size:13px; font-weight:600; line-height:1.4; margin:5px 0; word-break: break-word;"></p>
         </div>
         
         <div data-html2canvas-ignore="true">
@@ -138,7 +138,7 @@
 <div id="confirmOverlay">
     <div class="confirm-box">
         <h3 style="margin-top:0; font-family:'Cinzel'; color:var(--brown);">MOVE TO NEXT DEPARTMENT</h3>
-        <p style="font-size:14px; font-weight:600; color:#666;" id="confirmMsg">Are you sure you want to advance this order?</p>
+        <p style="font-family:'Montserrat'; font-size:14px; font-weight:600; color:#666;" id="confirmMsg">Are you sure you want to advance this order?</p>
         <div style="display:flex; gap:10px; margin-top:20px;">
             <button class="btn-gold" style="margin:0; padding:10px; flex:1;" id="confirmYesBtn">YES</button>
             <button class="btn-red" style="margin:0; padding:10px; flex:1; background:#777;" onclick="closeConfirm()">NO</button>
@@ -147,12 +147,12 @@
 </div>
 
 <div id="appContent" style="display:none;">
-    <div class="header"><h1>SHANTI JEWEL</h1></div>
+    <div class="header"><h1 style="font-family:'Cinzel';">SHANTI JEWEL</h1></div>
 
     <div id="punchPage" class="page active">
         <div class="punch-card">
             
-            <label style="font-size: 10px; font-weight: 800; color: var(--brown); text-transform: uppercase; letter-spacing: 1px;">Item Designs (Max 4 for Performance Stability)</label>
+            <label style="font-family:'Montserrat'; font-size: 10px; font-weight: 800; color: var(--brown); text-transform: uppercase; letter-spacing: 1px;">Item Designs</label>
             <div class="photo-grid-scroll">
                 <div id="p1" class="photo-box" onclick="document.getElementById('f1').click()">IMG 1 (MAIN)</div>
                 <div id="p2" class="photo-box" onclick="document.getElementById('f2').click()">IMG 2</div>
@@ -197,7 +197,7 @@
 
     <div id="dashPage" class="page">
         <div id="dashLock" style="text-align:center; padding:40px; background:var(--brown); border-radius:20px; color:white;">
-            <h2>ADMIN panel</h2>
+            <h2 style="font-family:'Cinzel'; text-transform:uppercase;">ADMIN panel</h2>
             <input type="password" id="dashPinInput" placeholder="PIN" style="text-align:center; max-width:150px; color:black;">
             <button class="btn-gold" onclick="unlockDash()">UNLOCK</button>
         </div>
@@ -254,6 +254,7 @@ function unlockMain() {
     }
 }
 
+// SECURITY ADMIN VALIDATION ENGAGEMENT
 function unlockDash() {
     if(document.getElementById('dashPinInput').value === '2215') {
         document.getElementById('dashLock').style.display = 'none';
@@ -263,7 +264,6 @@ function unlockDash() {
     }
 }
 
-// ULTRA COMPRESSION ENGINE STAYS ACTIVE (320PX @ 0.2 WEIGHT RATIO)
 function processPhoto(input, boxId, index) {
     if(!input.files[0]) return;
     const file = input.files[0];
@@ -355,7 +355,7 @@ async function saveOrder() {
 
         await db.ref('orders/' + id).set(obj);
         
-        showToast("ORDER PUNCHED SUCCESSFULLY ", "success");
+        showToast("✨ ORDER PUNCHED SUCCESSFULLY ✨", "success");
         
         setTimeout(() => {
             location.reload(); 
@@ -374,7 +374,6 @@ function openJobCard(orderID) {
         const o = snap.val();
         if(!o) return;
         
-        // Form layout excludes id, party, and delivery dates on purpose as requested
         document.getElementById('jc_wt').innerText = o.wt + "g";
         document.getElementById('jc_kt').innerText = o.kt || "N/A";
         document.getElementById('jc_sz').innerText = o.sz || "N/A";
@@ -478,17 +477,16 @@ function loadData() {
             });
             gridHTML += `</div>`;
 
-            // Fields show up safely on the data cards here
             const card = `<div class="card" onclick="this.classList.toggle('expanded')">
                 <div style="display:flex; gap:12px; align-items:center;">
                     <img src="${o.photo || ''}" style="width:60px; height:60px; border-radius:12px; object-fit:cover; border:1px solid #eee;">
                     <div style="flex:1;">
                         <div style="display:flex; justify-content:space-between;">
-                            <b style="color:var(--brown); font-size:16px;">${o.id || 'N/A'}</b>
-                            <small style="color:var(--red); font-weight:800;">DUE: ${o.dd || 'NONE'}</small>
+                            <b style="color:var(--brown); font-family:'Montserrat'; font-size:16px;">${o.id || 'N/A'}</b>
+                            <small style="font-family:'Montserrat'; color:var(--red); font-weight:800;">DUE: ${o.dd || 'NONE'}</small>
                         </div>
-                        <div style="font-weight:700; font-size:13px; color:#555;">Party: ${o.party || 'N/A'}</div>
-                        <small style="text-transform:uppercase; color:var(--gold); font-weight:800; font-size:10px;">STAGE: ${o.status}</small>
+                        <div style="font-family:'Montserrat'; font-weight:700; font-size:13px; color:#555;">Party: ${o.party || 'N/A'}</div>
+                        <small style="font-family:'Montserrat'; text-transform:uppercase; color:var(--gold); font-weight:800; font-size:10px;">STAGE: ${o.status}</small>
                     </div>
                 </div>
                 <div class="timeline">${stages.map((s,i)=>`<div class="t-step ${stages.indexOf(o.status)>=i?'active':''}"><span class="t-label">${s}</span></div>`).join('')}</div>
@@ -504,7 +502,7 @@ function loadData() {
                     <div class="df-row"><span class="df-label">Current Status:</span><span class="df-value" style="color:var(--gold); font-weight:800;">${o.status}</span></div>
                     <div style="margin-top:8px; margin-bottom:8px; background:#fdfbf7; padding:10px; border-radius:8px; border:1px solid #eee;">
                         <span class="df-label">Instructions:</span><br>
-                        <span style="font-size:13px; font-weight:600; color:var(--brown);">${o.sp || 'None'}</span>
+                        <span style="font-family:'Montserrat'; font-size:13px; font-weight:600; color:var(--brown);">${o.sp || 'None'}</span>
                     </div>
                     
                     ${gridHTML}
@@ -519,7 +517,7 @@ function loadData() {
             } else { hist.innerHTML += card; }
         });
 
-        statsDiv.innerHTML = stages.map(s => `<div style="background:var(--brown); color:var(--gold); padding:8px; border-radius:10px; text-align:center;"><h3>${counts[s]}</h3><small style="font-size:8px;">${s}</small></div>`).join('');
+        statsDiv.innerHTML = stages.map(s => `<div style="background:var(--brown); color:var(--gold); padding:8px; border-radius:10px; text-align:center;"><h3 style="font-family:'Cinzel'; margin:5px 0;">${counts[s]}</h3><small style="font-family:'Montserrat'; font-size:8px; font-weight:700;">${s}</small></div>`).join('');
         
         let tableHTML = `<table class="party-table"><thead><tr><th>Party</th><th>Pcs</th><th>Total Wt</th></tr></thead><tbody>`;
         for (const p in partyDist) tableHTML += `<tr><td>${p || "N/A"}</td><td>${partyDist[p].pcs}</td><td>${partyDist[p].wt.toFixed(3)}g</td></tr>`;
@@ -534,7 +532,6 @@ function del(id) {
     } 
 }
 
-// Full admin tools remain secure
 function wipeDataTrigger() { 
     if(confirm("CRITICAL WARNING: ERASE ENTIRE DATABASE PERMANENTLY?")) {
         db.ref('orders').remove();
