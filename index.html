@@ -137,7 +137,7 @@
         </div>
         
         <div data-html2canvas-ignore="true">
-            <button class="btn-green" id="downloadBtn" onclick="downloadJobCard()"> Download Image</button>
+            <button class="btn-green" id="downloadBtn" onclick="downloadJobCard()">📥 Download Image</button>
             <button class="btn-red" onclick="document.getElementById('jobCardOverlay').style.display='none'">CLOSE</button>
         </div>
     </div>
@@ -183,7 +183,7 @@
             <input type="file" id="f3" accept="image/*" hidden onchange="processPhoto(this, 'p3', 2)">
             <input type="file" id="f4" accept="image/*" hidden onchange="processPhoto(this, 'p4', 3)">
             <input type="file" id="f5" accept="image/*" hidden onchange="processPhoto(this, 'p5', 4)">
-            <input type="file" id="f6" accept="image/*" hidden onchange="processPhoto(this, 'f6', 5)">
+            <input type="file" id="f6" accept="image/*" hidden onchange="processPhoto(this, 'p6', 5)">
             <input type="file" id="f7" accept="image/*" hidden onchange="processPhoto(this, 'p7', 6)">
             <input type="file" id="f8" accept="image/*" hidden onchange="processPhoto(this, 'p8', 7)">
             <input type="file" id="f9" accept="image/*" hidden onchange="processPhoto(this, 'p9', 8)">
@@ -285,6 +285,7 @@ function unlockDash() {
     }
 }
 
+// OPTIMIZED LIGHTWEIGHT IMAGE COMPRESSION ENGINE (MAX 400PX WIDTH @ 0.4 QUALITY)
 function processPhoto(input, boxId, index) {
     if(!input.files[0]) return;
     const file = input.files[0];
@@ -294,7 +295,7 @@ function processPhoto(input, boxId, index) {
         const img = new Image();
         img.onload = function() {
             const canvas = document.createElement('canvas');
-            const MAX_WIDTH = 500; 
+            const MAX_WIDTH = 400; 
             let width = img.width;
             let height = img.height;
 
@@ -311,7 +312,7 @@ function processPhoto(input, boxId, index) {
             canvas.toBlob(function(blob) {
                 selectedFiles[index] = blob;
                 document.getElementById(boxId).innerHTML = `<img src="${URL.createObjectURL(blob)}" style="width:100%; height:100%; object-fit:contain;">`;
-            }, 'image/jpeg', 0.7);
+            }, 'image/jpeg', 0.4); // Dropped matrix weight to 0.4 for instantaneous remote loading
         };
         img.src = e.target.result;
     };
@@ -382,7 +383,7 @@ async function saveOrder() {
 
         await db.ref('orders/' + id).set(obj);
         
-        showToast("ORDER PUNCHED SUCCESSFULLY ", "success");
+        showToast(" ORDER PUNCHED SUCCESSFULLY ", "success");
         
         setTimeout(() => {
             location.reload(); 
@@ -422,7 +423,6 @@ function openJobCard(orderID) {
     });
 }
 
-// SECURE AUTO-RENDER HIGH FI DOWNLOAD ENGINE
 function downloadJobCard() {
     const target = document.getElementById('captureTarget');
     const dlBtn = document.getElementById('downloadBtn');
@@ -431,11 +431,10 @@ function downloadJobCard() {
     dlBtn.innerText = "GENERATING IMAGE...";
     dlBtn.disabled = true;
 
-    // Direct Canvas Snapshot Processing
     html2canvas(target, {
         useCORS: true, 
         allowTaint: true,
-        scale: 2, // High resolution crisp text rendering
+        scale: 2, 
         backgroundColor: "#ffffff"
     }).then(canvas => {
         const imageURI = canvas.toDataURL("image/jpeg", 0.9);
@@ -446,13 +445,13 @@ function downloadJobCard() {
         link.click();
         document.body.removeChild(link);
         
-        dlBtn.innerText = "Download Image";
+        dlBtn.innerText = "📥 Download Image";
         dlBtn.disabled = false;
         showToast("Form Image Saved Successfully", "success");
     }).catch(err => {
         console.error(err);
         showToast("Capture Failed: Try Again", "error");
-        dlBtn.innerText = "Download Image";
+        dlBtn.innerText = "📥 Download Image";
         dlBtn.disabled = false;
     });
 }
