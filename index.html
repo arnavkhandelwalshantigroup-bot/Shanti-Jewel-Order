@@ -6,7 +6,7 @@
     <title>SHANTI JEWEL</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
     
-    <link rel="manifest" href="./manifest.json?v=5">
+    <link rel="manifest" href="./manifest.json?v=6">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="#3E2723">
@@ -28,14 +28,14 @@
         .header { background: var(--brown); color: var(--gold); text-align: center; padding: 25px 10px; border-bottom: 5px solid var(--gold); }
         .header h1 { font-family: 'Cinzel', serif; margin: 0; font-size: 24px; letter-spacing: 4px; }
 
-        /* Order Form Specification Popup - EXACT LEGACY BOUNDS */
+        /* Order Form Specification Popup - LEGACY BOUNDS WITH SCROLLABLE 10-IMAGE GALLERY */
         #jobCardOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:5000; overflow-y:auto; padding:15px; box-sizing:border-box; }
         .digital-form { background: #fff; border: 6px double var(--gold); padding: 20px; max-width: 400px; margin: 20px auto; color: var(--brown); border-radius: 2px; box-sizing: border-box; }
         .df-header { text-align: center; border-bottom: 2px solid var(--gold); padding-bottom: 12px; margin-bottom: 18px; }
         
-        /* 4 Image Grid - Structured to prevent overflow */
+        /* 10 Image Layout Grid for Popup Form */
         .jc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; width: 100%; box-sizing: border-box; }
-        .df-img { width: 100%; height: 140px; object-fit: contain; background: #fcfcfc; border-radius: 5px; border: 1px solid #eee; display: none; box-sizing: border-box; }
+        .df-img { width: 100%; height: 130px; object-fit: contain; background: #fcfcfc; border-radius: 5px; border: 1px solid #eee; display: none; box-sizing: border-box; }
 
         .df-row { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid #f8f8f8; padding-bottom: 5px; gap: 10px; width: 100%; }
         .df-label { font-weight: 800; font-size: 10px; text-transform: uppercase; color: #aaa; }
@@ -55,9 +55,9 @@
         input, select, textarea { width: 100%; padding: 12px; margin: 6px 0; border: 1.5px solid #eee; border-radius: 12px; font-family: 'Montserrat'; font-weight: 600; box-sizing: border-box; font-size: 14px; }
         input:focus, select:focus, textarea:focus { border-color: var(--gold); outline: none; background: #fffdf9; }
         
-        /* 4 Photo Slot Punch Layout */
-        .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .photo-box { height: 100px; background: #fdfbf7; border: 2px dashed var(--gold); border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden; color: var(--gold); font-family: 'Cinzel'; font-size: 9px; text-align: center; padding: 5px; cursor: pointer; box-sizing: border-box; }
+        /* 10 Photo Layout Engine - 5 Slots per Row horizontally scrollable/compact */
+        .photo-grid-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; scrollbar-width: thin; -webkit-overflow-scrolling: touch; }
+        .photo-box { min-width: 75px; height: 75px; flex-shrink: 0; background: #fdfbf7; border: 2px dashed var(--gold); border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; color: var(--gold); font-family: 'Cinzel'; font-size: 8px; text-align: center; padding: 3px; cursor: pointer; box-sizing: border-box; }
 
         .tab-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; height: 75px; border-top: 2px solid var(--gold); z-index: 1000; }
         .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 8px; font-weight: 800; color: #bbb; text-transform: uppercase; cursor: pointer; }
@@ -83,8 +83,9 @@
         .btn-jobcard { background: var(--brown); color: var(--gold); border: 1px solid var(--gold); padding: 12px; border-radius: 10px; font-weight: 800; margin-top: 10px; width: 100%; display: block; text-align: center; cursor: pointer; }
         .btn-red { background: var(--red); color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; font-weight: 800; margin-top: 10px; }
         
-        .detail-img-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 10px; }
-        .detail-thumb { width: 100%; height: 60px; object-fit: cover; border-radius: 6px; border: 1px solid #eee; background: #fafafa; }
+        /* Expanded 10 Item Thumbnail Grid Layout inside active cards */
+        .detail-img-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-top: 10px; }
+        .detail-thumb { width: 100%; height: 50px; object-fit: cover; border-radius: 6px; border: 1px solid #eee; background: #fafafa; }
     </style>
 </head>
 <body>
@@ -112,6 +113,12 @@
             <img id="jc_img2" class="df-img" src="">
             <img id="jc_img3" class="df-img" src="">
             <img id="jc_img4" class="df-img" src="">
+            <img id="jc_img5" class="df-img" src="">
+            <img id="jc_img6" class="df-img" src="">
+            <img id="jc_img7" class="df-img" src="">
+            <img id="jc_img8" class="df-img" src="">
+            <img id="jc_img9" class="df-img" src="">
+            <img id="jc_img10" class="df-img" src="">
         </div>
 
         <div class="df-row">
@@ -145,16 +152,34 @@
     <div id="punchPage" class="page active">
         <div class="punch-card">
             
-            <div class="photo-grid">
+            <label style="font-size: 10px; font-weight: 800; color: var(--brown); text-transform: uppercase; letter-spacing: 1px;">Row 1: Main Designs</label>
+            <div class="photo-grid-scroll">
                 <div id="p1" class="photo-box" onclick="document.getElementById('f1').click()">IMG 1 (MAIN)</div>
                 <div id="p2" class="photo-box" onclick="document.getElementById('f2').click()">IMG 2</div>
                 <div id="p3" class="photo-box" onclick="document.getElementById('f3').click()">IMG 3</div>
                 <div id="p4" class="photo-box" onclick="document.getElementById('f4').click()">IMG 4</div>
+                <div id="p5" class="photo-box" onclick="document.getElementById('f5').click()">IMG 5</div>
             </div>
+
+            <label style="font-size: 10px; font-weight: 800; color: var(--brown); text-transform: uppercase; letter-spacing: 1px;">Row 2: Extra Perspectives</label>
+            <div class="photo-grid-scroll">
+                <div id="p6" class="photo-box" onclick="document.getElementById('f6').click()">IMG 6</div>
+                <div id="p7" class="photo-box" onclick="document.getElementById('f7').click()">IMG 7</div>
+                <div id="p8" class="photo-box" onclick="document.getElementById('f8').click()">IMG 8</div>
+                <div id="p9" class="photo-box" onclick="document.getElementById('f9').click()">IMG 9</div>
+                <div id="p10" class="photo-box" onclick="document.getElementById('f10').click()">IMG 10</div>
+            </div>
+
             <input type="file" id="f1" accept="image/*" hidden onchange="processPhoto(this, 'p1', 0)">
             <input type="file" id="f2" accept="image/*" hidden onchange="processPhoto(this, 'p2', 1)">
             <input type="file" id="f3" accept="image/*" hidden onchange="processPhoto(this, 'p3', 2)">
             <input type="file" id="f4" accept="image/*" hidden onchange="processPhoto(this, 'p4', 3)">
+            <input type="file" id="f5" accept="image/*" hidden onchange="processPhoto(this, 'p5', 4)">
+            <input type="file" id="f6" accept="image/*" hidden onchange="processPhoto(this, 'p6', 5)">
+            <input type="file" id="f7" accept="image/*" hidden onchange="processPhoto(this, 'p7', 6)">
+            <input type="file" id="f8" accept="image/*" hidden onchange="processPhoto(this, 'p8', 7)">
+            <input type="file" id="f9" accept="image/*" hidden onchange="processPhoto(this, 'p9', 8)">
+            <input type="file" id="f10" accept="image/*" hidden onchange="processPhoto(this, 'p10', 9)">
 
             <input type="text" id="i_id" placeholder="ORDER ID">
             <select id="i_pa">
@@ -219,7 +244,8 @@ const db = firebase.database();
 const storage = firebase.storage();
 const stages = ["CAD", "CAM", "CASTING", "POLISH", "HUID", "READY"];
 
-let selectedFiles = [null, null, null, null];
+// Initialize array with 10 slots
+let selectedFiles = new Array(10).fill(null);
 let pendingMoveId = null;
 let pendingMoveCurStage = null;
 
@@ -285,6 +311,7 @@ function processPhoto(input, boxId, index) {
     reader.readAsDataURL(file);
 }
 
+// 10 SLOT VERIFICATION ENGINE
 async function saveOrder() {
     const btn = document.getElementById('punchBtn');
     
@@ -311,9 +338,9 @@ async function saveOrder() {
     btn.disabled = true;
 
     try {
-        let urls = ["", "", "", ""];
+        let urls = new Array(10).fill("");
 
-        for(let i = 0; i < 4; i++) {
+        for(let i = 0; i < 10; i++) {
             if(selectedFiles[i]) {
                 const photoPath = `order_photos/${id}_slot${i}_${Date.now()}.jpg`;
                 const storageRef = storage.ref(photoPath);
@@ -337,13 +364,19 @@ async function saveOrder() {
             photo2: urls[1],
             photo3: urls[2],
             photo4: urls[3],
+            photo5: urls[4],
+            photo6: urls[5],
+            photo7: urls[6],
+            photo8: urls[7],
+            photo9: urls[8],
+            photo10: urls[9],
             status: "CAD", 
             ts: Date.now() 
         };
 
         await db.ref('orders/' + id).set(obj);
         
-        showToast("ORDER PUNCHED SUCCESSFULLY", "success");
+        showToast(" ORDER PUNCHED SUCCESSFULLY ", "success");
         
         setTimeout(() => {
             location.reload(); 
@@ -357,6 +390,7 @@ async function saveOrder() {
     }
 }
 
+// POPUP FORM SHOWING DYNAMIC ALLOCATED IMAGES (UP TO 10)
 function openJobCard(orderID) {
     db.ref('orders/' + orderID).once('value').then(snap => {
         const o = snap.val();
@@ -367,7 +401,7 @@ function openJobCard(orderID) {
         document.getElementById('jc_sz').innerText = o.sz;
         document.getElementById('jc_sp').innerText = o.sp || "No instructions";
         
-        for(let i=1; i<=4; i++) {
+        for(let i=1; i<=10; i++) {
             const field = i === 1 ? 'photo' : 'photo' + i;
             const imgEl = document.getElementById('jc_img' + i);
             if(o[field]) {
@@ -423,11 +457,14 @@ function loadData() {
             partyDist[o.party].pcs++;
             partyDist[o.party].wt += (parseFloat(o.wt) || 0);
 
+            // Constructing 10-column display grid inside the expandable cards
             let gridHTML = `<div class="detail-img-grid">`;
-            if(o.photo) gridHTML += `<img src="${o.photo}" class="detail-thumb" onclick="event.stopPropagation(); window.open('${o.photo}', '_blank')">`;
-            if(o.photo2) gridHTML += `<img src="${o.photo2}" class="detail-thumb" onclick="event.stopPropagation(); window.open('${o.photo2}', '_blank')">`;
-            if(o.photo3) gridHTML += `<img src="${o.photo3}" class="detail-thumb" onclick="event.stopPropagation(); window.open('${o.photo3}', '_blank')">`;
-            if(o.photo4) gridHTML += `<img src="${o.photo4}" class="detail-thumb" onclick="event.stopPropagation(); window.open('${o.photo4}', '_blank')">`;
+            const imageFields = ['photo', 'photo2', 'photo3', 'photo4', 'photo5', 'photo6', 'photo7', 'photo8', 'photo9', 'photo10'];
+            imageFields.forEach(f => {
+                if(o[f]) {
+                    gridHTML += `<img src="${o[f]}" class="detail-thumb" onclick="event.stopPropagation(); window.open('${o[f]}', '_blank')">`;
+                }
+            });
             gridHTML += `</div>`;
 
             const card = `<div class="card" onclick="this.classList.toggle('expanded')">
@@ -500,7 +537,7 @@ function nav(p, el) {
 
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./service-worker.js?v=5', { scope: './' })
+        navigator.serviceWorker.register('./service-worker.js?v=6', { scope: './' })
         .then(reg => {
             console.log('App Core Framework Live');
             reg.update();
