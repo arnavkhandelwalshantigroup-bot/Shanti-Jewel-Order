@@ -6,7 +6,7 @@
     <title>SHANTI JEWEL</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
     
-    <link rel="manifest" href="./manifest.json?v=3">
+    <link rel="manifest" href="./manifest.json?v=4">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="#3E2723">
@@ -19,7 +19,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
 
     <style>
-        :root { --gold: #D4AF37; --brown: #3E2723; --cream: #FFFDE7; --text: #212121; --red: #c62828; }
+        :root { --gold: #D4AF37; --brown: #3E2723; --cream: #FFFDE7; --text: #212121; --red: #c62828; --green: #2e7d32; }
         body { font-family: 'Montserrat', sans-serif; background: #fdfbf7; margin: 0; padding-bottom: 90px; color: var(--text); -webkit-tap-highlight-color: transparent; overflow-x: hidden; }
         
         #mainLock { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--brown); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
@@ -40,12 +40,15 @@
         #confirmOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:6000; align-items:center; justify-content:center; }
         .confirm-box { background: white; border: 2px solid var(--gold); border-radius: 20px; padding: 25px; max-width: 300px; width: 85%; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         
-        /* 4 Image Layout for Popup */
-        .jc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
-        .df-img { width: 100%; height: 140px; object-fit: contain; background: #fcfcfc; border-radius: 5px; border: 1px solid #eee; }
+        /* Dynamic Theme Notification Toast */
+        #themeToast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); width: 85%; max-width: 350px; padding: 16px; border-radius: 14px; color: white; font-weight: 700; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.35); z-index: 10000; transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-size: 13px; letter-spacing: 1px; border: 1.5px solid rgba(255,255,255,0.2); }
+        #themeToast.show { top: 25px; }
+        #themeToast.success { background: linear-gradient(135deg, var(--brown), #2b1b18); color: var(--gold); border-color: var(--gold); }
+        #themeToast.error { background: linear-gradient(135deg, var(--red), #900); color: #fff; }
 
         .punch-card { background: white; border-radius: 20px; padding: 20px; border: 1px solid var(--gold); }
         input, select, textarea { width: 100%; padding: 12px; margin: 6px 0; border: 1.5px solid #eee; border-radius: 12px; font-family: 'Montserrat'; font-weight: 600; box-sizing: border-box; font-size: 14px; }
+        input:focus, select:focus, textarea:focus { border-color: var(--gold); outline: none; background: #fffdf9; }
         
         /* 4 Photo Slot Punch Layout */
         .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
@@ -80,6 +83,8 @@
     </style>
 </head>
 <body>
+
+<div id="themeToast"></div>
 
 <div id="mainLock">
     <h1 style="font-family:'Cinzel'; color:var(--gold); letter-spacing:5px; margin-bottom: 20px;">SHANTI JEWEL</h1>
@@ -183,7 +188,7 @@
         <div id="dashBody" style="display:none;">
             <div id="stats" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;"></div>
             <div id="partyAnalysis"></div>
-            <button class="btn-red" style="margin-top: 30px;" onclick="wipeData()">WIPEOUT DATABASE</button>
+            <button class="btn-red" style="margin-top: 30px;" onclick="wipeDataTrigger()">WIPEOUT DATABASE</button>
         </div>
     </div>
 
@@ -213,19 +218,34 @@ let selectedFiles = [null, null, null, null];
 let pendingMoveId = null;
 let pendingMoveCurStage = null;
 
+// CUSTOM THEME TOAST FUNCTION (NO BROWSER DIALOG TITLES)
+function showToast(message, type = "success") {
+    const toast = document.getElementById("themeToast");
+    toast.innerText = message.toUpperCase();
+    toast.className = `show ${type}`;
+    
+    setTimeout(() => {
+        toast.classList.remove("show");
+    }, 4000);
+}
+
 function unlockMain() {
     if(document.getElementById('entryPin').value === '1008') {
         document.getElementById('mainLock').style.display = 'none';
         document.getElementById('appContent').style.display = 'block';
         loadData();
-    } else { alert("WRONG PIN"); }
+    } else { 
+        showToast("INVALID ACCESS PIN", "error"); 
+    }
 }
 
 function unlockDash() {
     if(document.getElementById('dashPinInput').value === '2215') {
         document.getElementById('dashLock').style.display = 'none';
         document.getElementById('dashBody').style.display = 'block';
-    } else { alert("WRONG PIN"); }
+    } else { 
+        showToast("INVALID ADMIN PIN", "error"); 
+    }
 }
 
 // AUTOMATIC BACKGROUND COMPRESSOR
@@ -262,13 +282,30 @@ function processPhoto(input, boxId, index) {
     reader.readAsDataURL(file);
 }
 
-// SAVING METADATA AND PARALLEL FAST IMAGES 
+// MANDATORY VALIDATION AND BEAUTIFUL SUCCESS TOAST PUNCH OVERHAUL
 async function saveOrder() {
     const btn = document.getElementById('punchBtn');
-    const id = document.getElementById('i_id').value.trim();
     
-    if(!id) return alert("Enter Order ID");
-    if(!selectedFiles[0]) return alert("Image 1 (Main) is Required");
+    // Extracting all field tokens
+    const id = document.getElementById('i_id').value.trim();
+    const party = document.getElementById('i_pa').value;
+    const designer = document.getElementById('i_cad').value;
+    const weight = document.getElementById('i_wt').value.trim();
+    const purity = document.getElementById('i_kt').value.trim();
+    const size = document.getElementById('i_sz').value.trim();
+    const dueDate = document.getElementById('i_dd').value;
+    const instructions = document.getElementById('i_sp').value.trim();
+
+    // MANDATORY FIELDS THEME CHECKS
+    if (!selectedFiles[0]) { showToast("MISSING PHOTO: MAIN IMG 1 IS REQUIRED", "error"); return; }
+    if (!id) { showToast("INPUT REQUIRED: ORDER ID IS BLANK", "error"); return; }
+    if (!party) { showToast("INPUT REQUIRED: SELECT PARTY NAME", "error"); return; }
+    if (!designer) { showToast("INPUT REQUIRED: SELECT DESIGNER ASSIGNMENT", "error"); return; }
+    if (!weight) { showToast("INPUT REQUIRED: ENTER ITEM WEIGHT", "error"); return; }
+    if (!purity) { showToast("INPUT REQUIRED: ENTER METAL PURITY (KT)", "error"); return; }
+    if (!size) { showToast("INPUT REQUIRED: ENTER SPECIFICATION SIZE", "error"); return; }
+    if (!dueDate) { showToast("INPUT REQUIRED: SELECT DELIVERY DUE DATE", "error"); return; }
+    if (!instructions) { showToast("INPUT REQUIRED: PROVIDE ORDER INSTRUCTIONS", "error"); return; }
     
     btn.innerText = "UPLOADING PHOTOS...";
     btn.disabled = true;
@@ -289,13 +326,13 @@ async function saveOrder() {
 
         const obj = { 
             id: id, 
-            party: document.getElementById('i_pa').value, 
-            cad: document.getElementById('i_cad').value, 
-            wt: parseFloat(document.getElementById('i_wt').value) || 0, 
-            kt: document.getElementById('i_kt').value, 
-            sz: document.getElementById('i_sz').value, 
-            dd: document.getElementById('i_dd').value, 
-            sp: document.getElementById('i_sp').value, 
+            party: party, 
+            cad: designer, 
+            wt: parseFloat(weight) || 0, 
+            kt: purity, 
+            sz: size, 
+            dd: dueDate, 
+            sp: instructions, 
             photo: urls[0], 
             photo2: urls[1],
             photo3: urls[2],
@@ -306,11 +343,16 @@ async function saveOrder() {
 
         await db.ref('orders/' + id).set(obj);
         
-        alert("Punched Successfully!");
-        location.reload(); 
+        // Dynamic Gold Theme Successful Notification Banner Trigger
+        showToast("ORDER PUNCHED SUCCESSFULLY ", "success");
+        
+        setTimeout(() => {
+            location.reload(); 
+        }, 1500);
+
     } catch (e) {
         console.error(e);
-        alert("Error: " + e.message);
+        showToast("DATABASE DISCONNECT: " + e.message, "error");
         btn.innerText = "RETRY PUNCH";
         btn.disabled = false;
     }
@@ -354,6 +396,7 @@ function triggerMoveConfirm(id, cur) {
         const nxt = stages[stages.indexOf(pendingMoveCurStage) + 1]; 
         if(nxt) {
             db.ref('orders/' + pendingMoveId).update({status: nxt});
+            showToast(`ORDER ${pendingMoveId} MOVED TO ${nxt}`, "success");
         }
         closeConfirm();
     };
@@ -439,8 +482,20 @@ function loadData() {
     });
 }
 
-function del(id) { if(confirm("Delete Order?")) db.ref('orders/'+id).remove(); }
-function wipeData() { if(confirm("ERASE ALL DATA?")) db.ref('orders').remove(); }
+function del(id) { 
+    if(confirm("Delete Order " + id + "?")) {
+        db.ref('orders/'+id).remove();
+        showToast("ORDER DELETED", "error");
+    } 
+}
+
+function wipeDataTrigger() { 
+    if(confirm("CRITICAL WARNING: ERASE ENTIRE DATABASE PERMANENTLY?")) {
+        db.ref('orders').remove();
+        showToast("DATABASE COMPLETELY WIPED", "error");
+    } 
+}
+
 function nav(p, el) { 
     document.querySelectorAll('.page, .tab').forEach(x => x.classList.remove('active')); 
     document.getElementById(p+'Page').classList.add('active'); 
@@ -450,7 +505,7 @@ function nav(p, el) {
 // AUTOMATIC BACKGROUND ENGINE ACTIVATION WITH VERSION CONTROL FORCING FRESH RE-SYNC
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./service-worker.js?v=3', { scope: './' })
+        navigator.serviceWorker.register('./service-worker.js?v=4', { scope: './' })
         .then(reg => {
             console.log('App Core Framework Live');
             reg.update();
