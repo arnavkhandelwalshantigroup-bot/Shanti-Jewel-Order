@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SHANTI JEWEL</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght=700&family=Montserrat:wght=400;600;800&display=swap" rel="stylesheet">
     
     <link rel="manifest" href="./manifest.json?v=7">
     <meta name="mobile-web-app-capable" content="yes">
@@ -35,7 +35,7 @@
         .digital-form { background: #fff; border: 6px double var(--gold); padding: 20px; max-width: 400px; margin: 20px auto; color: var(--brown); border-radius: 2px; box-sizing: border-box; position: relative; }
         .df-header { text-align: center; border-bottom: 2px solid var(--gold); padding-bottom: 12px; margin-bottom: 18px; }
         
-        /* 10 Image Layout Grid for Popup Form */
+        /* Optimized 4-Image Layout Grid Matrix */
         .jc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; width: 100%; box-sizing: border-box; }
         .df-img { width: 100%; height: 130px; object-fit: contain; background: #fcfcfc; border-radius: 5px; border: 1px solid #eee; display: none; box-sizing: border-box; }
 
@@ -57,7 +57,7 @@
         input, select, textarea { width: 100%; padding: 12px; margin: 6px 0; border: 1.5px solid #eee; border-radius: 12px; font-family: 'Montserrat'; font-weight: 600; box-sizing: border-box; font-size: 14px; }
         input:focus, select:focus, textarea:focus { border-color: var(--gold); outline: none; background: #fffdf9; }
         
-        /* 10 Photo Layout Engine */
+        /* Stable High-Speed 4 Photo Layout System */
         .photo-grid-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; scrollbar-width: thin; -webkit-overflow-scrolling: touch; }
         .photo-box { min-width: 75px; height: 75px; flex-shrink: 0; background: #fdfbf7; border: 2px dashed var(--gold); border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; color: var(--gold); font-family: 'Cinzel'; font-size: 8px; text-align: center; padding: 3px; cursor: pointer; box-sizing: border-box; }
 
@@ -86,7 +86,7 @@
         .btn-red { background: var(--red); color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; font-weight: 800; margin-top: 10px; }
         .btn-green { background: var(--green); color: white; border: none; padding: 14px; border-radius: 10px; width: 100%; font-weight: 800; margin-top: 15px; text-transform: uppercase; cursor: pointer; display: block; text-align: center; box-sizing: border-box; }
         
-        .detail-img-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-top: 10px; }
+        .detail-img-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 10px; }
         .detail-thumb { width: 100%; height: 50px; object-fit: cover; border-radius: 6px; border: 1px solid #eee; background: #fafafa; }
     </style>
 </head>
@@ -115,21 +115,13 @@
             <img id="jc_img2" class="df-img" src="" crossorigin="anonymous">
             <img id="jc_img3" class="df-img" src="" crossorigin="anonymous">
             <img id="jc_img4" class="df-img" src="" crossorigin="anonymous">
-            <img id="jc_img5" class="df-img" src="" crossorigin="anonymous">
-            <img id="jc_img6" class="df-img" src="" crossorigin="anonymous">
-            <img id="jc_img7" class="df-img" src="" crossorigin="anonymous">
-            <img id="jc_img8" class="df-img" src="" crossorigin="anonymous">
-            <img id="jc_img9" class="df-img" src="" crossorigin="anonymous">
-            <img id="jc_img10" class="df-img" src="" crossorigin="anonymous">
         </div>
 
         <div class="df-row">
-            <div><span class="df-label">Order ID</span><br><span class="df-value" id="jc_id" style="color:var(--red);"></span></div>
             <div><span class="df-label">Weight</span><br><span class="df-value" id="jc_wt"></span></div>
             <div><span class="df-label">Purity</span><br><span class="df-value" id="jc_kt"></span></div>
             <div><span class="df-label">Size</span><br><span class="df-value" id="jc_sz"></span></div>
         </div>
-        <div class="df-row"><span class="df-label">Party Name</span><span class="df-value" id="jc_party"></span></div>
         <div class="df-row"><span class="df-label">Designer</span><span class="df-value" id="jc_cad"></span></div>
         <div style="margin-top:15px; background:#fdfbf7; padding:12px; border-radius:8px; border: 1px solid #eee; box-sizing: border-box; width: 100%;">
             <span class="df-label">Instructions:</span><br>
@@ -160,36 +152,21 @@
     <div id="punchPage" class="page active">
         <div class="punch-card">
             
-            <label style="font-size: 10px; font-weight: 800; color: var(--brown); text-transform: uppercase; letter-spacing: 1px;">Row 1: Main Designs</label>
+            <label style="font-size: 10px; font-weight: 800; color: var(--brown); text-transform: uppercase; letter-spacing: 1px;">Item Designs (Max 4 for Performance Stability)</label>
             <div class="photo-grid-scroll">
                 <div id="p1" class="photo-box" onclick="document.getElementById('f1').click()">IMG 1 (MAIN)</div>
                 <div id="p2" class="photo-box" onclick="document.getElementById('f2').click()">IMG 2</div>
                 <div id="p3" class="photo-box" onclick="document.getElementById('f3').click()">IMG 3</div>
                 <div id="p4" class="photo-box" onclick="document.getElementById('f4').click()">IMG 4</div>
-                <div id="p5" class="photo-box" onclick="document.getElementById('f5').click()">IMG 5</div>
-            </div>
-
-            <label style="font-size: 10px; font-weight: 800; color: var(--brown); text-transform: uppercase; letter-spacing: 1px;">Row 2: Extra Perspectives</label>
-            <div class="photo-grid-scroll">
-                <div id="p6" class="photo-box" onclick="document.getElementById('f6').click()">IMG 6</div>
-                <div id="p7" class="photo-box" onclick="document.getElementById('f7').click()">IMG 7</div>
-                <div id="p8" class="photo-box" onclick="document.getElementById('f8').click()">IMG 8</div>
-                <div id="p9" class="photo-box" onclick="document.getElementById('f9').click()">IMG 9</div>
-                <div id="p10" class="photo-box" onclick="document.getElementById('f10').click()">IMG 10</div>
             </div>
 
             <input type="file" id="f1" accept="image/*" hidden onchange="processPhoto(this, 'p1', 0)">
             <input type="file" id="f2" accept="image/*" hidden onchange="processPhoto(this, 'p2', 1)">
             <input type="file" id="f3" accept="image/*" hidden onchange="processPhoto(this, 'p3', 2)">
             <input type="file" id="f4" accept="image/*" hidden onchange="processPhoto(this, 'p4', 3)">
-            <input type="file" id="f5" accept="image/*" hidden onchange="processPhoto(this, 'p5', 4)">
-            <input type="file" id="f6" accept="image/*" hidden onchange="processPhoto(this, 'p6', 5)">
-            <input type="file" id="f7" accept="image/*" hidden onchange="processPhoto(this, 'p7', 6)">
-            <input type="file" id="f8" accept="image/*" hidden onchange="processPhoto(this, 'p8', 7)">
-            <input type="file" id="f9" accept="image/*" hidden onchange="processPhoto(this, 'p9', 8)">
-            <input type="file" id="f10" accept="image/*" hidden onchange="processPhoto(this, 'p10', 9)">
 
             <input type="text" id="i_id" placeholder="ORDER ID">
+            
             <select id="i_pa">
                 <option value="">SELECT PARTY</option>
                 <option>Annapurna Gold</option>
@@ -200,6 +177,7 @@
                 <option>Neelkanth Jewellers</option>
                 <option>Inhouse Production</option>
             </select>
+            
             <select id="i_cad"><option value="">DESIGNER</option><option>DYE</option><option>SHINDE</option><option>ALAUDDIN</option></select>
             <div style="display:flex; gap:10px;"><input type="number" step="0.001" id="i_wt" placeholder="WT"><input type="text" id="i_kt" placeholder="KT"></div>
             <div style="display:flex; gap:10px;"><input type="text" id="i_sz" placeholder="Size"><input type="date" id="i_dd"></div>
@@ -209,7 +187,7 @@
     </div>
 
     <div id="activePage" class="page">
-        <input type="text" id="src" placeholder="Search ID..." onkeyup="loadData()" style="margin-bottom:15px;">
+        <input type="text" id="src" placeholder="Search ID, Party Name, Designer..." onkeyup="loadData()" style="margin-bottom:15px;">
         <div id="activeList"></div>
     </div>
 
@@ -252,7 +230,7 @@ const db = firebase.database();
 const storage = firebase.storage();
 const stages = ["CAD", "CAM", "CASTING", "POLISH", "HUID", "READY"];
 
-let selectedFiles = new Array(10).fill(null);
+let selectedFiles = new Array(4).fill(null);
 let pendingMoveId = null;
 let pendingMoveCurStage = null;
 
@@ -285,7 +263,7 @@ function unlockDash() {
     }
 }
 
-// OPTIMIZED LIGHTWEIGHT IMAGE COMPRESSION ENGINE (MAX 400PX WIDTH @ 0.4 QUALITY)
+// ULTRA COMPRESSION ENGINE STAYS ACTIVE (320PX @ 0.2 WEIGHT RATIO)
 function processPhoto(input, boxId, index) {
     if(!input.files[0]) return;
     const file = input.files[0];
@@ -295,7 +273,7 @@ function processPhoto(input, boxId, index) {
         const img = new Image();
         img.onload = function() {
             const canvas = document.createElement('canvas');
-            const MAX_WIDTH = 400; 
+            const MAX_WIDTH = 320; 
             let width = img.width;
             let height = img.height;
 
@@ -312,7 +290,7 @@ function processPhoto(input, boxId, index) {
             canvas.toBlob(function(blob) {
                 selectedFiles[index] = blob;
                 document.getElementById(boxId).innerHTML = `<img src="${URL.createObjectURL(blob)}" style="width:100%; height:100%; object-fit:contain;">`;
-            }, 'image/jpeg', 0.4); // Dropped matrix weight to 0.4 for instantaneous remote loading
+            }, 'image/jpeg', 0.2); 
         };
         img.src = e.target.result;
     };
@@ -345,9 +323,9 @@ async function saveOrder() {
     btn.disabled = true;
 
     try {
-        let urls = new Array(10).fill("");
+        let urls = new Array(4).fill("");
 
-        for(let i = 0; i < 10; i++) {
+        for(let i = 0; i < 4; i++) {
             if(selectedFiles[i]) {
                 const photoPath = `order_photos/${id}_slot${i}_${Date.now()}.jpg`;
                 const storageRef = storage.ref(photoPath);
@@ -360,30 +338,24 @@ async function saveOrder() {
 
         const obj = { 
             id: id, 
-            party: party, 
+            party: party,
             cad: designer, 
             wt: parseFloat(weight) || 0, 
             kt: purity, 
             sz: size, 
-            dd: dueDate, 
+            dd: dueDate,
             sp: instructions, 
             photo: urls[0], 
             photo2: urls[1],
             photo3: urls[2],
             photo4: urls[3],
-            photo5: urls[4],
-            photo6: urls[5],
-            photo7: urls[6],
-            photo8: urls[7],
-            photo9: urls[8],
-            photo10: urls[9],
             status: "CAD", 
             ts: Date.now() 
         };
 
         await db.ref('orders/' + id).set(obj);
         
-        showToast(" ORDER PUNCHED SUCCESSFULLY ", "success");
+        showToast("ORDER PUNCHED SUCCESSFULLY ", "success");
         
         setTimeout(() => {
             location.reload(); 
@@ -401,15 +373,15 @@ function openJobCard(orderID) {
     db.ref('orders/' + orderID).once('value').then(snap => {
         const o = snap.val();
         if(!o) return;
-        document.getElementById('jc_id').innerText = o.id;
-        document.getElementById('jc_party').innerText = o.party || "N/A";
-        document.getElementById('jc_cad').innerText = o.cad || "N/A";
+        
+        // Form layout excludes id, party, and delivery dates on purpose as requested
         document.getElementById('jc_wt').innerText = o.wt + "g";
         document.getElementById('jc_kt').innerText = o.kt || "N/A";
         document.getElementById('jc_sz').innerText = o.sz || "N/A";
+        document.getElementById('jc_cad').innerText = o.cad || "N/A";
         document.getElementById('jc_sp').innerText = o.sp || "No instructions";
         
-        for(let i=1; i<=10; i++) {
+        for(let i=1; i<=4; i++) {
             const field = i === 1 ? 'photo' : 'photo' + i;
             const imgEl = document.getElementById('jc_img' + i);
             if(o[field]) {
@@ -426,7 +398,6 @@ function openJobCard(orderID) {
 function downloadJobCard() {
     const target = document.getElementById('captureTarget');
     const dlBtn = document.getElementById('downloadBtn');
-    const orderID = document.getElementById('jc_id').innerText || "ORDER";
     
     dlBtn.innerText = "GENERATING IMAGE...";
     dlBtn.disabled = true;
@@ -439,7 +410,7 @@ function downloadJobCard() {
     }).then(canvas => {
         const imageURI = canvas.toDataURL("image/jpeg", 0.9);
         const link = document.createElement('a');
-        link.download = `SHANTI_JEWEL_${orderID}.jpg`;
+        link.download = `SHANTI_JEWEL_CARD.jpg`;
         link.href = imageURI;
         document.body.appendChild(link);
         link.click();
@@ -461,7 +432,7 @@ function triggerMoveConfirm(id, cur) {
     pendingMoveCurStage = cur;
     const nextStage = stages[stages.indexOf(cur) + 1];
     
-    document.getElementById('confirmMsg').innerText = `Advance Order ${id} from ${cur} to ${nextStage}?`;
+    document.getElementById('confirmMsg').innerText = `Advance Order ${id} to ${nextStage}?`;
     document.getElementById('confirmOverlay').style.display = 'flex';
     
     document.getElementById('confirmYesBtn').onclick = function() {
@@ -499,7 +470,7 @@ function loadData() {
             partyDist[o.party].wt += (parseFloat(o.wt) || 0);
 
             let gridHTML = `<div class="detail-img-grid">`;
-            const imageFields = ['photo', 'photo2', 'photo3', 'photo4', 'photo5', 'photo6', 'photo7', 'photo8', 'photo9', 'photo10'];
+            const imageFields = ['photo', 'photo2', 'photo3', 'photo4'];
             imageFields.forEach(f => {
                 if(o[f]) {
                     gridHTML += `<img src="${o[f]}" class="detail-thumb" onclick="event.stopPropagation(); window.open('${o[f]}', '_blank')">`;
@@ -507,22 +478,23 @@ function loadData() {
             });
             gridHTML += `</div>`;
 
+            // Fields show up safely on the data cards here
             const card = `<div class="card" onclick="this.classList.toggle('expanded')">
                 <div style="display:flex; gap:12px; align-items:center;">
                     <img src="${o.photo || ''}" style="width:60px; height:60px; border-radius:12px; object-fit:cover; border:1px solid #eee;">
                     <div style="flex:1;">
                         <div style="display:flex; justify-content:space-between;">
-                            <b style="color:var(--brown); font-size:16px;">${o.id}</b>
+                            <b style="color:var(--brown); font-size:16px;">${o.id || 'N/A'}</b>
                             <small style="color:var(--red); font-weight:800;">DUE: ${o.dd || 'NONE'}</small>
                         </div>
-                        <div style="font-weight:700; font-size:13px; color:#555;">${o.party || 'UNKNOWN'}</div>
+                        <div style="font-weight:700; font-size:13px; color:#555;">Party: ${o.party || 'N/A'}</div>
                         <small style="text-transform:uppercase; color:var(--gold); font-weight:800; font-size:10px;">STAGE: ${o.status}</small>
                     </div>
                 </div>
                 <div class="timeline">${stages.map((s,i)=>`<div class="t-step ${stages.indexOf(o.status)>=i?'active':''}"><span class="t-label">${s}</span></div>`).join('')}</div>
                 
                 <div class="details">
-                    <div class="df-row"><span class="df-label">Order ID:</span><span class="df-value">${o.id}</span></div>
+                    <div class="df-row"><span class="df-label">Order ID:</span><span class="df-value">${o.id || 'N/A'}</span></div>
                     <div class="df-row"><span class="df-label">Party Name:</span><span class="df-value">${o.party || 'N/A'}</span></div>
                     <div class="df-row"><span class="df-label">Designer:</span><span class="df-value">${o.cad || 'N/A'}</span></div>
                     <div class="df-row"><span class="df-label">Weight:</span><span class="df-value">${o.wt ? o.wt + 'g' : 'N/A'}</span></div>
@@ -531,7 +503,7 @@ function loadData() {
                     <div class="df-row"><span class="df-label">Delivery Date:</span><span class="df-value">${o.dd || 'N/A'}</span></div>
                     <div class="df-row"><span class="df-label">Current Status:</span><span class="df-value" style="color:var(--gold); font-weight:800;">${o.status}</span></div>
                     <div style="margin-top:8px; margin-bottom:8px; background:#fdfbf7; padding:10px; border-radius:8px; border:1px solid #eee;">
-                        <span class="df-label">Special Instructions:</span><br>
+                        <span class="df-label">Instructions:</span><br>
                         <span style="font-size:13px; font-weight:600; color:var(--brown);">${o.sp || 'None'}</span>
                     </div>
                     
@@ -543,7 +515,7 @@ function loadData() {
                 </div></div>`;
             
             if(o.status !== 'READY') {
-                if(!search || o.id.toLowerCase().includes(search)) act.innerHTML += card;
+                if(!search || o.id.toLowerCase().includes(search) || o.party.toLowerCase().includes(search) || o.cad.toLowerCase().includes(search)) act.innerHTML += card;
             } else { hist.innerHTML += card; }
         });
 
@@ -558,10 +530,11 @@ function loadData() {
 function del(id) { 
     if(confirm("Delete Order " + id + "?")) {
         db.ref('orders/'+id).remove();
-        showToast("ORDER DELETED", "error");
+        showToast("ENTRY DELETED", "error");
     } 
 }
 
+// Full admin tools remain secure
 function wipeDataTrigger() { 
     if(confirm("CRITICAL WARNING: ERASE ENTIRE DATABASE PERMANENTLY?")) {
         db.ref('orders').remove();
