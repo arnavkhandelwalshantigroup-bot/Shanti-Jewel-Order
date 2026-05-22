@@ -127,7 +127,6 @@
         </div>
         <div class="df-row">
             <div><span class="df-label">Designer</span><br><span class="df-value" id="jc_cad"></span></div>
-            <div><span class="df-label">Order ID</span><br><span class="df-value" id="jc_order_id"></span></div>
         </div>
         <div style="margin-top:15px; background:#fdfbf7; padding:12px; border-radius:8px; border: 1px solid #eee; box-sizing: border-box; width: 100%;">
             <span class="df-label">Instructions:</span><br>
@@ -369,7 +368,9 @@ function processPhoto(input, boxId, index) {
         const img = new Image();
         img.onload = function() {
             const canvas = document.createElement('canvas');
-            const MAX_WIDTH = 2560; 
+            
+            // Reduced dimension constraints for mobile uploads to prevent memory crashes
+            const MAX_WIDTH = 1280; 
             let width = img.width;
             let height = img.height;
 
@@ -383,10 +384,11 @@ function processPhoto(input, boxId, index) {
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
 
+            // Balanced quality parameter to reduce file size while retaining jewelry line clarity
             canvas.toBlob(function(blob) {
                 selectedFiles[index] = blob;
                 document.getElementById(boxId).innerHTML = `<img src="${URL.createObjectURL(blob)}" style="width:100%; height:100%; object-fit:contain;">`;
-            }, 'image/jpeg', 0.90);
+            }, 'image/jpeg', 0.75);
         };
         img.src = e.target.result;
     };
@@ -492,7 +494,6 @@ function openJobCard(orderID) {
     db.ref('orders/' + orderID).once('value').then(snap => {
         const o = snap.val();
         if(!o) return;
-        document.getElementById('jc_order_id').innerText = o.id;
         document.getElementById('jc_cad').innerText = o.cad;
         document.getElementById('jc_wt').innerText = o.wt + "g";
         document.getElementById('jc_kt').innerText = o.kt;
@@ -518,7 +519,6 @@ function downloadHDJobCard(orderID) {
         const o = snap.val();
         if(!o) return;
 
-        document.getElementById('jc_order_id').innerText = o.id;
         document.getElementById('jc_cad').innerText = o.cad;
         document.getElementById('jc_wt').innerText = o.wt + "g";
         document.getElementById('jc_kt').innerText = o.kt;
@@ -555,18 +555,18 @@ function runHDExport(filenameId) {
     document.getElementById('jobCardOverlay').style.display = 'block';
     
     html2canvas(target, {
-        scale: 4, 
+        scale: 3, 
         useCORS: true, 
         backgroundColor: "#ffffff",
         logging: false
     }).then(canvas => {
         const link = document.createElement('a');
-        link.download = `ORDER_${filenameId}_FORM_4HD.jpg`;
-        link.href = canvas.toDataURL('image/jpeg', 1.0);
+        link.download = `ORDER_${filenameId}_FORM.jpg`;
+        link.href = canvas.toDataURL('image/jpeg', 0.85);
         link.click();
         
         document.getElementById('jobCardOverlay').style.display = originalDisplay;
-        showToast("HD FORM DOWNLOADED", "success");
+        showToast("FORM DOWNLOADED", "success");
     }).catch(err => {
         console.error(err);
         document.getElementById('jobCardOverlay').style.display = originalDisplay;
