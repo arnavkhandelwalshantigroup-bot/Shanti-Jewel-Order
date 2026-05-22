@@ -88,7 +88,9 @@
         .detail-img-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-top: 10px; }
         .detail-thumb { width: 100%; height: 50px; object-fit: cover; border-radius: 6px; border: 1px solid #eee; background: #fafafa; }
 
-        .dash-dye-box { background: linear-gradient(135deg, #f57f17, #fbc02d); border: 2px solid #fff; color: #3e2723; padding: 15px; border-radius: 14px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        /* Unified Gradient Theme for Dye Box and Dashboard Process Metric Slots */
+        .dash-dye-box, .dash-metric-slot { background: linear-gradient(135deg, #f57f17, #fbc02d); border: 2px solid #fff; color: #3e2723; padding: 15px; border-radius: 14px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .dash-dye-box { margin-bottom: 20px; }
         
         /* Advanced Search Panel Panel Box styling */
         .filter-panel { background: #fff; padding: 14px; border-radius: 16px; border: 1px solid var(--gold); margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
@@ -233,10 +235,13 @@
     </div>
 
     <div id="dashPage" class="page">
-        <div id="dashLock" style="text-align:center; padding:40px; background:var(--brown); border-radius:20px; color:white;">
-            <h2>ADMIN panel</h2>
-            <input type="password" id="dashPinInput" onkeyup="if(this.value.length === 4) unlockDash()" placeholder="PIN" style="text-align:center; max-width:150px; color:black;">
-            <button class="btn-gold" onclick="unlockDash()">UNLOCK</button>
+        <!-- Re-designed Entry Form Match Main Look Constraints -->
+        <div id="dashLock" style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--brown); padding: 40px 20px; border-radius: 25px; border: 1px solid var(--gold); text-align: center; color: white; margin-top: 20px;">
+            <h2 style="font-family:'Cinzel'; color:var(--gold); letter-spacing:4px; margin: 0 0 20px 0;">RESTRICTED</h2>
+            <div style="width: 100%; max-width: 260px;">
+                <input type="password" id="dashPinInput" onkeyup="if(this.value.length === 4) unlockDash()" placeholder="PIN" style="text-align:center; letter-spacing:15px; font-size:24px; color:black; width:100%; margin-bottom:15px;">
+                <button class="btn-gold" onclick="unlockDash()">UNLOCK</button>
+            </div>
         </div>
         <div id="dashBody" style="display:none;">
             <!-- Dedicated DYE Summary Card Box -->
@@ -625,18 +630,22 @@ function loadData() {
             } else { hist.innerHTML += card; }
         });
 
+        // Renamed Box and setup structural wrapper
         document.getElementById('dyeMetricsContainer').innerHTML = `
             <div class="dash-dye-box">
-                <div style="font-family:'Cinzel'; font-size:13px; font-weight:800; letter-spacing:1px; margin-bottom:5px; border-bottom:1px solid rgba(62,39,35,0.2); padding-bottom:5px;">DYE DESIGN OVERVIEW</div>
+                <div style="font-family:'Cinzel'; font-size:14px; font-weight:800; letter-spacing:2px; margin-bottom:5px; border-bottom:1px solid rgba(62,39,35,0.2); padding-bottom:5px;">DYE</div>
                 <div style="display:flex; justify-content:space-around; margin-top:8px;">
                     <div><span class="df-label" style="color:#5d4037;">Active Pcs</span><br><span style="font-size:18px; font-weight:800;">${dyeActiveCount}</span></div>
                     <div><span class="df-label" style="color:#5d4037;">Total Weight</span><br><span style="font-size:18px; font-weight:800;">${dyeActiveWeight.toFixed(3)}g</span></div>
                 </div>
             </div>`;
 
+        // Process boxes matched with the matching vibrant theme class
         statsDiv.innerHTML = stages.map(s => {
-            let label = s;
-            return `<div style="background:var(--brown); color:var(--gold); padding:8px; border-radius:10px; text-align:center;"><h3>${counts[s]}</h3><small style="font-size:8px;">${label}</small></div>`;
+            return `<div class="dash-metric-slot">
+                <h3 style="margin: 0; font-size: 20px; font-weight: 800;">${counts[s]}</h3>
+                <small style="font-size:9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.85;">${s}</small>
+            </div>`;
         }).join('');
         
         let tableHTML = `<table class="party-table"><thead><tr><th>Party</th><th>Pcs</th><th>Total Wt</th></tr></thead><tbody>`;
