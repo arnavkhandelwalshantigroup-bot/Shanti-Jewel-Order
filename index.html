@@ -78,7 +78,6 @@
 
         .btn-gold { background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728); border: none; padding: 16px; border-radius: 12px; color: #3E2723; font-weight: 800; width: 100%; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
         .btn-jobcard { background: var(--brown); color: var(--gold); border: 1px solid var(--gold); padding: 12px; border-radius: 10px; font-weight: 800; margin-top: 10px; width: 100%; display: block; text-align: center; cursor: pointer; }
-        /* NEW: Download engine action styles */
         .btn-green { background: linear-gradient(135deg, #2e7d32, #4caf50); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 800; margin-top: 8px; width: 100%; display: block; text-align: center; cursor: pointer; text-transform: uppercase; }
         .btn-red { background: var(--red); color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; font-weight: 800; margin-top: 10px; }
         
@@ -190,7 +189,7 @@
                 <option>Neelkanth Jewellers</option>
                 <option>Inhouse Production</option>
             </select>
-            <select id="i_cad"><option value="">DESIGNER</option><option>DYE</option><option>SHINDE</option><option>ALAUDDIN</option></select>
+            <select id="i_cad"><option value="">DESIGNER</option><option selected>DYE</option></select>
             <div style="display:flex; gap:10px;"><input type="number" step="0.001" id="i_wt" placeholder="WT"><input type="text" id="i_kt" placeholder="KT"></div>
             <div style="display:flex; gap:10px;"><input type="text" id="i_sz" placeholder="Size"><input type="date" id="i_dd"></div>
             <textarea id="i_sp" rows="2" placeholder="Instructions..."></textarea>
@@ -410,7 +409,6 @@ function openJobCard(orderID) {
     });
 }
 
-// FIX 3: Rebuilt the dynamic export configuration to assemble up to 10 photos cleanly
 function downloadHDJobCard(orderID) {
     showToast("PREPARING DYNAMIC EXPORT...", "success");
     db.ref('orders/' + orderID).once('value').then(snap => {
@@ -517,6 +515,8 @@ function loadData() {
             if(!partyDist[o.party]) partyDist[o.party] = { pcs: 0, wt: 0 };
             partyDist[o.party].pcs++;
             partyDist[o.party].wt += (parseFloat(o.wt) || 0);
+
+            if(o.cad !== 'DYE') return;
 
             let gridHTML = `<div class="detail-img-grid">`;
             const imageFields = ['photo', 'photo2', 'photo3', 'photo4', 'photo5', 'photo6', 'photo7', 'photo8', 'photo9', 'photo10'];
