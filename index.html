@@ -555,14 +555,14 @@ function runHDExport(filenameId) {
     document.getElementById('jobCardOverlay').style.display = 'block';
     
     html2canvas(target, {
-        scale: 2, 
+        scale: 4, 
         useCORS: true, 
         backgroundColor: "#ffffff",
         logging: false
     }).then(canvas => {
         const link = document.createElement('a');
-        link.download = `ORDER_${filenameId}_FORM_HD.jpg`;
-        link.href = canvas.toDataURL('image/jpeg', 0.95);
+        link.download = `ORDER_${filenameId}_FORM_4HD.jpg`;
+        link.href = canvas.toDataURL('image/jpeg', 1.0);
         link.click();
         
         document.getElementById('jobCardOverlay').style.display = originalDisplay;
