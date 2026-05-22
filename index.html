@@ -78,7 +78,6 @@
 
         .btn-gold { background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728); border: none; padding: 16px; border-radius: 12px; color: #3E2723; font-weight: 800; width: 100%; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
         .btn-jobcard { background: var(--brown); color: var(--gold); border: 1px solid var(--gold); padding: 12px; border-radius: 10px; font-weight: 800; margin-top: 10px; width: 100%; display: block; text-align: center; cursor: pointer; }
-        .btn-green { background: linear-gradient(135deg, #2e7d32, #4caf50); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 800; margin-top: 8px; width: 100%; display: block; text-align: center; cursor: pointer; text-transform: uppercase; }
         .btn-red { background: var(--red); color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; font-weight: 800; margin-top: 10px; }
         
         .detail-img-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-top: 10px; }
@@ -274,6 +273,7 @@ function unlockDash() {
     }
 }
 
+// HIGH OPTIMIZATION: Max dimensions reduced to 300px width with a 0.3 compression quality factor
 function processPhoto(input, boxId, index) {
     if(!input.files[0]) return;
     const file = input.files[0];
@@ -283,7 +283,7 @@ function processPhoto(input, boxId, index) {
         const img = new Image();
         img.onload = function() {
             const canvas = document.createElement('canvas');
-            const MAX_WIDTH = 500; 
+            const MAX_WIDTH = 300; 
             let width = img.width;
             let height = img.height;
 
@@ -300,7 +300,7 @@ function processPhoto(input, boxId, index) {
             canvas.toBlob(function(blob) {
                 selectedFiles[index] = blob;
                 document.getElementById(boxId).innerHTML = `<img src="${URL.createObjectURL(blob)}" style="width:100%; height:100%; object-fit:contain;">`;
-            }, 'image/jpeg', 0.7);
+            }, 'image/jpeg', 0.3);
         };
         img.src = e.target.result;
     };
@@ -406,70 +406,30 @@ function openJobCard(orderID) {
             }
         }
         document.getElementById('jobCardOverlay').style.display = 'block';
-    });
-}
-
-function downloadHDJobCard(orderID) {
-    showToast("PREPARING DYNAMIC EXPORT...", "success");
-    db.ref('orders/' + orderID).once('value').then(snap => {
-        const o = snap.val();
-        if(!o) return;
-
-        document.getElementById('jc_cad').innerText = o.cad;
-        document.getElementById('jc_wt').innerText = o.wt + "g";
-        document.getElementById('jc_kt').innerText = o.kt;
-        document.getElementById('jc_sz').innerText = o.sz;
-        document.getElementById('jc_sp').innerText = o.sp || "No instructions";
-        
-        let loadedImages = 0;
-        let totalImages = 0;
-        const imageFields = ['photo', 'photo2', 'photo3', 'photo4', 'photo5', 'photo6', 'photo7', 'photo8', 'photo9', 'photo10'];
-        
-        const validFields = imageFields.filter(field => o[field] && o[field].trim() !== "");
-        totalImages = validFields.length;
-
-        imageFields.forEach((field, idx) => {
-            const imgEl = document.getElementById('jc_img' + (idx + 1));
-            if(o[field] && o[field].trim() !== "") {
-                imgEl.src = o[field];
-                imgEl.style.display = 'block';
-                imgEl.onload = imgEl.onerror = () => {
-                    loadedImages++;
-                    if(loadedImages === totalImages) generateCanvasDownload(o.id);
-                };
-            } else {
-                imgEl.src = ""; 
-                imgEl.style.display = 'none';
-            }
-        });
-
-        if(totalImages === 0) generateCanvasDownload(o.id);
+        setTimeout(() => { generateCanvasDownload(o.id); }, 400);
     });
 }
 
 function generateCanvasDownload(filenameId) {
     const target = document.getElementById('hdFormCaptureBlock');
     const overlay = document.getElementById('jobCardOverlay');
-    const originalDisplay = overlay.style.display;
-    
-    overlay.style.display = 'block';
     
     html2canvas(target, {
-        scale: 3, 
+        scale: 1.5, 
         useCORS: true, 
         backgroundColor: "#ffffff",
         logging: false
     }).then(canvas => {
         const link = document.createElement('a');
         link.download = `ORDER_${filenameId}_FORM.jpg`;
-        link.href = canvas.toDataURL('image/jpeg', 0.9);
+        link.href = canvas.toDataURL('image/jpeg', 0.6);
         link.click();
         
-        overlay.style.display = originalDisplay;
+        overlay.style.display = 'none';
         showToast("IMAGE DOWNLOADED SUCCESSFULLY", "success");
     }).catch(err => {
         console.error(err);
-        overlay.style.display = originalDisplay;
+        overlay.style.display = 'none';
         showToast("DOWNLOAD EXPORT FAILED", "error");
     });
 }
@@ -557,8 +517,7 @@ function loadData() {
                     
                     ${gridHTML}
                     
-                    <button class="btn-jobcard" onclick="event.stopPropagation(); openJobCard('${o.id}')">PREVIEW FORM</button>
-                    <button class="btn-green" onclick="event.stopPropagation(); downloadHDJobCard('${o.id}')">DOWNLOAD HD FORM</button>
+                    <button class="btn-jobcard" onclick="event.stopPropagation(); openJobCard('${o.id}')">DOWNLOAD FORM</button>
                     ${o.status!=='READY'?`<button class="btn-gold" style="font-size:11px;" onclick="event.stopPropagation(); triggerMoveConfirm('${o.id}','${o.status}')">NEXT STAGE</button>`:''}
                     <button class="btn-red" style="font-size:10px; opacity:0.6;" onclick="event.stopPropagation(); del('${o.id}')">DELETE</button>
                 </div></div>`;
