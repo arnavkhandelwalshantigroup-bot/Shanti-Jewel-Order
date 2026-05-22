@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -94,6 +95,10 @@
         
         /* Advanced Search Panel Panel Box styling */
         .filter-panel { background: #fff; padding: 14px; border-radius: 16px; border: 1px solid var(--gold); margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+
+        /* Full Screen Cover for Restricted State to Match Main Entry Screen Design */
+        .restricted-lock-screen { position: absolute; top: 0; left: 0; width: 100%; min-height: calc(100vh - 165px); background: var(--brown); display: flex; flex-direction: column; align-items: center; justify-content: center; box-sizing: border-box; padding: 20px; z-index: 100; border-radius: 0; margin: -15px; }
+        .restricted-wrapper { position: relative; width: 100%; min-height: calc(100vh - 165px); }
     </style>
 </head>
 <body>
@@ -235,20 +240,23 @@
     </div>
 
     <div id="dashPage" class="page">
-        <!-- Re-designed Entry Form Match Main Look Constraints -->
-        <div id="dashLock" style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--brown); padding: 40px 20px; border-radius: 25px; border: 1px solid var(--gold); text-align: center; color: white; margin-top: 20px;">
-            <h2 style="font-family:'Cinzel'; color:var(--gold); letter-spacing:4px; margin: 0 0 20px 0;">RESTRICTED</h2>
-            <div style="width: 100%; max-width: 260px;">
-                <input type="password" id="dashPinInput" onkeyup="if(this.value.length === 4) unlockDash()" placeholder="PIN" style="text-align:center; letter-spacing:15px; font-size:24px; color:black; width:100%; margin-bottom:15px;">
-                <button class="btn-gold" onclick="unlockDash()">UNLOCK</button>
+        <div class="restricted-wrapper">
+            <!-- Full Page Sized Restricted Screen Variant matching Main Lock Screen Style Constraints -->
+            <div id="dashLock" class="restricted-lock-screen">
+                <h1 style="font-family:'Cinzel'; color:var(--gold); letter-spacing:5px; margin-bottom: 20px;">SHANTI JEWEL</h1>
+                <div class="lock-container">
+                    <h2 style="font-family:'Cinzel'; color:var(--gold); letter-spacing:4px; margin: 0 0 20px 0; font-size: 18px;">RESTRICTED</h2>
+                    <input type="password" id="dashPinInput" onkeyup="if(this.value.length === 4) unlockDash()" placeholder="PIN" style="text-align:center; letter-spacing:15px; font-size:24px; color:black; width:100%; margin-bottom:15px;">
+                    <button class="btn-gold" onclick="unlockDash()">UNLOCK</button>
+                </div>
             </div>
-        </div>
-        <div id="dashBody" style="display:none;">
-            <!-- Dedicated DYE Summary Card Box -->
-            <div id="dyeMetricsContainer"></div>
-            <div id="stats" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;"></div>
-            <div id="partyAnalysis"></div>
-            <button class="btn-red" style="margin-top: 30px;" onclick="wipeDataTrigger()">WIPEOUT DATABASE</button>
+            <div id="dashBody" style="display:none;">
+                <!-- Dedicated DYE Summary Card Box -->
+                <div id="dyeMetricsContainer"></div>
+                <div id="stats" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;"></div>
+                <div id="partyAnalysis"></div>
+                <button class="btn-red" style="margin-top: 30px;" onclick="wipeDataTrigger()">WIPEOUT DATABASE</button>
+            </div>
         </div>
     </div>
 
