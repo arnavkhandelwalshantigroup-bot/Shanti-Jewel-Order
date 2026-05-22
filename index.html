@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SHANTI JEWEL</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght=700&family=Montserrat:wght=400;600;800&display=swap" rel="stylesheet">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Cinzel+Decorative:wght@700&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <link rel="manifest" href="./manifest.json?v=6">
     <meta name="mobile-web-app-capable" content="yes">
@@ -24,7 +25,10 @@
         .lock-container { background: rgba(255,255,255,0.05); padding: 30px; border-radius: 25px; border: 1px solid var(--gold); width: 85%; max-width: 320px; text-align: center; }
 
         .header { background: var(--brown); color: var(--gold); text-align: center; padding: 25px 10px; border-bottom: 5px solid var(--gold); }
-        .header h1 { font-family: 'Cinzel', serif; margin: 0; font-size: 24px; letter-spacing: 4px; }
+        
+        /* RESTORED DECORATIVE HEADINGS */
+        .header h1 { font-family: 'Cinzel Decorative', serif; margin: 0; font-size: 22px; letter-spacing: 3px; }
+        .lock-title { font-family: 'Cinzel Decorative', serif; color: var(--gold); letter-spacing: 4px; margin-bottom: 15px; font-size: 24px; text-align: center; }
 
         #jobCardOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:5000; overflow-y:auto; padding:15px; box-sizing:border-box; }
         .digital-form { background: #fff; border: 6px double var(--gold); padding: 20px; max-width: 400px; margin: 20px auto; color: var(--brown); border-radius: 2px; box-sizing: border-box; }
@@ -85,7 +89,7 @@
 <div id="themeToast"></div>
 
 <div id="mainLock">
-    <h1 style="font-family:'Cinzel'; color:var(--gold); letter-spacing:5px; margin-bottom: 10px;">SHANTI JEWEL</h1>
+    <div class="lock-title">SHANTI JEWEL</div>
     <div class="lock-container">
         <div id="pinForm">
             <p style="font-family:'Montserrat'; font-size:11px; font-weight:600; color:#ddd; margin-bottom:15px; text-transform:uppercase;">Enter Access Code</p>
@@ -109,7 +113,7 @@
     <div class="digital-form" onclick="event.stopPropagation()">
         <div class="df-header">
             <small style="font-family:'Montserrat'; font-weight:600;">॥ श्री ॥</small>
-            <h2 style="font-family:'Cinzel'; margin:5px 0;">SHANTI JEWEL</h2>
+            <h2 style="font-family:'Cinzel Decorative'; margin:5px 0; font-size: 20px;">SHANTI JEWEL</h2>
             <small style="font-family:'Montserrat'; font-weight:700; color:var(--gold); letter-spacing:2px;">PRODUCTION SPECIFICATIONS</small>
         </div>
         
@@ -147,7 +151,7 @@
 </div>
 
 <div id="appContent" style="display:none;">
-    <div class="header"><h1 style="font-family:'Cinzel';">SHANTI JEWEL</h1></div>
+    <div class="header"><h1>SHANTI JEWEL</h1></div>
 
     <div id="punchPage" class="page active">
         <div class="punch-card">
@@ -194,7 +198,7 @@
 
     <div id="dashPage" class="page">
         <div id="dashLock" style="text-align:center; padding:40px; background:var(--brown); border-radius:20px; color:white;">
-            <h2 style="font-family:'Cinzel';">ADMIN panel</h2>
+            <h2 style="font-family:'Cinzel Decorative';">ADMIN panel</h2>
             <input type="password" id="dashPinInput" placeholder="PIN" style="text-align:center; max-width:150px; color:black;">
             <button class="btn-gold" onclick="unlockDash()">UNLOCK</button>
         </div>
@@ -202,7 +206,7 @@
             <div id="stats" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;"></div>
             <div id="partyAnalysis"></div>
             
-            <h3 style="font-family:'Cinzel'; margin-top:25px; color:var(--brown); border-bottom:2px solid var(--gold); padding-bottom:5px;">PORTAL SECURITY TERMINAL</h3>
+            <h3 style="font-family:'Cinzel Decorative'; margin-top:25px; color:var(--brown); border-bottom:2px solid var(--gold); padding-bottom:5px; font-size: 16px;">PORTAL SECURITY TERMINAL</h3>
             <div id="deviceApprovalsList" style="margin-bottom:20px;"></div>
 
             <button class="btn-red" style="margin-top: 30px;" onclick="wipeDataTrigger()">WIPEOUT DATABASE</button>
@@ -248,15 +252,11 @@ function showToast(message, type = "success") {
     setTimeout(() => { toast.classList.remove("show"); }, 4000);
 }
 
-// THE NEW PERMANENT MASTER KEY SECURITY LOGIC
 function verifyPinStep() {
     const enteredCode = document.getElementById('entryPin').value.trim();
     
-    // 1. THE 2825 UN-DELETABLE PERMANENT WHIETLIST RULE
     if(enteredCode === '2825') {
         localStorage.setItem('shanti_permanent_vip', 'true');
-        
-        // Push an un-deletable configuration directly to the database registry
         db.ref('allowed_devices/' + deviceUUID).set({
             uuid: deviceUUID, 
             name: "PERMANENT MASTER DEVICE", 
@@ -273,7 +273,6 @@ function verifyPinStep() {
         return;
     }
 
-    // 2. BACKUP OWNER INTERFACE PASS
     if(enteredCode === '2215') {
         document.getElementById('mainLock').style.display = 'none';
         document.getElementById('appContent').style.display = 'block';
@@ -283,7 +282,6 @@ function verifyPinStep() {
         return;
     }
 
-    // 3. REGULAR WORKER SYSTEM PIN
     if(enteredCode === '1008') {
         db.ref('allowed_devices/' + deviceUUID).once('value').then(snap => {
             const access = snap.val();
@@ -306,20 +304,17 @@ function verifyPinStep() {
     }
 }
 
-// CONTINUOUS ACCESS BACKGROUND MONITOR
 function startSecurityMonitor() {
-    // CRITICAL FIX: If 2825 has been entered once on this phone, IMMEDIATELY bypass all system locks
     if(localStorage.getItem('shanti_permanent_vip') === 'true') {
         document.getElementById('mainLock').style.display = 'none';
         document.getElementById('appContent').style.display = 'block';
         loadData();
         loadApprovalsList();
-        return; // Exits immediately. The database cannot overwrite or lock this out.
+        return;
     }
 
-    // Run basic tracking logic for normal workers only
     db.ref('allowed_devices/' + deviceUUID).on('value', snap => {
-        if(localStorage.getItem('shanti_permanent_vip') === 'true') return; // Double protection
+        if(localStorage.getItem('shanti_permanent_vip') === 'true') return;
         
         const access = snap.val();
         if (!access || access.status !== 'approved') {
@@ -602,7 +597,7 @@ function loadData() {
             } else { hist.innerHTML += card; }
         });
 
-        statsDiv.innerHTML = stages.map(s => `<div style="background:var(--brown); color:var(--gold); padding:8px; border-radius:10px; text-align:center;"><h3 style="font-family:'Cinzel'; margin:5px 0;">${counts[s]}</h3><small style="font-family:'Montserrat'; font-size:8px;">${s}</small></div>`).join('');
+        statsDiv.innerHTML = stages.map(s => `<div style="background:var(--brown); color:var(--gold); padding:8px; border-radius:10px; text-align:center;"><h3 style="font-family:'Cinzel Decorative'; margin:5px 0; font-size: 16px;">${counts[s]}</h3><small style="font-family:'Montserrat'; font-size:8px;">${s}</small></div>`).join('');
         
         let tableHTML = `<table class="party-table"><thead><tr><th>Party</th><th>Pcs</th><th>Total Wt</th></tr></thead><tbody>`;
         for (const p in partyDist) tableHTML += `<tr><td>${p || "N/A"}</td><td>${partyDist[p].pcs}</td><td>${partyDist[p].wt.toFixed(3)}g</td></tr>`;
