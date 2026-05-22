@@ -46,9 +46,9 @@
         .confirm-box { background: white; border: 2px solid var(--gold); border-radius: 20px; padding: 25px; max-width: 300px; width: 85%; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         
         /* Dynamic Theme Notification Toast */
-        #themeToast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); width: 85%; max-width: 350px; padding: 16px; border-radius: 14px; color: white; font-weight: 700; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.35); z-index: 10000; transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-size: 13px; letter-spacing: 1px; border: 1.5px solid rgba(255,255,255,0.2); }
+        #themeToast { position: fixed; top: -200px; left: 50%; transform: translateX(-50%); width: 85%; max-width: 350px; padding: 16px; border-radius: 14px; color: white; font-weight: 700; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.35); z-index: 10000; transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-size: 13px; letter-spacing: 1px; border: 1.5px solid rgba(255,255,255,0.2); white-space: pre-line; }
         #themeToast.show { top: 25px; }
-        #themeToast.success { background: linear-gradient(135deg, var(--brown), #2b1b18); color: var(--gold); border-color: var(--gold); }
+        #themeToast.success { background: linear-gradient(135deg, var(--brown), #2b1b18); color: var(--gold); border-color: var(--gold); font-family: 'Cinzel', serif; }
         #themeToast.error { background: linear-gradient(135deg, var(--red), #900); color: #fff; }
 
         .punch-card { background: white; border-radius: 20px; padding: 20px; border: 1px solid var(--gold); }
@@ -244,7 +244,6 @@ const db = firebase.database();
 const storage = firebase.storage();
 const stages = ["CAD", "CAM", "CASTING", "POLISH", "HUID", "READY"];
 
-// Initialize array with 10 slots
 let selectedFiles = new Array(10).fill(null);
 let pendingMoveId = null;
 let pendingMoveCurStage = null;
@@ -256,7 +255,7 @@ function showToast(message, type = "success") {
     
     setTimeout(() => {
         toast.classList.remove("show");
-    }, 4000);
+    }, 6000); // Extended view limit for long data lists
 }
 
 function unlockMain() {
@@ -264,6 +263,9 @@ function unlockMain() {
         document.getElementById('mainLock').style.display = 'none';
         document.getElementById('appContent').style.display = 'block';
         loadData();
+        // Fire background alert engine
+        setInterval(checkDeliveryDeadlines, 60000);
+        checkDeliveryDeadlines();
     } else { 
         showToast("INVALID ACCESS PIN", "error"); 
     }
@@ -311,7 +313,6 @@ function processPhoto(input, boxId, index) {
     reader.readAsDataURL(file);
 }
 
-// 10 SLOT VERIFICATION ENGINE
 async function saveOrder() {
     const btn = document.getElementById('punchBtn');
     
@@ -390,7 +391,6 @@ async function saveOrder() {
     }
 }
 
-// POPUP FORM SHOWING DYNAMIC ALLOCATED IMAGES (UP TO 10)
 function openJobCard(orderID) {
     db.ref('orders/' + orderID).once('value').then(snap => {
         const o = snap.val();
@@ -439,6 +439,65 @@ function closeConfirm() {
     pendingMoveCurStage = null;
 }
 
+// AUTOMATED TIMED DELIVERY ALERT ENGINE
+function checkDeliveryDeadlines() {
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+
+    const is10AM = (currentHour === 10 && currentMinute === 0);
+    const is8PM = (currentHour === 20 && currentMinute === 0);
+
+    if (!is10AM && !is8PM) return;
+
+    // Local Date String Conversions (YYYY-MM-DD matches input layout)
+    const formatLocalDateString = (dateObj) => {
+        const year = dateObj.getFullYear();
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const day = String(dateObj.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+
+    const todayStr = formatLocalDateString(now);
+    
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = formatLocalDateString(tomorrow);
+
+    db.ref('orders').once('value').then(snap => {
+        const orders = snap.val();
+        if (!orders) return;
+
+        let trackingKey = `notified_${todayStr}_${currentHour}`;
+        if (localStorage.getItem(trackingKey)) return; 
+
+        let sameDayAlerts = [];
+        let nextDayAlerts = [];
+
+        Object.values(orders).forEach(o => {
+            if (o.status === "READY") return; // Filter finished items out
+
+            if (o.dd === todayStr) {
+                sameDayAlerts.push(`ID: ${o.id} | PARTY: ${o.party} | WT: ${o.wt}g | PURITY: ${o.kt} | SIZE: ${o.sz} | STATUS: ${o.status}`);
+            } else if (o.dd === tomorrowStr) {
+                nextDayAlerts.push(o.id);
+            }
+        });
+
+        if (is10AM && sameDayAlerts.length > 0) {
+            let compiledMsg = "URGENT SAME DAY DELIVERY ORDERS\n\n" + sameDayAlerts.join("\n\n");
+            showToast(compiledMsg, "success");
+            localStorage.setItem(trackingKey, "true");
+        }
+
+        if (is8PM && nextDayAlerts.length > 0) {
+            let compiledMsg = "UPCOMING TOMORROW DEADLINES\n\nORDERS DUE: " + nextDayAlerts.join(", ");
+            showToast(compiledMsg, "success");
+            localStorage.setItem(trackingKey, "true");
+        }
+    });
+}
+
 function loadData() {
     const search = document.getElementById('src').value.toLowerCase();
     db.ref('orders').on('value', snap => {
@@ -457,7 +516,6 @@ function loadData() {
             partyDist[o.party].pcs++;
             partyDist[o.party].wt += (parseFloat(o.wt) || 0);
 
-            // Constructing 10-column display grid inside the expandable cards
             let gridHTML = `<div class="detail-img-grid">`;
             const imageFields = ['photo', 'photo2', 'photo3', 'photo4', 'photo5', 'photo6', 'photo7', 'photo8', 'photo9', 'photo10'];
             imageFields.forEach(f => {
