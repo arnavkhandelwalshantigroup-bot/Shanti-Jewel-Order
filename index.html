@@ -17,7 +17,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js"></script>
 
     <style>
         :root { --gold: #D4AF37; --brown: #3E2723; --cream: #FFFDE7; --text: #212121; --red: #c62828; --green: #2e7d32; }
@@ -174,7 +173,7 @@
             <input type="file" id="f1" accept="image/*" hidden onchange="processPhoto(this, 'p1', 0)">
             <input type="file" id="f2" accept="image/*" hidden onchange="processPhoto(this, 'p2', 1)">
             <input type="file" id="f3" accept="image/*" hidden onchange="processPhoto(this, 'p3', 2)">
-            <input type="file" id="f4" accept="image/*" hidden onchange="processPhoto(this, 'f4', 3)">
+            <input type="file" id="f4" accept="image/*" hidden onchange="processPhoto(this, 'p4', 3)">
             <input type="file" id="f5" accept="image/*" hidden onchange="processPhoto(this, 'p5', 4)">
             <input type="file" id="f6" accept="image/*" hidden onchange="processPhoto(this, 'p6', 5)">
             <input type="file" id="f7" accept="image/*" hidden onchange="processPhoto(this, 'p7', 6)">
@@ -193,7 +192,7 @@
                 <option>Neelkanth Jewellers</option>
                 <option>Inhouse Production</option>
             </select>
-            <select id="i_cad"><option value="">DESIGNER</option><option selected>DYE</option><option>SHINDE</option><option>ALAUDDIN</option></select>
+            <select id="i_cad"><option value="">DESIGNER</option><option>DYE</option><option>SHINDE</option><option>ALAUDDIN</option></select>
             <div style="display:flex; gap:10px;"><input type="number" step="0.001" id="i_wt" placeholder="WT"><input type="text" id="i_kt" placeholder="KT"></div>
             <div style="display:flex; gap:10px;"><input type="text" id="i_sz" placeholder="Size"><input type="date" id="i_dd"></div>
             <textarea id="i_sp" rows="2" placeholder="Instructions..."></textarea>
@@ -279,7 +278,6 @@ function unlockDash() {
     }
 }
 
-// HIGH OPTIMIZATION: Compressed file parameters for precision low footprint loading
 function processPhoto(input, boxId, index) {
     if(!input.files[0]) return;
     const file = input.files[0];
@@ -289,7 +287,7 @@ function processPhoto(input, boxId, index) {
         const img = new Image();
         img.onload = function() {
             const canvas = document.createElement('canvas');
-            const MAX_WIDTH = 300; 
+            const MAX_WIDTH = 500; 
             let width = img.width;
             let height = img.height;
 
@@ -306,59 +304,11 @@ function processPhoto(input, boxId, index) {
             canvas.toBlob(function(blob) {
                 selectedFiles[index] = blob;
                 document.getElementById(boxId).innerHTML = `<img src="${URL.createObjectURL(blob)}" style="width:100%; height:100%; object-fit:contain;">`;
-            }, 'image/jpeg', 0.3);
+            }, 'image/jpeg', 0.7);
         };
         img.src = e.target.result;
     };
     reader.readAsDataURL(file);
-}
-
-// Daily Scheduled Notification Engine
-function checkDeadlinesAndNotify() {
-    const now = new Date();
-    const currentHour = now.getHours();
-    
-    const isTwoPMWindow = (currentHour === 14);
-    const isFourPMWindow = (currentHour === 16);
-
-    if (!isTwoPMWindow && !isFourPMWindow) return;
-
-    const storageKey = `last_sweep_${now.toDateString()}_${currentHour}`;
-    if (localStorage.getItem(storageKey)) return;
-
-    db.ref('orders').once('value', (snapshot) => {
-        if (!snapshot.exists()) return;
-        
-        const orders = snapshot.val();
-        const todayStr = now.toISOString().split('T')[0];
-        
-        const tomorrow = new Date();
-        tomorrow.setDate(now.getDate() + 1);
-        const tomorrowStr = tomorrow.toISOString().split('T')[0];
-
-        let urgentCount = 0;
-
-        for (let key in orders) {
-            const order = orders[key];
-            if (order.status !== "READY" && order.dd) {
-                if (isTwoPMWindow && order.dd === tomorrowStr) {
-                    urgentCount++;
-                }
-                else if (isFourPMWindow && order.dd === todayStr) {
-                    urgentCount++;
-                }
-            }
-        }
-
-        if (urgentCount > 0) {
-            localStorage.setItem(storageKey, "true");
-            if (isTwoPMWindow) {
-                showToast(`⚠️ DASHBOARD ALERT: ${urgentCount} orders are due tomorrow!`, "error");
-            } else if (isFourPMWindow) {
-                showToast(`🚨 CRITICAL ACTION REQUIRED: ${urgentCount} orders are due TODAY!`, "error");
-            }
-        }
-    });
 }
 
 // 10 SLOT VERIFICATION ENGINE
@@ -372,246 +322,4 @@ async function saveOrder() {
     const purity = document.getElementById('i_kt').value.trim();
     const size = document.getElementById('i_sz').value.trim();
     const dueDate = document.getElementById('i_dd').value;
-    const instructions = document.getElementById('i_sp').value.trim();
-
-    if (!selectedFiles[0]) { showToast("MISSING PHOTO: MAIN IMG 1 IS REQUIRED", "error"); return; }
-    if (!id) { showToast("INPUT REQUIRED: ORDER ID IS BLANK", "error"); return; }
-    if (!party) { showToast("INPUT REQUIRED: SELECT PARTY NAME", "error"); return; }
-    if (!designer) { showToast("INPUT REQUIRED: SELECT DESIGNER ASSIGNMENT", "error"); return; }
-    if (!weight) { showToast("INPUT REQUIRED: ENTER ITEM WEIGHT", "error"); return; }
-    if (!purity) { showToast("INPUT REQUIRED: ENTER METAL PURITY (KT)", "error"); return; }
-    if (!size) { showToast("INPUT REQUIRED: ENTER SPECIFICATION SIZE", "error"); return; }
-    if (!dueDate) { showToast("INPUT REQUIRED: SELECT DELIVERY DUE DATE", "error"); return; }
-    if (!instructions) { showToast("INPUT REQUIRED: PROVIDE ORDER INSTRUCTIONS", "error"); return; }
-    
-    btn.innerText = "UPLOADING PHOTOS...";
-    btn.disabled = true;
-
-    try {
-        let urls = new Array(10).fill("");
-
-        for(let i = 0; i < 10; i++) {
-            if(selectedFiles[i]) {
-                const photoPath = `order_photos/${id}_slot${i}_${Date.now()}.jpg`;
-                const storageRef = storage.ref(photoPath);
-                const uploadTask = await storageRef.put(selectedFiles[i]);
-                urls[i] = await uploadTask.ref.getDownloadURL();
-            }
-        }
-
-        btn.innerText = "SAVING ALL DETAILS...";
-
-        const obj = { 
-            id: id, 
-            party: party, 
-            cad: designer, 
-            wt: parseFloat(weight) || 0, 
-            kt: purity, 
-            sz: size, 
-            dd: dueDate, 
-            sp: instructions, 
-            photo: urls[0] || "", 
-            photo2: urls[1] || "",
-            photo3: urls[2] || "",
-            photo4: urls[3] || "",
-            photo5: urls[4] || "",
-            photo6: urls[5] || "",
-            photo7: urls[6] || "",
-            photo8: urls[7] || "",
-            photo9: urls[8] || "",
-            photo10: urls[9] || "",
-            status: "CAD", 
-            ts: Date.now() 
-        };
-
-        await db.ref('orders/' + id).set(obj);
-        showToast("ORDER PUNCHED SUCCESSFULLY", "success");
-        
-        setTimeout(() => {
-            location.reload(); 
-        }, 1500);
-
-    } catch (e) {
-        console.error(e);
-        showToast("DATABASE DISCONNECT: " + e.message, "error");
-        btn.innerText = "RETRY PUNCH";
-        btn.disabled = false;
-    }
-}
-
-function openJobCard(orderID) {
-    db.ref('orders/' + orderID).once('value').then(snap => {
-        const o = snap.val();
-        if(!o) return;
-        document.getElementById('jc_cad').innerText = o.cad;
-        document.getElementById('jc_wt').innerText = o.wt + "g";
-        document.getElementById('jc_kt').innerText = o.kt;
-        document.getElementById('jc_sz').innerText = o.sz;
-        document.getElementById('jc_sp').innerText = o.sp || "No instructions";
-        
-        for(let i=1; i<=10; i++) {
-            const field = i === 1 ? 'photo' : 'photo' + i;
-            const imgEl = document.getElementById('jc_img' + i);
-            if(o[field] && o[field].trim() !== "") {
-                imgEl.src = o[field];
-                imgEl.style.display = 'block';
-            } else {
-                imgEl.src = "";
-                imgEl.style.display = 'none';
-            }
-        }
-        document.getElementById('jobCardOverlay').style.display = 'block';
-    });
-}
-
-function triggerMoveConfirm(id, cur) {
-    pendingMoveId = id;
-    pendingMoveCurStage = cur;
-    const nextStage = stages[stages.indexOf(cur) + 1];
-    
-    document.getElementById('confirmMsg').innerText = `Advance Order ${id} from ${cur} to ${nextStage}?`;
-    document.getElementById('confirmOverlay').style.display = 'flex';
-    
-    document.getElementById('confirmYesBtn').onclick = function() {
-        const nxt = stages[stages.indexOf(pendingMoveCurStage) + 1]; 
-        if(nxt) {
-            db.ref('orders/' + pendingMoveId).update({status: nxt});
-            showToast(`ORDER ${pendingMoveId} MOVED TO ${nxt}`, "success");
-        }
-        closeConfirm();
-    };
-}
-
-function closeConfirm() {
-    document.getElementById('confirmOverlay').style.display = 'none';
-    pendingMoveId = null;
-    pendingMoveCurStage = null;
-}
-
-function nav(page, tabElement) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.getElementById(page + 'Page').classList.add('active');
-    tabElement.classList.add('active');
-}
-
-function loadData() {
-    const search = document.getElementById('src').value.toLowerCase();
-    db.ref('orders').on('value', snap => {
-        const act = document.getElementById('activeList');
-        const hist = document.getElementById('historyList');
-        const statsDiv = document.getElementById('stats');
-        act.innerHTML = ""; hist.innerHTML = "";
-        
-        const data = snap.val() ? Object.values(snap.val()).reverse() : [];
-        const counts = {}; stages.forEach(s => counts[s] = 0);
-        const partyDist = {};
-
-        data.forEach(o => {
-            counts[o.status]++;
-            if(!partyDist[o.party]) partyDist[o.party] = { pcs: 0, wt: 0 };
-            partyDist[o.party].pcs++;
-            partyDist[o.party].wt += (parseFloat(o.wt) || 0);
-
-            // DYE Filtering Engine
-            if(o.cad !== 'DYE') return;
-
-            let gridHTML = `<div class="detail-img-grid">`;
-            const imageFields = ['photo', 'photo2', 'photo3', 'photo4', 'photo5', 'photo6', 'photo7', 'photo8', 'photo9', 'photo10'];
-            imageFields.forEach(f => {
-                if(o[f] && o[f].trim() !== "") {
-                    gridHTML += `<img src="${o[f]}" class="detail-thumb" onclick="event.stopPropagation(); window.open('${o[f]}', '_blank')">`;
-                }
-            });
-            gridHTML += `</div>`;
-
-            const card = `<div class="card" onclick="this.classList.toggle('expanded')">
-                <div style="display:flex; gap:12px; align-items:center;">
-                    <img src="${o.photo || ''}" style="width:60px; height:60px; border-radius:12px; object-fit:cover; border:1px solid #eee;">
-                    <div style="flex:1;">
-                        <div style="display:flex; justify-content:space-between;">
-                            <b style="color:var(--brown); font-size:16px;">${o.id}</b>
-                            <small style="color:var(--red); font-weight:800;">DUE: ${o.dd || 'NONE'}</small>
-                        </div>
-                        <div style="font-weight:700; font-size:13px; color:#555;">${o.party || 'UNKNOWN'}</div>
-                        <small style="text-transform:uppercase; color:var(--gold); font-weight:800; font-size:10px;">STAGE: ${o.status}</small>
-                    </div>
-                </div>
-                <div class="timeline">${stages.map((s,i)=>`<div class="t-step ${stages.indexOf(o.status)>=i?'active':''}"><span class="t-label">${s}</span></div>`).join('')}</div>
-                
-                <div class="details">
-                    <div class="df-row"><span class="df-label">Order ID:</span><span class="df-value">${o.id}</span></div>
-                    <div class="df-row"><span class="df-label">Party Name:</span><span class="df-value">${o.party || 'N/A'}</span></div>
-                    <div class="df-row"><span class="df-label">Designer:</span><span class="df-value">${o.cad || 'N/A'}</span></div>
-                    <div class="df-row"><span class="df-label">Weight:</span><span class="df-value">${o.wt ? o.wt + 'g' : 'N/A'}</span></div>
-                    <div class="df-row"><span class="df-label">Purity:</span><span class="df-value">${o.kt || 'N/A'}</span></div>
-                    <div class="df-row"><span class="df-label">Size:</span><span class="df-value">${o.sz || 'N/A'}</span></div>
-                    <div class="df-row"><span class="df-label">Delivery Date:</span><span class="df-value">${o.dd || 'N/A'}</span></div>
-                    <div class="df-row"><span class="df-label">Current Status:</span><span class="df-value" style="color:var(--gold); font-weight:800;">${o.status}</span></div>
-                    <div style="margin-top:8px; margin-bottom:8px; background:#fdfbf7; padding:10px; border-radius:8px; border:1px solid #eee;">
-                        <span class="df-label">Special Instructions:</span><br>
-                        <span style="font-size:13px; font-weight:600; color:var(--brown);">${o.sp || 'None'}</span>
-                    </div>
-                    
-                    ${gridHTML}
-                    
-                    <button class="btn-jobcard" onclick="event.stopPropagation(); openJobCard('${o.id}')">PREVIEW FORM</button>
-                    ${o.status!=='READY'?`<button class="btn-gold" style="font-size:11px;" onclick="event.stopPropagation(); triggerMoveConfirm('${o.id}','${o.status}')">NEXT STAGE</button>`:''}
-                    <button class="btn-red" style="font-size:10px; opacity:0.6;" onclick="event.stopPropagation(); del('${o.id}')">DELETE</button>
-                </div></div>`;
-            
-            if(o.status !== 'READY') {
-                if(!search || o.id.toLowerCase().includes(search)) act.innerHTML += card;
-            } else { hist.innerHTML += card; }
-        });
-
-        statsDiv.innerHTML = stages.map(s => `<div style="background:var(--brown); color:var(--gold); padding:8px; border-radius:10px; text-align:center;"><h3>${counts[s]}</h3><small style="font-size:8px;">${s}</small></div>`).join('');
-        
-        let tableHTML = `<table class="party-table"><thead><tr><th>Party</th><th>Pcs</th><th>Total Wt</th></tr></thead><tbody>`;
-        for (const p in partyDist) tableHTML += `<tr><td>${p || "N/A"}</td><td>${partyDist[p].pcs}</td><td>${partyDist[p].wt.toFixed(3)}g</td></tr>`;
-        document.getElementById('partyAnalysis').innerHTML = tableHTML + `</tbody></table>`;
-    });
-}
-
-function del(id) { 
-    if(confirm("Delete Order " + id + "?")) {
-        db.ref('orders/'+id).remove();
-        showToast("ORDER DELETED", "error");
-    } 
-}
-
-function wipeDataTrigger() { 
-    if(confirm("CRITICAL WARNING: ERASE ENTIRE DATABASE PERMANENTLY?")) {
-        db.ref('orders').remove();
-        showToast("DATABASE COMPLETELY WIPED", "error");
-    } 
-}
-
-// Run checks immediately and monitor intervals every 15 minutes
-setInterval(checkDeadlinesAndNotify, 15 * 60 * 1000);
-db.ref('orders').on('value', checkDeadlinesAndNotify);
-
-// PWA Service Worker Registration Loop logic
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/firebase-messaging-sw.js')
-        .then((registration) => {
-            console.log('FCM Service Worker operational with scope:', registration.scope);
-            const messaging = firebase.messaging();
-            
-            Notification.requestPermission().then((permission) => {
-                if (permission === 'granted') {
-                    messaging.getToken({ serviceWorkerRegistration: registration })
-                    .then((currentToken) => {
-                        if (currentToken) {
-                            db.ref(`users/admin_device/token`).set(currentToken);
-                        }
-                    }).catch((err) => console.error('Token acquisition error:', err));
-                }
-            });
-        });
-    });
-}
-</script>
-</body>
-</html>
+    const instructions = document.getElementById('i_sp').value.tr
