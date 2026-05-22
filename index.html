@@ -17,6 +17,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
@@ -61,9 +62,6 @@
         .page { display: none; padding: 15px; box-sizing: border-box; }
         .page.active { display: block; }
 
-        .filter-container { background: #fff; border: 1px solid var(--gold); border-radius: 14px; padding: 10px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 5px; }
-        .filter-row { display: flex; gap: 5px; }
-
         .card { background: white; border-radius: 18px; padding: 18px; margin-bottom: 15px; border: 1px solid #f0f0f0; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
         .details { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #ddd; }
         .card.expanded .details { display: block; }
@@ -72,15 +70,16 @@
         .timeline::before { content: ""; position: absolute; top: 5px; left: 15px; right: 15px; height: 2px; background: #f0f0f0; z-index: 1; }
         .t-step { width: 10px; height: 10px; border-radius: 50%; background: #ddd; z-index: 2; position: relative; }
         .t-step.active { background: var(--gold); }
-        .t-label { position: absolute; top: 15px; font-size: 7px; transform: translateX(-40%); font-weight: 800; color: #ccc; text-transform: uppercase; }
+        .t-label { position: absolute; top: 15px; font-size: 7px; transform: translateX(-40%); font-weight: 800; color: #ccc; }
 
         .party-table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; font-size: 12px; border: 1px solid var(--gold); margin-top: 15px; }
         .party-table th { background: var(--brown); color: var(--gold); padding: 10px; text-align: left; }
         .party-table td { padding: 10px; border-bottom: 1px solid #eee; font-weight: 600; }
 
         .btn-gold { background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728); border: none; padding: 16px; border-radius: 12px; color: #3E2723; font-weight: 800; width: 100%; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
-        .btn-jobcard { background: var(--brown); color: var(--gold); border: 1px solid var(--gold); padding: 12px; border-radius: 10px; font-weight: 800; margin-top: 10px; width: 100%; display: block; text-align: center; cursor: pointer; text-transform: uppercase; }
-        .btn-download { background: var(--green); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 800; margin-top: 8px; width: 100%; display: block; text-align: center; cursor: pointer; text-transform: uppercase; }
+        .btn-jobcard { background: var(--brown); color: var(--gold); border: 1px solid var(--gold); padding: 12px; border-radius: 10px; font-weight: 800; margin-top: 10px; width: 100%; display: block; text-align: center; cursor: pointer; }
+        /* NEW: Download engine action styles */
+        .btn-green { background: linear-gradient(135deg, #2e7d32, #4caf50); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 800; margin-top: 8px; width: 100%; display: block; text-align: center; cursor: pointer; text-transform: uppercase; }
         .btn-red { background: var(--red); color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; font-weight: 800; margin-top: 10px; }
         
         .detail-img-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-top: 10px; }
@@ -100,10 +99,10 @@
 </div>
 
 <div id="jobCardOverlay" onclick="this.style.display='none'">
-    <div class="digital-form" id="hdDownloadTarget" onclick="event.stopPropagation()">
+    <div class="digital-form" id="hdFormCaptureBlock" onclick="event.stopPropagation()">
         <div class="df-header">
-            <small style="font-weight: 800; font-size: 14px; letter-spacing: 2px;">॥ श्री ॥</small>
-            <h2 style="font-family:'Cinzel'; margin:5px 0; font-size: 22px;">SHANTI JEWEL</h2>
+            <small>॥ श्री ॥</small>
+            <h2 style="font-family:'Cinzel'; margin:5px 0;">SHANTI JEWEL</h2>
             <small style="font-weight:700; color:var(--gold); letter-spacing:2px;">ORDER FORM SPECIFICATIONS</small>
         </div>
         
@@ -125,9 +124,7 @@
             <div><span class="df-label">Purity</span><br><span class="df-value" id="jc_kt"></span></div>
             <div><span class="df-label">Size</span><br><span class="df-value" id="jc_sz"></span></div>
         </div>
-        <div class="df-row">
-            <div><span class="df-label">Designer</span><br><span class="df-value" id="jc_cad"></span></div>
-        </div>
+        <div class="df-row"><span class="df-label">Designer</span><span class="df-value" id="jc_cad"></span></div>
         <div style="margin-top:15px; background:#fdfbf7; padding:12px; border-radius:8px; border: 1px solid #eee; box-sizing: border-box; width: 100%;">
             <span class="df-label">Instructions:</span><br>
             <p id="jc_sp" style="font-size:13px; font-weight:600; line-height:1.4; margin:5px 0; word-break: break-word;"></p>
@@ -193,7 +190,7 @@
                 <option>Neelkanth Jewellers</option>
                 <option>Inhouse Production</option>
             </select>
-            <select id="i_cad"><option value="">DESIGNER</option><option value="DYE">DYE</option><option value="SHINDE">SHINDE</option><option value="ALAUDDIN">ALAUDDIN</option></select>
+            <select id="i_cad"><option value="">DESIGNER</option><option>DYE</option><option>SHINDE</option><option>ALAUDDIN</option></select>
             <div style="display:flex; gap:10px;"><input type="number" step="0.001" id="i_wt" placeholder="WT"><input type="text" id="i_kt" placeholder="KT"></div>
             <div style="display:flex; gap:10px;"><input type="text" id="i_sz" placeholder="Size"><input type="date" id="i_dd"></div>
             <textarea id="i_sp" rows="2" placeholder="Instructions..."></textarea>
@@ -202,28 +199,7 @@
     </div>
 
     <div id="activePage" class="page">
-        <div class="filter-container">
-            <input type="text" id="src" placeholder="Search Order ID..." onkeyup="loadData()" style="margin: 0 0 5px 0;">
-            <div class="filter-row">
-                <select id="flt_party" onchange="loadData()" style="margin:0; padding:8px; font-size:11px;">
-                    <option value="">ALL PARTIES</option>
-                    <option>Annapurna Gold</option>
-                    <option>REVA DIAMONDS</option>
-                    <option>Shree Gajanan Jewellers</option>
-                    <option>P.N.GADGIL & SONS</option>
-                    <option>PNG Brothers</option>
-                    <option>Neelkanth Jewellers</option>
-                    <option>Inhouse Production</option>
-                </select>
-                <select id="flt_designer" onchange="loadData()" style="margin:0; padding:8px; font-size:11px;">
-                    <option value="">ALL DESIGNERS</option>
-                    <option value="DYE">DYE</option>
-                    <option value="SHINDE">SHINDE</option>
-                    <option value="ALAUDDIN">ALAUDDIN</option>
-                </select>
-            </div>
-            <input type="date" id="flt_date" onchange="loadData()" style="margin:5px 0 0 0; padding:8px; font-size:11px;">
-        </div>
+        <input type="text" id="src" placeholder="Search ID..." onkeyup="loadData()" style="margin-bottom:15px;">
         <div id="activeList"></div>
     </div>
 
@@ -280,71 +256,11 @@ function showToast(message, type = "success") {
     }, 4000);
 }
 
-function checkAndTriggerDeviceNotifications() {
-    if (!("Notification" in window)) return;
-    if (Notification.permission !== "granted") {
-        Notification.requestPermission();
-        return;
-    }
-
-    db.ref('orders').once('value').then(snap => {
-        const data = snap.val() ? Object.values(snap.val()) : [];
-        const now = new Date();
-        const currentHour = now.getHours();
-
-        const todayStr = now.toISOString().split('T')[0];
-        
-        const tomorrow = new Date();
-        tomorrow.setDate(now.getDate() + 1);
-        const tomorrowStr = tomorrow.toISOString().split('T')[0];
-
-        navigator.serviceWorker.ready.then(registration => {
-            data.forEach(o => {
-                if (o.status === "READY" || !o.dd) return;
-
-                if (o.dd === todayStr && currentHour >= 14) {
-                    const storageKey = `notif_today_${o.id}`;
-                    if (!localStorage.getItem(storageKey)) {
-                        registration.showNotification("SHANTI JEWEL: DELIVERY TODAY", {
-                            body: `Order ID: ${o.id}\nParty: ${o.party}\nStatus: ${o.status}\nWeight: ${o.wt}g\n\nThis order is scheduled for dispatch today.`,
-                            icon: "./icon.png",
-                            badge: "./icon.png",
-                            tag: o.id,
-                            requireInteraction: true
-                        });
-                        localStorage.setItem(storageKey, "sent");
-                    }
-                }
-
-                if (o.dd === tomorrowStr && currentHour >= 18) {
-                    const storageKey = `notif_warning_${o.id}`;
-                    if (!localStorage.getItem(storageKey)) {
-                        registration.showNotification("SHANTI JEWEL: DUE TOMORROW", {
-                            body: `Order ID: ${o.id}\nParty: ${o.party}\nStage: ${o.status}\n\nUrgent: This design layout is due tomorrow. Ensure it passes the current department line.`,
-                            icon: "./icon.png",
-                            badge: "./icon.png",
-                            tag: o.id,
-                            requireInteraction: true
-                        });
-                        localStorage.setItem(storageKey, "sent");
-                    }
-                }
-            });
-        });
-    });
-}
-
 function unlockMain() {
     if(document.getElementById('entryPin').value === '1008') {
         document.getElementById('mainLock').style.display = 'none';
         document.getElementById('appContent').style.display = 'block';
-        
-        if ("Notification" in window && Notification.permission === "default") {
-            Notification.requestPermission();
-        }
-        
         loadData();
-        checkAndTriggerDeviceNotifications();
     } else { 
         showToast("INVALID ACCESS PIN", "error"); 
     }
@@ -368,7 +284,7 @@ function processPhoto(input, boxId, index) {
         const img = new Image();
         img.onload = function() {
             const canvas = document.createElement('canvas');
-            const MAX_WIDTH = 1280; 
+            const MAX_WIDTH = 500; 
             let width = img.width;
             let height = img.height;
 
@@ -385,7 +301,7 @@ function processPhoto(input, boxId, index) {
             canvas.toBlob(function(blob) {
                 selectedFiles[index] = blob;
                 document.getElementById(boxId).innerHTML = `<img src="${URL.createObjectURL(blob)}" style="width:100%; height:100%; object-fit:contain;">`;
-            }, 'image/jpeg', 0.75);
+            }, 'image/jpeg', 0.7);
         };
         img.src = e.target.result;
     };
@@ -420,9 +336,8 @@ async function saveOrder() {
     try {
         let urls = new Array(10).fill("");
 
-        // FIX: Only attempt to upload blocks where an image is actually selected
         for(let i = 0; i < 10; i++) {
-            if(selectedFiles[i] !== null && selectedFiles[i] !== undefined) {
+            if(selectedFiles[i]) {
                 const photoPath = `order_photos/${id}_slot${i}_${Date.now()}.jpg`;
                 const storageRef = storage.ref(photoPath);
                 const uploadTask = await storageRef.put(selectedFiles[i]);
@@ -458,26 +373,8 @@ async function saveOrder() {
         await db.ref('orders/' + id).set(obj);
         showToast("ORDER PUNCHED SUCCESSFULLY", "success");
         
-        setTimeout(() => { 
-            selectedFiles = new Array(10).fill(null);
-            
-            for(let i = 1; i <= 10; i++) {
-                const box = document.getElementById('p' + i);
-                if(i === 1) { box.innerHTML = "IMG 1 (MAIN)"; } 
-                else { box.innerHTML = "IMG " + i; }
-            }
-            
-            document.getElementById('i_id').value = "";
-            document.getElementById('i_pa').value = "";
-            document.getElementById('i_cad').value = "";
-            document.getElementById('i_wt').value = "";
-            document.getElementById('i_kt').value = "";
-            document.getElementById('i_sz').value = "";
-            document.getElementById('i_dd').value = "";
-            document.getElementById('i_sp').value = "";
-            
-            btn.innerText = "PUNCH ORDER";
-            btn.disabled = false;
+        setTimeout(() => {
+            location.reload(); 
         }, 1500);
 
     } catch (e) {
@@ -513,7 +410,9 @@ function openJobCard(orderID) {
     });
 }
 
+// FIX 3: Rebuilt the dynamic export configuration to assemble up to 10 photos cleanly
 function downloadHDJobCard(orderID) {
+    showToast("PREPARING DYNAMIC EXPORT...", "success");
     db.ref('orders/' + orderID).once('value').then(snap => {
         const o = snap.val();
         if(!o) return;
@@ -538,7 +437,7 @@ function downloadHDJobCard(orderID) {
                 imgEl.style.display = 'block';
                 imgEl.onload = imgEl.onerror = () => {
                     loadedImages++;
-                    if(loadedImages === totalImages) runHDExport(o.id);
+                    if(loadedImages === totalImages) generateCanvasDownload(o.id);
                 };
             } else {
                 imgEl.src = ""; 
@@ -546,15 +445,16 @@ function downloadHDJobCard(orderID) {
             }
         });
 
-        if(totalImages === 0) runHDExport(o.id);
+        if(totalImages === 0) generateCanvasDownload(o.id);
     });
 }
 
-function runHDExport(filenameId) {
-    const target = document.getElementById('hdDownloadTarget');
-    const originalDisplay = document.getElementById('jobCardOverlay').style.display;
+function generateCanvasDownload(filenameId) {
+    const target = document.getElementById('hdFormCaptureBlock');
+    const overlay = document.getElementById('jobCardOverlay');
+    const originalDisplay = overlay.style.display;
     
-    document.getElementById('jobCardOverlay').style.display = 'block';
+    overlay.style.display = 'block';
     
     html2canvas(target, {
         scale: 3, 
@@ -564,40 +464,34 @@ function runHDExport(filenameId) {
     }).then(canvas => {
         const link = document.createElement('a');
         link.download = `ORDER_${filenameId}_FORM.jpg`;
-        link.href = canvas.toDataURL('image/jpeg', 0.85);
+        link.href = canvas.toDataURL('image/jpeg', 0.9);
         link.click();
         
-        document.getElementById('jobCardOverlay').style.display = originalDisplay;
-        showToast("FORM DOWNLOADED", "success");
+        overlay.style.display = originalDisplay;
+        showToast("IMAGE DOWNLOADED SUCCESSFULLY", "success");
     }).catch(err => {
         console.error(err);
-        document.getElementById('jobCardOverlay').style.display = originalDisplay;
-        showToast("EXPORT ERROR", "error");
+        overlay.style.display = originalDisplay;
+        showToast("DOWNLOAD EXPORT FAILED", "error");
     });
 }
 
 function triggerMoveConfirm(id, cur) {
     pendingMoveId = id;
     pendingMoveCurStage = cur;
+    const nextStage = stages[stages.indexOf(cur) + 1];
     
-    db.ref('orders/' + id).once('value').then(snap => {
-        const o = snap.val();
-        let currentStages = [...stages];
-        if(o && o.cad === "DYE") { currentStages[0] = "DYE"; }
-        
-        const nextStage = currentStages[currentStages.indexOf(cur) + 1];
-        document.getElementById('confirmMsg').innerText = `Advance Order ${id} from ${cur} to ${nextStage}?`;
-        document.getElementById('confirmOverlay').style.display = 'flex';
-        
-        document.getElementById('confirmYesBtn').onclick = function() {
-            const nxt = currentStages[currentStages.indexOf(pendingMoveCurStage) + 1]; 
-            if(nxt) {
-                db.ref('orders/' + pendingMoveId).update({status: nxt});
-                showToast(`ORDER ${pendingMoveId} MOVED TO ${nxt}`, "success");
-            }
-            closeConfirm();
-        };
-    });
+    document.getElementById('confirmMsg').innerText = `Advance Order ${id} from ${cur} to ${nextStage}?`;
+    document.getElementById('confirmOverlay').style.display = 'flex';
+    
+    document.getElementById('confirmYesBtn').onclick = function() {
+        const nxt = stages[stages.indexOf(pendingMoveCurStage) + 1]; 
+        if(nxt) {
+            db.ref('orders/' + pendingMoveId).update({status: nxt});
+            showToast(`ORDER ${pendingMoveId} MOVED TO ${nxt}`, "success");
+        }
+        closeConfirm();
+    };
 }
 
 function closeConfirm() {
@@ -608,10 +502,6 @@ function closeConfirm() {
 
 function loadData() {
     const search = document.getElementById('src').value.toLowerCase();
-    const filterParty = document.getElementById('flt_party').value;
-    const filterDesigner = document.getElementById('flt_designer').value;
-    const filterDate = document.getElementById('flt_date').value;
-
     db.ref('orders').on('value', snap => {
         const act = document.getElementById('activeList');
         const hist = document.getElementById('historyList');
@@ -623,27 +513,10 @@ function loadData() {
         const partyDist = {};
 
         data.forEach(o => {
-            let localTimelineStages = [...stages];
-            if(o.cad === "DYE") {
-                localTimelineStages[0] = "DYE";
-                if(o.status === "CAD") o.status = "DYE"; 
-            }
-            
-            const currentStatusIndex = localTimelineStages.indexOf(o.status);
-            if(currentStatusIndex !== -1) {
-                counts[stages[currentStatusIndex]]++;
-            } else {
-                counts["CAD"]++;
-            }
-
+            counts[o.status]++;
             if(!partyDist[o.party]) partyDist[o.party] = { pcs: 0, wt: 0 };
             partyDist[o.party].pcs++;
             partyDist[o.party].wt += (parseFloat(o.wt) || 0);
-
-            if(search && !o.id.toLowerCase().includes(search)) return;
-            if(filterParty && o.party !== filterParty) return;
-            if(filterDesigner && o.cad !== filterDesigner) return;
-            if(filterDate && o.dd !== filterDate) return;
 
             let gridHTML = `<div class="detail-img-grid">`;
             const imageFields = ['photo', 'photo2', 'photo3', 'photo4', 'photo5', 'photo6', 'photo7', 'photo8', 'photo9', 'photo10'];
@@ -666,7 +539,7 @@ function loadData() {
                         <small style="text-transform:uppercase; color:var(--gold); font-weight:800; font-size:10px;">STAGE: ${o.status}</small>
                     </div>
                 </div>
-                <div class="timeline">${localTimelineStages.map((s,i)=>`<div class="t-step ${localTimelineStages.indexOf(o.status)>=i?'active':''}"><span class="t-label">${s}</span></div>`).join('')}</div>
+                <div class="timeline">${stages.map((s,i)=>`<div class="t-step ${stages.indexOf(o.status)>=i?'active':''}"><span class="t-label">${s}</span></div>`).join('')}</div>
                 
                 <div class="details">
                     <div class="df-row"><span class="df-label">Order ID:</span><span class="df-value">${o.id}</span></div>
@@ -685,16 +558,14 @@ function loadData() {
                     ${gridHTML}
                     
                     <button class="btn-jobcard" onclick="event.stopPropagation(); openJobCard('${o.id}')">PREVIEW FORM</button>
-                    <button class="btn-download" onclick="event.stopPropagation(); downloadHDJobCard('${o.id}')">DOWNLOAD HD FORM</button>
+                    <button class="btn-green" onclick="event.stopPropagation(); downloadHDJobCard('${o.id}')">DOWNLOAD HD FORM</button>
                     ${o.status!=='READY'?`<button class="btn-gold" style="font-size:11px;" onclick="event.stopPropagation(); triggerMoveConfirm('${o.id}','${o.status}')">NEXT STAGE</button>`:''}
                     <button class="btn-red" style="font-size:10px; opacity:0.6;" onclick="event.stopPropagation(); del('${o.id}')">DELETE</button>
                 </div></div>`;
             
             if(o.status !== 'READY') {
-                act.innerHTML += card;
-            } else { 
-                hist.innerHTML += card; 
-            }
+                if(!search || o.id.toLowerCase().includes(search)) act.innerHTML += card;
+            } else { hist.innerHTML += card; }
         });
 
         statsDiv.innerHTML = stages.map(s => `<div style="background:var(--brown); color:var(--gold); padding:8px; border-radius:10px; text-align:center;"><h3>${counts[s]}</h3><small style="font-size:8px;">${s}</small></div>`).join('');
