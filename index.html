@@ -368,8 +368,6 @@ function processPhoto(input, boxId, index) {
         const img = new Image();
         img.onload = function() {
             const canvas = document.createElement('canvas');
-            
-            // Reduced dimension constraints for mobile uploads to prevent memory crashes
             const MAX_WIDTH = 1280; 
             let width = img.width;
             let height = img.height;
@@ -384,7 +382,6 @@ function processPhoto(input, boxId, index) {
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
 
-            // Balanced quality parameter to reduce file size while retaining jewelry line clarity
             canvas.toBlob(function(blob) {
                 selectedFiles[index] = blob;
                 document.getElementById(boxId).innerHTML = `<img src="${URL.createObjectURL(blob)}" style="width:100%; height:100%; object-fit:contain;">`;
@@ -423,8 +420,9 @@ async function saveOrder() {
     try {
         let urls = new Array(10).fill("");
 
+        // FIX: Only attempt to upload blocks where an image is actually selected
         for(let i = 0; i < 10; i++) {
-            if(selectedFiles[i]) {
+            if(selectedFiles[i] !== null && selectedFiles[i] !== undefined) {
                 const photoPath = `order_photos/${id}_slot${i}_${Date.now()}.jpg`;
                 const storageRef = storage.ref(photoPath);
                 const uploadTask = await storageRef.put(selectedFiles[i]);
@@ -443,16 +441,16 @@ async function saveOrder() {
             sz: size, 
             dd: dueDate, 
             sp: instructions, 
-            photo: urls[0], 
-            photo2: urls[1],
-            photo3: urls[2],
-            photo4: urls[3],
-            photo5: urls[4],
-            photo6: urls[5],
-            photo7: urls[6],
-            photo8: urls[7],
-            photo9: urls[8],
-            photo10: urls[9],
+            photo: urls[0] || "", 
+            photo2: urls[1] || "",
+            photo3: urls[2] || "",
+            photo4: urls[3] || "",
+            photo5: urls[4] || "",
+            photo6: urls[5] || "",
+            photo7: urls[6] || "",
+            photo8: urls[7] || "",
+            photo9: urls[8] || "",
+            photo10: urls[9] || "",
             status: "CAD", 
             ts: Date.now() 
         };
@@ -503,10 +501,11 @@ function openJobCard(orderID) {
         for(let i=1; i<=10; i++) {
             const field = i === 1 ? 'photo' : 'photo' + i;
             const imgEl = document.getElementById('jc_img' + i);
-            if(o[field]) {
+            if(o[field] && o[field].trim() !== "") {
                 imgEl.src = o[field];
                 imgEl.style.display = 'block';
             } else {
+                imgEl.src = "";
                 imgEl.style.display = 'none';
             }
         }
@@ -529,10 +528,12 @@ function downloadHDJobCard(orderID) {
         let totalImages = 0;
         const imageFields = ['photo', 'photo2', 'photo3', 'photo4', 'photo5', 'photo6', 'photo7', 'photo8', 'photo9', 'photo10'];
         
+        const validFields = imageFields.filter(field => o[field] && o[field].trim() !== "");
+        totalImages = validFields.length;
+
         imageFields.forEach((field, idx) => {
             const imgEl = document.getElementById('jc_img' + (idx + 1));
-            if(o[field]) {
-                totalImages++;
+            if(o[field] && o[field].trim() !== "") {
                 imgEl.src = o[field];
                 imgEl.style.display = 'block';
                 imgEl.onload = imgEl.onerror = () => {
@@ -540,6 +541,7 @@ function downloadHDJobCard(orderID) {
                     if(loadedImages === totalImages) runHDExport(o.id);
                 };
             } else {
+                imgEl.src = ""; 
                 imgEl.style.display = 'none';
             }
         });
@@ -646,7 +648,7 @@ function loadData() {
             let gridHTML = `<div class="detail-img-grid">`;
             const imageFields = ['photo', 'photo2', 'photo3', 'photo4', 'photo5', 'photo6', 'photo7', 'photo8', 'photo9', 'photo10'];
             imageFields.forEach(f => {
-                if(o[f]) {
+                if(o[f] && o[f].trim() !== "") {
                     gridHTML += `<img src="${o[f]}" class="detail-thumb" onclick="event.stopPropagation(); window.open('${o[f]}', '_blank')">`;
                 }
             });
