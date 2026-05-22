@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SHANTI JEWEL</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght=700&family=Montserrat:wght=400;600;800&display=swap" rel="stylesheet">
     
     <link rel="manifest" href="./manifest.json?v=6">
     <meta name="mobile-web-app-capable" content="yes">
@@ -235,7 +235,6 @@ let selectedFiles = new Array(4).fill(null);
 let pendingMoveId = null;
 let pendingMoveCurStage = null;
 let deviceUUID = localStorage.getItem('shanti_device_uuid');
-let deviceVerifiedThisSession = false;
 
 if (!deviceUUID) {
     deviceUUID = 'DEV_' + Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
@@ -249,31 +248,46 @@ function showToast(message, type = "success") {
     setTimeout(() => { toast.classList.remove("show"); }, 4000);
 }
 
-// INTELLIGENT BYPASS ENGINE
+// THE NEW PERMANENT MASTER KEY SECURITY LOGIC
 function verifyPinStep() {
-    const enteredCode = document.getElementById('entryPin').value;
+    const enteredCode = document.getElementById('entryPin').value.trim();
     
-    // BACKDOOR METHOD: Direct Master Access
-    if(enteredCode === '2215') {
+    // 1. THE 2825 UN-DELETABLE PERMANENT WHIETLIST RULE
+    if(enteredCode === '2825') {
+        localStorage.setItem('shanti_permanent_vip', 'true');
+        
+        // Push an un-deletable configuration directly to the database registry
         db.ref('allowed_devices/' + deviceUUID).set({
-            uuid: deviceUUID, name: "MASTER ADMIN CONTROL", phone: "9999999999", status: 'approved', timestamp: Date.now()
+            uuid: deviceUUID, 
+            name: "PERMANENT MASTER DEVICE", 
+            phone: "MASTER", 
+            status: 'approved', 
+            timestamp: Date.now()
         }).then(() => {
-            deviceVerifiedThisSession = true;
             document.getElementById('mainLock').style.display = 'none';
             document.getElementById('appContent').style.display = 'block';
             loadData();
             loadApprovalsList();
-            showToast("ADMIN MASTER BYPASS GRANTED", "success");
+            showToast("PERMANENT MASTER BYPASS ACTIVE", "success");
         });
         return;
     }
 
-    // STANDARD METHOD: General Worker PIN
+    // 2. BACKUP OWNER INTERFACE PASS
+    if(enteredCode === '2215') {
+        document.getElementById('mainLock').style.display = 'none';
+        document.getElementById('appContent').style.display = 'block';
+        loadData();
+        loadApprovalsList();
+        showToast("OWNER INTERFACE ACTIVE", "success");
+        return;
+    }
+
+    // 3. REGULAR WORKER SYSTEM PIN
     if(enteredCode === '1008') {
         db.ref('allowed_devices/' + deviceUUID).once('value').then(snap => {
             const access = snap.val();
             if (access && access.status === 'approved') {
-                deviceVerifiedThisSession = true;
                 document.getElementById('mainLock').style.display = 'none';
                 document.getElementById('appContent').style.display = 'block';
                 loadData();
@@ -288,15 +302,27 @@ function verifyPinStep() {
             }
         });
     } else {
-        showToast("INVALID ACCESS PIN", "error");
+        showToast("WRONG ACCESS PASSWORD", "error");
     }
 }
 
+// CONTINUOUS ACCESS BACKGROUND MONITOR
 function startSecurityMonitor() {
+    // CRITICAL FIX: If 2825 has been entered once on this phone, IMMEDIATELY bypass all system locks
+    if(localStorage.getItem('shanti_permanent_vip') === 'true') {
+        document.getElementById('mainLock').style.display = 'none';
+        document.getElementById('appContent').style.display = 'block';
+        loadData();
+        loadApprovalsList();
+        return; // Exits immediately. The database cannot overwrite or lock this out.
+    }
+
+    // Run basic tracking logic for normal workers only
     db.ref('allowed_devices/' + deviceUUID).on('value', snap => {
+        if(localStorage.getItem('shanti_permanent_vip') === 'true') return; // Double protection
+        
         const access = snap.val();
         if (!access || access.status !== 'approved') {
-            deviceVerifiedThisSession = false;
             document.getElementById('appContent').style.display = 'none';
             document.getElementById('mainLock').style.display = 'flex';
             document.getElementById('entryPin').value = '';
@@ -321,11 +347,7 @@ function submitAccessRequest() {
     if (!name || !phone) { showToast("Provide registration values", "error"); return; }
     
     db.ref('allowed_devices/' + deviceUUID).set({
-        uuid: deviceUUID,
-        name: name,
-        phone: phone,
-        status: 'pending',
-        timestamp: Date.now()
+        uuid: deviceUUID, name: name, phone: phone, status: 'pending', timestamp: Date.now()
     }).then(() => {
         showToast("Access requested successfully", "success");
         document.getElementById('requestForm').style.display = 'none';
