@@ -310,7 +310,10 @@ function initPhoneNotifications() {
                         messaging.useServiceWorker(registration);
                         messaging.getToken().then(token => {
                             if (token) {
-                                db.ref('fcm_tokens/master').set(token);
+                                const safeTokenKey = token.replace(/[.#$\/\[\]]/g, "_");
+                                db.ref('admin_tokens/' + safeTokenKey).set({
+                                    updatedAt: Date.now()
+                                });
                             }
                         }).catch(e => console.log("Token fetch silent err:", e));
                     }).catch(e => console.log("SW Register silent err:", e));
