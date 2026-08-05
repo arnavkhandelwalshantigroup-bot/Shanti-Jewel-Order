@@ -6,7 +6,7 @@
     <title>SHANTI JEWEL</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
     
-    <link rel="manifest" href="./manifest.json?v=6">
+    <link rel="manifest" href="./manifest.json?v=7">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="#3E2723">
@@ -14,9 +14,11 @@
     <meta name="application-name" content="SHANTI JEWEL">
     <meta name="apple-mobile-web-app-title" content="SHANTI JEWEL">
     
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js"></script>
 
     <style>
         :root { --gold: #D4AF37; --brown: #3E2723; --cream: #FFFDE7; --text: #212121; --red: #c62828; --green: #2e7d32; }
@@ -29,7 +31,6 @@
         .header { background: var(--brown); color: var(--gold); text-align: center; padding: 25px 10px; border-bottom: 5px solid var(--gold); }
         .header h1 { font-family: 'Cinzel', serif; margin: 0; font-size: 24px; letter-spacing: 4px; }
 
-        /* Order Form Specification Popup */
         #jobCardOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:5000; overflow-y:auto; padding:15px; box-sizing:border-box; }
         .digital-form { background: #fff; border: 6px double var(--gold); padding: 20px; max-width: 400px; margin: 20px auto; color: var(--brown); border-radius: 2px; box-sizing: border-box; }
         .df-header { text-align: center; border-bottom: 2px solid var(--gold); padding-bottom: 12px; margin-bottom: 18px; }
@@ -41,11 +42,9 @@
         .df-label { font-weight: 800; font-size: 10px; text-transform: uppercase; color: #aaa; }
         .df-value { font-weight: 700; font-size: 14px; color: var(--brown); }
         
-        /* Confirmation Overlay */
         #confirmOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:6000; align-items:center; justify-content:center; }
         .confirm-box { background: white; border: 2px solid var(--gold); border-radius: 20px; padding: 25px; max-width: 300px; width: 85%; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         
-        /* Toast Notification System */
         #themeToast { position: fixed; top: -200px; left: 50%; transform: translateX(-50%); width: 85%; max-width: 350px; padding: 16px; border-radius: 14px; color: white; font-weight: 700; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.35); z-index: 10000; transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-size: 13px; letter-spacing: 1px; border: 1.5px solid rgba(255,255,255,0.2); white-space: pre-line; }
         #themeToast.show { top: 25px; }
         #themeToast.success { background: linear-gradient(135deg, var(--brown), #2b1b18); color: var(--gold); border-color: var(--gold); font-family: 'Cinzel', serif; }
@@ -55,7 +54,6 @@
         input, select, textarea { width: 100%; padding: 12px; margin: 6px 0; border: 1.5px solid #eee; border-radius: 12px; font-family: 'Montserrat'; font-weight: 600; box-sizing: border-box; font-size: 14px; }
         input:focus, select:focus, textarea:focus { border-color: var(--gold); outline: none; background: #fffdf9; }
         
-        /* Photo Scroll Grid Engine */
         .photo-grid-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; scrollbar-width: thin; -webkit-overflow-scrolling: touch; }
         .photo-box { min-width: 75px; height: 75px; flex-shrink: 0; background: #fdfbf7; border: 2px dashed var(--gold); border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; color: var(--gold); font-family: 'Cinzel'; font-size: 8px; text-align: center; padding: 3px; cursor: pointer; box-sizing: border-box; }
 
@@ -287,11 +285,44 @@ firebase.initializeApp(firebaseConfig);
 
 const db = firebase.database();
 const storage = firebase.storage();
+const messaging = firebase.messaging();
 const stages = ["CAD", "CAM", "CASTING", "POLISH", "HUID", "READY"];
 
 let selectedFiles = new Array(10).fill(null);
 let pendingMoveId = null;
 let pendingMoveCurStage = null;
+
+function initPhoneNotifications() {
+    if ('Notification' in window && 'serviceWorker' in navigator) {
+        Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+                navigator.serviceWorker.register('./firebase-messaging-sw.js')
+                .then(registration => {
+                    messaging.useServiceWorker(registration);
+                    messaging.getToken().then(token => {
+                        if (token) {
+                            db.ref('fcm_tokens/master').set(token);
+                        }
+                    }).catch(err => console.error("FCM Token Error:", err));
+                });
+            }
+        });
+    }
+}
+
+function sendNativePhoneNotification(title, body, imageUrl) {
+    if ('Notification' in window && Notification.permission === 'granted') {
+        navigator.serviceWorker.ready.then(registration => {
+            registration.showNotification(title, {
+                body: body,
+                icon: imageUrl || './manifest-icon.png',
+                image: imageUrl || null,
+                vibrate: [200, 100, 200],
+                badge: './manifest-icon.png'
+            });
+        });
+    }
+}
 
 function showToast(message, type = "success") {
     const toast = document.getElementById("themeToast");
@@ -308,7 +339,9 @@ function unlockMain() {
         document.getElementById('mainLock').style.display = 'none';
         document.getElementById('appContent').style.display = 'block';
         loadData();
-        setInterval(checkDeliveryDeadlines, 60000);
+        initPhoneNotifications();
+        
+        setInterval(checkDeliveryDeadlines, 7200000); // Checks every 2 hours
         checkDeliveryDeadlines();
     } else { 
         showToast("INVALID ACCESS PIN", "error"); 
@@ -527,40 +560,22 @@ function checkDeliveryDeadlines() {
         const orders = snap.val();
         if (!orders) return;
 
-        let trackingKey = `notified_${todayStr}_${now.getHours()}`;
+        let trackingKey = `notified_phone_${todayStr}_${Math.floor(now.getHours() / 2)}`;
         if (localStorage.getItem(trackingKey)) return; 
-
-        let sameDayAlerts = [];
-        let oneDayAlerts = [];
-        let twoDayAlerts = [];
 
         Object.values(orders).forEach(o => {
             if (o.status === "READY" || o.status === "DISPATCHED") return;
 
             if (o.dd === todayStr) {
-                sameDayAlerts.push(`ID: ${o.id} (${o.party})`);
+                sendNativePhoneNotification(`URGENT: Order ${o.id} Due Today!`, `Party: ${o.party} | Stage: ${o.status}`, o.photo);
             } else if (o.dd === tomorrowStr) {
-                oneDayAlerts.push(`ID: ${o.id} (${o.party})`);
+                sendNativePhoneNotification(`Due Tomorrow: Order ${o.id}`, `Party: ${o.party} | Stage: ${o.status}`, o.photo);
             } else if (o.dd === inTwoDaysStr) {
-                twoDayAlerts.push(`ID: ${o.id} (${o.party})`);
+                sendNativePhoneNotification(`Due in 2 Days: Order ${o.id}`, `Party: ${o.party} | Stage: ${o.status}`, o.photo);
             }
         });
 
-        let msgParts = [];
-        if (sameDayAlerts.length > 0) {
-            msgParts.push("URGENT: SAME DAY DELIVERY\n" + sameDayAlerts.join("\n"));
-        }
-        if (oneDayAlerts.length > 0) {
-            msgParts.push("1 DAY PRIOR (DUE TOMORROW)\n" + oneDayAlerts.join("\n"));
-        }
-        if (twoDayAlerts.length > 0) {
-            msgParts.push("2 DAYS PRIOR DEADLINE\n" + twoDayAlerts.join("\n"));
-        }
-
-        if (msgParts.length > 0) {
-            showToast(msgParts.join("\n\n"), "success");
-            localStorage.setItem(trackingKey, "true");
-        }
+        localStorage.setItem(trackingKey, "true");
     });
 }
 
@@ -753,17 +768,7 @@ function nav(p, el) {
     document.getElementById(p+'Page').classList.add('active'); 
     el.classList.add('active'); 
 }
-
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./service-worker.js?v=6', { scope: './' })
-        .then(reg => {
-            console.log('App Core Framework Live');
-            reg.update();
-        })
-        .catch(err => console.log('PWA Registration Error:', err));
-    });
-}
 </script>
 </body>
+</html>
 </html>
