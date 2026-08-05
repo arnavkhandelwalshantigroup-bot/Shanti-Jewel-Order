@@ -824,3 +824,34 @@ function nav(p, el) {
 </script>
 </body>
 </html>
+
+
+
+<!-- Temporary Test Button -->
+<button onclick="sendTrialNotification()" style="padding: 12px 20px; background-color: #d4af37; color: white; border: none; border-radius: 6px; font-weight: bold; margin: 20px 0;">
+  🔔 Click Here to Test Notification
+</button>
+
+<script>
+function sendTrialNotification() {
+  if (!('Notification' in window)) {
+    alert('Notifications are not supported on this browser.');
+    return;
+  }
+
+  Notification.requestPermission().then((permission) => {
+    if (permission === 'granted') {
+      navigator.serviceWorker.ready.then((registration) => {
+        registration.showNotification('Trial Order #101 - Shanti Jewel', {
+          body: 'New order received for 3g Gold Earrings',
+          icon: '/icon-192.png',
+          image: 'https://via.placeholder.com/600x400.png?text=Jewelry+Photo+Preview',
+          data: { url: '/' }
+        });
+      });
+    } else {
+      alert('Notification permission was denied. Please allow notifications in your phone settings for this site.');
+    }
+  });
+}
+</script>
