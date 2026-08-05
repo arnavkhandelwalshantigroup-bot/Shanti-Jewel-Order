@@ -1,7 +1,6 @@
 // sw.js
 
 self.addEventListener('push', function(event) {
-  // 1. Get current hour in IST (Asia/Kolkata)
   const currentHour = parseInt(
     new Date().toLocaleString('en-US', {
       timeZone: 'Asia/Kolkata',
@@ -11,29 +10,30 @@ self.addEventListener('push', function(event) {
     10
   );
 
-  // 2. Quiet hours: 9:00 PM (21) to 8:59 AM (less than 9)
-  const isQuietHours = currentHour >= 21 || currentHour < 9;
-
-  if (isQuietHours) {
-    console.log('Quiet hours active (9 PM - 9 AM). Notification suppressed.');
-    return; // Stops the notification pop-up/sound completely
+  // Quiet hours: 9:00 PM to 8:59 AM
+  if (currentHour >= 21 || currentHour < 9) {
+    console.log('Quiet hours active. Notification suppressed.');
+    return;
   }
 
-  // 3. Extract notification payload
-  let payload = { title: 'New Order Alert', body: 'You have a new order update.' };
+  let payload = {};
   if (event.data) {
     payload = event.data.json();
   }
 
   const title = payload.title || payload.notification?.title || 'Shanti Jewel Order';
+  
+  // Extract photo URL sent from your backend / Firebase
+  const photoUrl = payload.image || payload.notification?.image || payload.data?.imageUrl;
+
   const options = {
-    body: payload.body || payload.notification?.body || 'New update available',
-    icon: '/icon-192.png', // Replace with your icon path
-    badge: '/badge.png',   // Replace with your badge path
+    body: payload.body || payload.notification?.body || 'New order update available',
+    icon: '/icon-192.png',          // Small logo icon
+    badge: '/badge.png',         // Small status bar icon
+    image: photoUrl,             // <--- THIS SHOWS THE FULL ORDER PHOTO
     data: payload.data || {}
   };
 
-  // 4. Display notification during active hours (9 AM - 9 PM)
   event.waitUntil(
     self.registration.showNotification(title, options)
   );
