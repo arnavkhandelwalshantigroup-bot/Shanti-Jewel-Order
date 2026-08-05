@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notification Test</title>
+</head>
+<body style="font-family: Arial, sans-serif; text-align: center; padding: 40px 20px;">
+
+  <h2>Shanti Jewel - Notification Test</h2>
+  <p>Tap the button below to trigger a sample notification with photo preview.</p>
+
+  <button id="btn" style="padding: 16px 28px; background-color: #d4af37; color: #ffffff; border: none; border-radius: 8px; font-size: 18px; font-weight: bold;">
+    🔔 Click to Test Notification
+  </button>
+
+  <script>
+    // Automatically link sw.js in the same folder
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js');
+    }
+
+    document.getElementById('btn').onclick = async () => {
+      if (!('Notification' in window)) {
+        alert('Notifications are not supported by this browser.');
+        return;
+      }
+
+      const permission = await Notification.requestPermission();
+      
+      if (permission === 'granted') {
+        const reg = await navigator.serviceWorker.ready;
+        reg.showNotification('Trial Order #101 - Shanti Jewel', {
+          body: 'New order received for 3g Gold Earrings',
+          icon: 'https://via.placeholder.com/192.png?text=Logo',
+          image: 'https://via.placeholder.com/600x400.png?text=Jewelry+Photo+Preview'
+        });
+      } else {
+        alert('Permission denied. Please allow notifications in your phone browser site settings.');
+      }
+    };
+  </script>
+
+</body>
+</html>
