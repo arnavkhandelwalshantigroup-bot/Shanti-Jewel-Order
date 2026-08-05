@@ -3,55 +3,101 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Notification Diagnostic Test</title>
+  <title>Notification System Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 30px 15px;
+      background-color: #f9f9f9;
+    }
+    .card {
+      max-width: 400px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: bold;
+      color: #ffffff;
+      cursor: pointer;
+    }
+    .btn-new { background-color: #28a745; }
+    .btn-reminder { background-color: #007bff; }
+  </style>
 </head>
-<body style="font-family: Arial, sans-serif; text-align: center; padding: 40px 20px;">
+<body>
 
-  <h2>Shanti Jewel - Notification Test</h2>
-  <button id="btn" style="padding: 16px 28px; background-color: #d4af37; color: #ffffff; border: none; border-radius: 8px; font-size: 18px; font-weight: bold;">
-    🔔 Click to Test Notification
-  </button>
+  <div class="card">
+    <h2>Shanti Jewel Notification Test</h2>
+    <p>Tap below to trigger sample notifications on your device.</p>
+
+    <!-- TEST 1: NEW ORDER -->
+    <button class="btn-new" onclick="triggerNewOrderTest()">
+      Test New Order Notification
+    </button>
+
+    <!-- TEST 2: DELIVERY REMINDER -->
+    <button class="btn-reminder" onclick="triggerDeliveryReminderTest()">
+      Test Delivery Reminder Notification
+    </button>
+  </div>
 
   <script>
-    document.getElementById('btn').onclick = async () => {
-      // 1. HTTPS Check
-      if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
-        alert('❌ ERROR: Notifications ONLY work on HTTPS links (https://). Your site is currently using HTTP or opening as a local file.');
-        return;
-      }
+    // Register sw.js from the same folder
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js');
+    }
 
-      // 2. Browser Support Check
+    // Reliable sample photo for testing
+    const samplePhotoUrl = 'https://picsum.photos/600/400';
+
+    async function sendNotification(title, body, imageUrl) {
       if (!('Notification' in window)) {
-        alert('❌ ERROR: This browser does not support notifications.');
+        alert('Notifications are not supported on this browser.');
         return;
       }
 
-      // 3. Permission Request
-      alert('1. Requesting notification permission...');
       const permission = await Notification.requestPermission();
-      
       if (permission !== 'granted') {
-        alert('❌ PERMISSION BLOCKED: Permission is "' + permission + '". Go to your phone browser settings -> Site Settings -> Notifications -> Allow.');
+        alert('Permission denied. Please allow notifications in site settings.');
         return;
       }
 
-      alert('2. Permission GRANTED! Registering sw.js...');
+      const reg = await navigator.serviceWorker.ready;
+      reg.showNotification(title, {
+        body: body,
+        icon: 'https://cdn-icons-png.flaticon.com/512/3081/3081559.png',
+        image: imageUrl,
+        badge: 'https://cdn-icons-png.flaticon.com/512/3081/3081559.png'
+      });
+    }
 
-      // 4. Service Worker Registration & Notification
-      try {
-        const reg = await navigator.serviceWorker.register('./sw.js');
-        
-        await reg.showNotification('Trial Order #101 - Shanti Jewel', {
-          body: 'New order received for 3g Gold Earrings',
-          icon: 'https://via.placeholder.com/192.png?text=Logo',
-          image: 'https://via.placeholder.com/600x400.png?text=Jewelry+Photo+Preview'
-        });
+    // 1. Test Instant New Order Notification
+    function triggerNewOrderTest() {
+      sendNotification(
+        'Order #97502555',
+        'Rajesh Gold placed order',
+        samplePhotoUrl
+      );
+    }
 
-        alert('✅ SUCCESS! Notification sent. Check your phone top bar/tray.');
-      } catch (err) {
-        alert('❌ SERVICE WORKER ERROR: ' + err.message + '\n\nCheck if sw.js is in the exact same folder.');
-      }
-    };
+    // 2. Test Scheduled Delivery Reminder Notification
+    function triggerDeliveryReminderTest() {
+      sendNotification(
+        'Delivery Reminder (In 2 Days) - #97502555',
+        'Rajesh Gold order delivery scheduled',
+        samplePhotoUrl
+      );
+    }
   </script>
 
 </body>
