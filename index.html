@@ -281,46 +281,65 @@ const firebaseConfig = {
     storageBucket: "shanti-jewel-order.firebasestorage.app"
 };
 
+// Initialize Core Firebase
 firebase.initializeApp(firebaseConfig);
 
 const db = firebase.database();
 const storage = firebase.storage();
-const messaging = firebase.messaging();
 const stages = ["CAD", "CAM", "CASTING", "POLISH", "HUID", "READY"];
 
 let selectedFiles = new Array(10).fill(null);
 let pendingMoveId = null;
 let pendingMoveCurStage = null;
+let messaging = null;
+
+// Safe messaging initialization so it never crashes database or order punch
+try {
+    if (firebase.messaging && firebase.messaging.isSupported()) {
+        messaging = firebase.messaging();
+    }
+} catch (err) {
+    console.warn("FCM Push Notifications not supported in this environment:", err);
+}
 
 function initPhoneNotifications() {
-    if ('Notification' in window && 'serviceWorker' in navigator) {
-        Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-                navigator.serviceWorker.register('./firebase-messaging-sw.js')
-                .then(registration => {
-                    messaging.useServiceWorker(registration);
-                    messaging.getToken().then(token => {
-                        if (token) {
-                            db.ref('fcm_tokens/master').set(token);
-                        }
-                    }).catch(err => console.error("FCM Token Error:", err));
-                });
-            }
-        });
+    if (!messaging) return;
+    try {
+        if ('Notification' in window && 'serviceWorker' in navigator) {
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    navigator.serviceWorker.register('./firebase-messaging-sw.js')
+                    .then(registration => {
+                        messaging.useServiceWorker(registration);
+                        messaging.getToken().then(token => {
+                            if (token) {
+                                db.ref('fcm_tokens/master').set(token);
+                            }
+                        }).catch(e => console.log("Token fetch silent err:", e));
+                    }).catch(e => console.log("SW Register silent err:", e));
+                }
+            });
+        }
+    } catch(e) {
+        console.warn("Push init bypass:", e);
     }
 }
 
 function sendNativePhoneNotification(title, body, imageUrl) {
-    if ('Notification' in window && Notification.permission === 'granted') {
-        navigator.serviceWorker.ready.then(registration => {
-            registration.showNotification(title, {
-                body: body,
-                icon: imageUrl || './manifest-icon.png',
-                image: imageUrl || null,
-                vibrate: [200, 100, 200],
-                badge: './manifest-icon.png'
-            });
-        });
+    try {
+        if ('Notification' in window && Notification.permission === 'granted' && navigator.serviceWorker) {
+            navigator.serviceWorker.ready.then(registration => {
+                registration.showNotification(title, {
+                    body: body,
+                    icon: imageUrl || './manifest-icon.png',
+                    image: imageUrl || null,
+                    vibrate: [200, 100, 200],
+                    badge: './manifest-icon.png'
+                });
+            }).catch(e => console.log("SW Ready err:", e));
+        }
+    } catch (e) {
+        console.log("Notification send bypass:", e);
     }
 }
 
@@ -338,11 +357,16 @@ function unlockMain() {
     if(document.getElementById('entryPin').value === '1008') {
         document.getElementById('mainLock').style.display = 'none';
         document.getElementById('appContent').style.display = 'block';
-        loadData();
-        initPhoneNotifications();
         
-        setInterval(checkDeliveryDeadlines, 7200000); // Checks every 2 hours
-        checkDeliveryDeadlines();
+        // Load Database Data Immediately
+        loadData();
+        
+        // Attempt optional notifications without blocking execution
+        initPhoneNotifications();
+        try {
+            setInterval(checkDeliveryDeadlines, 7200000); // Check every 2 hours
+            checkDeliveryDeadlines();
+        } catch(e) {}
     } else { 
         showToast("INVALID ACCESS PIN", "error"); 
     }
@@ -465,12 +489,12 @@ async function saveOrder() {
         
         setTimeout(() => {
             location.reload(); 
-        }, 1500);
+        }, 1200);
 
     } catch (e) {
-        console.error(e);
+        console.error("Save Error:", e);
         showToast("DATABASE DISCONNECT: " + e.message, "error");
-        btn.innerText = "RETRY PUNCH";
+        btn.innerText = "PUNCH ORDER";
         btn.disabled = false;
     }
 }
@@ -595,15 +619,22 @@ function deleteSelectedHistory() {
 }
 
 function loadData() {
-    const searchId = document.getElementById('src').value.toLowerCase().trim();
-    const searchParty = document.getElementById('filter_party').value;
-    const searchDate = document.getElementById('filter_date').value;
+    const srcInput = document.getElementById('src');
+    const partyInput = document.getElementById('filter_party');
+    const dateInput = document.getElementById('filter_date');
+
+    const searchId = srcInput ? srcInput.value.toLowerCase().trim() : "";
+    const searchParty = partyInput ? partyInput.value : "";
+    const searchDate = dateInput ? dateInput.value : "";
 
     db.ref('orders').on('value', snap => {
         const act = document.getElementById('activeList');
         const rdy = document.getElementById('readyList');
         const hist = document.getElementById('historyList');
         const statsDiv = document.getElementById('stats');
+        
+        if (!act || !rdy || !hist) return;
+        
         act.innerHTML = ""; rdy.innerHTML = ""; hist.innerHTML = "";
         
         const data = snap.val() ? Object.values(snap.val()).reverse() : [];
@@ -717,35 +748,46 @@ function loadData() {
             }
         });
 
-        document.getElementById('dashSummaryMetrics').innerHTML = `
-            <div class="dash-summary-box">
-                <div style="font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:1px; opacity:0.85;">Current Orders</div>
-                <div style="font-size:24px; font-weight:800; margin-top:5px;">${currentOrdersCount}</div>
-            </div>
-            <div class="dash-summary-box">
-                <div style="font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:1px; opacity:0.85;">Orders Done</div>
-                <div style="font-size:24px; font-weight:800; margin-top:5px;">${ordersDoneCount}</div>
-            </div>`;
-
-        document.getElementById('dyeMetricsContainer').innerHTML = `
-            <div class="dash-dye-box">
-                <div style="font-family:'Cinzel'; font-size:14px; font-weight:800; letter-spacing:2px; margin-bottom:5px; border-bottom:1px solid rgba(62,39,35,0.2); padding-bottom:5px;">DYE</div>
-                <div style="display:flex; justify-content:space-around; margin-top:8px;">
-                    <div><span class="df-label" style="color:#5d4037;">Active Pcs</span><br><span style="font-size:18px; font-weight:800;">${dyeActiveCount}</span></div>
-                    <div><span class="df-label" style="color:#5d4037;">Total Weight</span><br><span style="font-size:18px; font-weight:800;">${dyeActiveWeight.toFixed(3)}g</span></div>
+        const summaryDiv = document.getElementById('dashSummaryMetrics');
+        if (summaryDiv) {
+            summaryDiv.innerHTML = `
+                <div class="dash-summary-box">
+                    <div style="font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:1px; opacity:0.85;">Current Orders</div>
+                    <div style="font-size:24px; font-weight:800; margin-top:5px;">${currentOrdersCount}</div>
                 </div>
-            </div>`;
+                <div class="dash-summary-box">
+                    <div style="font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:1px; opacity:0.85;">Orders Done</div>
+                    <div style="font-size:24px; font-weight:800; margin-top:5px;">${ordersDoneCount}</div>
+                </div>`;
+        }
 
-        statsDiv.innerHTML = stages.map(s => {
-            return `<div class="dash-metric-slot">
-                <h3 style="margin: 0; font-size: 20px; font-weight: 800;">${counts[s] || 0}</h3>
-                <small style="font-size:9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.85;">${s}</small>
-            </div>`;
-        }).join('');
+        const dyeDiv = document.getElementById('dyeMetricsContainer');
+        if (dyeDiv) {
+            dyeDiv.innerHTML = `
+                <div class="dash-dye-box">
+                    <div style="font-family:'Cinzel'; font-size:14px; font-weight:800; letter-spacing:2px; margin-bottom:5px; border-bottom:1px solid rgba(62,39,35,0.2); padding-bottom:5px;">DYE</div>
+                    <div style="display:flex; justify-content:space-around; margin-top:8px;">
+                        <div><span class="df-label" style="color:#5d4037;">Active Pcs</span><br><span style="font-size:18px; font-weight:800;">${dyeActiveCount}</span></div>
+                        <div><span class="df-label" style="color:#5d4037;">Total Weight</span><br><span style="font-size:18px; font-weight:800;">${dyeActiveWeight.toFixed(3)}g</span></div>
+                    </div>
+                </div>`;
+        }
+
+        if (statsDiv) {
+            statsDiv.innerHTML = stages.map(s => {
+                return `<div class="dash-metric-slot">
+                    <h3 style="margin: 0; font-size: 20px; font-weight: 800;">${counts[s] || 0}</h3>
+                    <small style="font-size:9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.85;">${s}</small>
+                </div>`;
+            }).join('');
+        }
         
-        let tableHTML = `<table class="party-table"><thead><tr><th>Party</th><th>Pcs</th><th>Total Wt</th></tr></thead><tbody>`;
-        for (const p in partyDist) tableHTML += `<tr><td>${p || "N/A"}</td><td>${partyDist[p].pcs}</td><td>${partyDist[p].wt.toFixed(3)}g</td></tr>`;
-        document.getElementById('partyAnalysis').innerHTML = tableHTML + `</tbody></table>`;
+        const partyDiv = document.getElementById('partyAnalysis');
+        if (partyDiv) {
+            let tableHTML = `<table class="party-table"><thead><tr><th>Party</th><th>Pcs</th><th>Total Wt</th></tr></thead><tbody>`;
+            for (const p in partyDist) tableHTML += `<tr><td>${p || "N/A"}</td><td>${partyDist[p].pcs}</td><td>${partyDist[p].wt.toFixed(3)}g</td></tr>`;
+            partyDiv.innerHTML = tableHTML + `</tbody></table>`;
+        }
     });
 }
 
@@ -770,5 +812,4 @@ function nav(p, el) {
 }
 </script>
 </body>
-</html>
 </html>
