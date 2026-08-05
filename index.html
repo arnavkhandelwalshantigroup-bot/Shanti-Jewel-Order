@@ -19,6 +19,9 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js"></script>
+    
+    <!-- HTML2Canvas Library for Order Form Download -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
         :root { --gold: #D4AF37; --brown: #3E2723; --cream: #FFFDE7; --text: #212121; --red: #c62828; --green: #2e7d32; }
@@ -32,11 +35,13 @@
         .header h1 { font-family: 'Cinzel', serif; margin: 0; font-size: 24px; letter-spacing: 4px; }
 
         #jobCardOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:5000; overflow-y:auto; padding:15px; box-sizing:border-box; }
-        .digital-form { background: #fff; border: 6px double var(--gold); padding: 20px; max-width: 400px; margin: 20px auto; color: var(--brown); border-radius: 2px; box-sizing: border-box; }
+        .job-card-modal-wrapper { max-width: 400px; margin: 20px auto; }
+        .job-card-action-bar { display: flex; gap: 10px; margin-bottom: 12px; }
+        .digital-form { background: #fff; border: 6px double var(--gold); padding: 20px; color: var(--brown); border-radius: 2px; box-sizing: border-box; width: 100%; }
         .df-header { text-align: center; border-bottom: 2px solid var(--gold); padding-bottom: 12px; margin-bottom: 18px; }
         
-        .jc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; width: 100%; box-sizing: border-box; }
-        .df-img { width: 100%; height: 130px; object-fit: contain; background: #fcfcfc; border-radius: 5px; border: 1px solid #eee; display: none; box-sizing: border-box; }
+        .jc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; width: 100%; box-sizing: border-box; }
+        .df-img { width: 100%; height: 150px; object-fit: contain; background: #fcfcfc; border-radius: 5px; border: 1px solid #eee; display: none; box-sizing: border-box; }
 
         .df-row { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid #f8f8f8; padding-bottom: 5px; gap: 10px; width: 100%; }
         .df-label { font-weight: 800; font-size: 10px; text-transform: uppercase; color: #aaa; }
@@ -54,8 +59,8 @@
         input, select, textarea { width: 100%; padding: 12px; margin: 6px 0; border: 1.5px solid #eee; border-radius: 12px; font-family: 'Montserrat'; font-weight: 600; box-sizing: border-box; font-size: 14px; }
         input:focus, select:focus, textarea:focus { border-color: var(--gold); outline: none; background: #fffdf9; }
         
-        .photo-grid-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; scrollbar-width: thin; -webkit-overflow-scrolling: touch; }
-        .photo-box { min-width: 75px; height: 75px; flex-shrink: 0; background: #fdfbf7; border: 2px dashed var(--gold); border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; color: var(--gold); font-family: 'Cinzel'; font-size: 8px; text-align: center; padding: 3px; cursor: pointer; box-sizing: border-box; }
+        .photo-box-grid { display: flex; gap: 10px; margin-bottom: 15px; }
+        .photo-box { flex: 1; height: 110px; background: #fdfbf7; border: 2px dashed var(--gold); border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden; color: var(--gold); font-family: 'Cinzel'; font-size: 10px; font-weight: 800; text-align: center; padding: 5px; cursor: pointer; box-sizing: border-box; }
 
         .tab-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: white; display: flex; height: 75px; border-top: 2px solid var(--gold); z-index: 1000; }
         .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 8px; font-weight: 800; color: #bbb; text-transform: uppercase; cursor: pointer; }
@@ -79,11 +84,11 @@
 
         .btn-gold { background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728); border: none; padding: 16px; border-radius: 12px; color: #3E2723; font-weight: 800; width: 100%; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
         .btn-jobcard { background: var(--brown); color: var(--gold); border: 1px solid var(--gold); padding: 12px; border-radius: 10px; font-weight: 800; margin-top: 10px; width: 100%; display: block; text-align: center; cursor: pointer; }
-        .btn-red { background: var(--red); color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; font-weight: 800; margin-top: 10px; }
+        .btn-red { background: var(--red); color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; font-weight: 800; margin-top: 10px; cursor: pointer; }
         .btn-clear { background: #f0f0f0; color: #555; border: 1px solid #ddd; padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; width: 100%; cursor: pointer; text-transform: uppercase; margin-top: 2px; box-sizing: border-box; text-align: center; }
         
-        .detail-img-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-top: 10px; }
-        .detail-thumb { width: 100%; height: 50px; object-fit: cover; border-radius: 6px; border: 1px solid #eee; background: #fafafa; }
+        .detail-img-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 10px; }
+        .detail-thumb { width: 100%; height: 80px; object-fit: contain; border-radius: 6px; border: 1px solid #eee; background: #fafafa; }
 
         .dash-dye-box, .dash-metric-slot { background: linear-gradient(135deg, #f57f17, #fbc02d); border: 2px solid #fff; color: #3e2723; padding: 15px; border-radius: 14px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .dash-dye-box { margin-bottom: 20px; }
@@ -109,38 +114,49 @@
     </div>
 </div>
 
-<div id="jobCardOverlay" onclick="this.style.display='none'">
-    <div class="digital-form" onclick="event.stopPropagation()">
-        <div class="df-header">
-            <small>॥ श्री ॥</small>
-            <h2 style="font-family:'Cinzel'; margin:5px 0;">SHANTI JEWEL</h2>
-            <small style="font-weight:700; color:var(--gold); letter-spacing:2px;">ORDER FORM SPECIFICATIONS</small>
-        </div>
+<!-- Order Form Modal with External Action Buttons -->
+<div id="jobCardOverlay" onclick="document.getElementById('jobCardOverlay').style.display='none'">
+    <div class="job-card-modal-wrapper" onclick="event.stopPropagation()">
         
-        <div class="jc-grid">
-            <img id="jc_img1" class="df-img" src="">
-            <img id="jc_img2" class="df-img" src="">
-            <img id="jc_img3" class="df-img" src="">
-            <img id="jc_img4" class="df-img" src="">
-            <img id="jc_img5" class="df-img" src="">
-            <img id="jc_img6" class="df-img" src="">
-            <img id="jc_img7" class="df-img" src="">
-            <img id="jc_img8" class="df-img" src="">
-            <img id="jc_img9" class="df-img" src="">
-            <img id="jc_img10" class="df-img" src="">
+        <!-- Action Buttons Bar Outside Form -->
+        <div class="job-card-action-bar">
+            <button class="btn-gold" style="margin:0; padding:12px; flex:1;" onclick="downloadJobCard()">DOWNLOAD FORM</button>
+            <button class="btn-red" style="margin:0; padding:12px; width:100px;" onclick="document.getElementById('jobCardOverlay').style.display='none'">CLOSE</button>
         </div>
 
-        <div class="df-row">
-            <div><span class="df-label">Weight</span><br><span class="df-value" id="jc_wt"></span></div>
-            <div><span class="df-label">Purity</span><br><span class="df-value" id="jc_kt"></span></div>
-            <div><span class="df-label">Size</span><br><span class="df-value" id="jc_sz"></span></div>
+        <!-- Printable Order Form Card -->
+        <div class="digital-form" id="printableJobCard">
+            <div class="df-header">
+                <small>SHANTI JEWEL</small>
+                <h2 style="font-family:'Cinzel'; margin:5px 0;">SHANTI JEWEL</h2>
+                <small style="font-weight:700; color:var(--gold); letter-spacing:2px;">ORDER FORM SPECIFICATIONS</small>
+            </div>
+            
+            <div class="jc-grid">
+                <img id="jc_img1" class="df-img" src="">
+                <img id="jc_img2" class="df-img" src="">
+                <img id="jc_img3" class="df-img" src="">
+                <img id="jc_img4" class="df-img" src="">
+                <img id="jc_img5" class="df-img" src="">
+                <img id="jc_img6" class="df-img" src="">
+                <img id="jc_img7" class="df-img" src="">
+                <img id="jc_img8" class="df-img" src="">
+                <img id="jc_img9" class="df-img" src="">
+                <img id="jc_img10" class="df-img" src="">
+            </div>
+
+            <div class="df-row">
+                <div><span class="df-label">Weight</span><br><span class="df-value" id="jc_wt"></span></div>
+                <div><span class="df-label">Purity</span><br><span class="df-value" id="jc_kt"></span></div>
+                <div><span class="df-label">Size</span><br><span class="df-value" id="jc_sz"></span></div>
+            </div>
+            <div class="df-row"><span class="df-label">Designer</span><span class="df-value" id="jc_cad"></span></div>
+            <div style="margin-top:15px; background:#fdfbf7; padding:12px; border-radius:8px; border: 1px solid #eee; box-sizing: border-box; width: 100%;">
+                <span class="df-label">Instructions:</span><br>
+                <p id="jc_sp" style="font-size:13px; font-weight:600; line-height:1.4; margin:5px 0; word-break: break-word;"></p>
+            </div>
         </div>
-        <div class="df-row"><span class="df-label">Designer</span><span class="df-value" id="jc_cad"></span></div>
-        <div style="margin-top:15px; background:#fdfbf7; padding:12px; border-radius:8px; border: 1px solid #eee; box-sizing: border-box; width: 100%;">
-            <span class="df-label">Instructions:</span><br>
-            <p id="jc_sp" style="font-size:13px; font-weight:600; line-height:1.4; margin:5px 0; word-break: break-word;"></p>
-        </div>
-        <button class="btn-red" onclick="document.getElementById('jobCardOverlay').style.display='none'">CLOSE</button>
+        
     </div>
 </div>
 
@@ -161,34 +177,14 @@
     <div id="punchPage" class="page active">
         <div class="punch-card">
             
-            <label style="font-size: 10px; font-weight: 800; color: var(--brown); text-transform: uppercase; letter-spacing: 1px;">Row 1: Main Designs</label>
-            <div class="photo-grid-scroll">
+            <label style="font-size: 10px; font-weight: 800; color: var(--brown); text-transform: uppercase; letter-spacing: 1px;">Order Photos (2 Slots)</label>
+            <div class="photo-box-grid">
                 <div id="p1" class="photo-box" onclick="document.getElementById('f1').click()">IMG 1 (MAIN)</div>
-                <div id="p2" class="photo-box" onclick="document.getElementById('f2').click()">IMG 2</div>
-                <div id="p3" class="photo-box" onclick="document.getElementById('f3').click()">IMG 3</div>
-                <div id="p4" class="photo-box" onclick="document.getElementById('f4').click()">IMG 4</div>
-                <div id="p5" class="photo-box" onclick="document.getElementById('f5').click()">IMG 5</div>
-            </div>
-
-            <label style="font-size: 10px; font-weight: 800; color: var(--brown); text-transform: uppercase; letter-spacing: 1px;">Row 2: Extra Perspectives</label>
-            <div class="photo-grid-scroll">
-                <div id="p6" class="photo-box" onclick="document.getElementById('f6').click()">IMG 6</div>
-                <div id="p7" class="photo-box" onclick="document.getElementById('f7').click()">IMG 7</div>
-                <div id="p8" class="photo-box" onclick="document.getElementById('f8').click()">IMG 8</div>
-                <div id="p9" class="photo-box" onclick="document.getElementById('f9').click()">IMG 9</div>
-                <div id="p10" class="photo-box" onclick="document.getElementById('f10').click()">IMG 10</div>
+                <div id="p2" class="photo-box" onclick="document.getElementById('f2').click()">IMG 2 (PERSPECTIVE)</div>
             </div>
 
             <input type="file" id="f1" accept="image/*" hidden onchange="processPhoto(this, 'p1', 0)">
             <input type="file" id="f2" accept="image/*" hidden onchange="processPhoto(this, 'p2', 1)">
-            <input type="file" id="f3" accept="image/*" hidden onchange="processPhoto(this, 'p3', 2)">
-            <input type="file" id="f4" accept="image/*" hidden onchange="processPhoto(this, 'p4', 3)">
-            <input type="file" id="f5" accept="image/*" hidden onchange="processPhoto(this, 'p5', 4)">
-            <input type="file" id="f6" accept="image/*" hidden onchange="processPhoto(this, 'p6', 5)">
-            <input type="file" id="f7" accept="image/*" hidden onchange="processPhoto(this, 'p7', 6)">
-            <input type="file" id="f8" accept="image/*" hidden onchange="processPhoto(this, 'p8', 7)">
-            <input type="file" id="f9" accept="image/*" hidden onchange="processPhoto(this, 'p9', 8)">
-            <input type="file" id="f10" accept="image/*" hidden onchange="processPhoto(this, 'p10', 9)">
 
             <input type="text" id="i_id" placeholder="ORDER ID">
             <select id="i_pa">
@@ -288,12 +284,13 @@ const db = firebase.database();
 const storage = firebase.storage();
 const stages = ["CAD", "CAM", "CASTING", "POLISH", "HUID", "READY"];
 
-let selectedFiles = new Array(10).fill(null);
+let selectedFiles = new Array(2).fill(null);
 let pendingMoveId = null;
 let pendingMoveCurStage = null;
+let currentActiveCardId = "Order";
 let messaging = null;
 
-// Safe messaging initialization so it never crashes database or order punch
+// Safe messaging initialization
 try {
     if (firebase.messaging && firebase.messaging.isSupported()) {
         messaging = firebase.messaging();
@@ -358,13 +355,10 @@ function unlockMain() {
         document.getElementById('mainLock').style.display = 'none';
         document.getElementById('appContent').style.display = 'block';
         
-        // Load Database Data Immediately
         loadData();
-        
-        // Attempt optional notifications without blocking execution
         initPhoneNotifications();
         try {
-            setInterval(checkDeliveryDeadlines, 7200000); // Check every 2 hours
+            setInterval(checkDeliveryDeadlines, 7200000);
             checkDeliveryDeadlines();
         } catch(e) {}
     } else { 
@@ -397,7 +391,7 @@ function processPhoto(input, boxId, index) {
         const img = new Image();
         img.onload = function() {
             const canvas = document.createElement('canvas');
-            const MAX_WIDTH = 500; 
+            const MAX_WIDTH = 900; 
             let width = img.width;
             let height = img.height;
 
@@ -414,7 +408,7 @@ function processPhoto(input, boxId, index) {
             canvas.toBlob(function(blob) {
                 selectedFiles[index] = blob;
                 document.getElementById(boxId).innerHTML = `<img src="${URL.createObjectURL(blob)}" style="width:100%; height:100%; object-fit:contain;">`;
-            }, 'image/jpeg', 0.7);
+            }, 'image/jpeg', 0.8);
         };
         img.src = e.target.result;
     };
@@ -447,9 +441,9 @@ async function saveOrder() {
     btn.disabled = true;
 
     try {
-        let urls = new Array(10).fill("");
+        let urls = new Array(2).fill("");
 
-        for(let i = 0; i < 10; i++) {
+        for(let i = 0; i < 2; i++) {
             if(selectedFiles[i]) {
                 const photoPath = `order_photos/${id}_slot${i}_${Date.now()}.jpg`;
                 const storageRef = storage.ref(photoPath);
@@ -471,14 +465,6 @@ async function saveOrder() {
             sp: instructions, 
             photo: urls[0], 
             photo2: urls[1],
-            photo3: urls[2],
-            photo4: urls[3],
-            photo5: urls[4],
-            photo6: urls[5],
-            photo7: urls[6],
-            photo8: urls[7],
-            photo9: urls[8],
-            photo10: urls[9],
             status: "CAD", 
             ts: Date.now() 
         };
@@ -500,6 +486,7 @@ async function saveOrder() {
 }
 
 function openJobCard(orderID) {
+    currentActiveCardId = orderID;
     db.ref('orders/' + orderID).once('value').then(snap => {
         const o = snap.val();
         if(!o) return;
@@ -520,6 +507,30 @@ function openJobCard(orderID) {
             }
         }
         document.getElementById('jobCardOverlay').style.display = 'block';
+    });
+}
+
+function downloadJobCard() {
+    const cardContainer = document.getElementById('printableJobCard');
+    if (!cardContainer) return;
+
+    showToast("GENERATING ORDER FORM IMAGE...", "success");
+
+    html2canvas(cardContainer, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff'
+    }).then(canvas => {
+        const image = canvas.toDataURL("image/jpeg", 0.95);
+        const link = document.createElement('a');
+        link.download = `Order_Form_${currentActiveCardId}.jpg`;
+        link.href = image;
+        link.click();
+        showToast("ORDER FORM DOWNLOADED", "success");
+    }).catch(err => {
+        console.error("Download Error:", err);
+        showToast("DOWNLOAD FAILED: " + err.message, "error");
     });
 }
 
