@@ -6,7 +6,7 @@
     <title>SHANTI JEWEL</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
     
-    <link rel="manifest" href="./manifest.json?v=7">
+    <link rel="manifest" href="./manifest.json?v=8">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="#3E2723">
@@ -133,16 +133,16 @@
             </div>
             
             <div class="jc-grid">
-                <img id="jc_img1" class="df-img" src="">
-                <img id="jc_img2" class="df-img" src="">
-                <img id="jc_img3" class="df-img" src="">
-                <img id="jc_img4" class="df-img" src="">
-                <img id="jc_img5" class="df-img" src="">
-                <img id="jc_img6" class="df-img" src="">
-                <img id="jc_img7" class="df-img" src="">
-                <img id="jc_img8" class="df-img" src="">
-                <img id="jc_img9" class="df-img" src="">
-                <img id="jc_img10" class="df-img" src="">
+                <img id="jc_img1" class="df-img" src="" crossorigin="anonymous">
+                <img id="jc_img2" class="df-img" src="" crossorigin="anonymous">
+                <img id="jc_img3" class="df-img" src="" crossorigin="anonymous">
+                <img id="jc_img4" class="df-img" src="" crossorigin="anonymous">
+                <img id="jc_img5" class="df-img" src="" crossorigin="anonymous">
+                <img id="jc_img6" class="df-img" src="" crossorigin="anonymous">
+                <img id="jc_img7" class="df-img" src="" crossorigin="anonymous">
+                <img id="jc_img8" class="df-img" src="" crossorigin="anonymous">
+                <img id="jc_img9" class="df-img" src="" crossorigin="anonymous">
+                <img id="jc_img10" class="df-img" src="" crossorigin="anonymous">
             </div>
 
             <div class="df-row">
@@ -288,55 +288,40 @@ let selectedFiles = new Array(2).fill(null);
 let pendingMoveId = null;
 let pendingMoveCurStage = null;
 let currentActiveCardId = "Order";
-let messaging = null;
 
-// Safe messaging initialization
-try {
-    if (firebase.messaging && firebase.messaging.isSupported()) {
-        messaging = firebase.messaging();
-    }
-} catch (err) {
-    console.warn("FCM Push Notifications not supported in this environment:", err);
-}
-
+// In-app Notification Handling (Web Notifications API)
 function initPhoneNotifications() {
-    if (!messaging) return;
     try {
-        if ('Notification' in window && 'serviceWorker' in navigator) {
+        if ('Notification' in window) {
             Notification.requestPermission().then(permission => {
                 if (permission === 'granted') {
-                    navigator.serviceWorker.register('./firebase-messaging-sw.js')
-                    .then(registration => {
-                        messaging.useServiceWorker(registration);
-                        messaging.getToken().then(token => {
-                            if (token) {
-                                const safeTokenKey = token.replace(/[.#$\/\[\]]/g, "_");
-                                db.ref('admin_tokens/' + safeTokenKey).set({
-                                    updatedAt: Date.now()
-                                });
-                            }
-                        }).catch(e => console.log("Token fetch silent err:", e));
-                    }).catch(e => console.log("SW Register silent err:", e));
+                    console.log("Browser notifications enabled.");
                 }
             });
         }
     } catch(e) {
-        console.warn("Push init bypass:", e);
+        console.warn("Notification init error:", e);
     }
 }
 
 function sendNativePhoneNotification(title, body, imageUrl) {
     try {
-        if ('Notification' in window && Notification.permission === 'granted' && navigator.serviceWorker) {
-            navigator.serviceWorker.ready.then(registration => {
-                registration.showNotification(title, {
-                    body: body,
-                    icon: imageUrl || './manifest-icon.png',
-                    image: imageUrl || null,
-                    vibrate: [200, 100, 200],
-                    badge: './manifest-icon.png'
+        if ('Notification' in window && Notification.permission === 'granted') {
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.ready.then(registration => {
+                    registration.showNotification(title, {
+                        body: body,
+                        icon: imageUrl || './manifest-icon.png',
+                        image: imageUrl || null,
+                        vibrate: [200, 100, 200]
+                    });
                 });
-            }).catch(e => console.log("SW Ready err:", e));
+            } else {
+                new Notification(title, {
+                    body: body,
+                    icon: imageUrl || './manifest-icon.png'
+                });
+            }
         }
     } catch (e) {
         console.log("Notification send bypass:", e);
@@ -522,7 +507,7 @@ function downloadJobCard() {
     html2canvas(cardContainer, {
         scale: 2,
         useCORS: true,
-        allowTaint: true,
+        allowTaint: false,
         backgroundColor: '#ffffff'
     }).then(canvas => {
         const image = canvas.toDataURL("image/jpeg", 0.95);
@@ -681,7 +666,7 @@ function loadData() {
             const imageFields = ['photo', 'photo2', 'photo3', 'photo4', 'photo5', 'photo6', 'photo7', 'photo8', 'photo9', 'photo10'];
             imageFields.forEach(f => {
                 if(o[f]) {
-                    gridHTML += `<img src="${o[f]}" class="detail-thumb" onclick="event.stopPropagation(); window.open('${o[f]}', '_blank')">`;
+                    gridHTML += `<img src="${o[f]}" class="detail-thumb" crossorigin="anonymous" onclick="event.stopPropagation(); window.open('${o[f]}', '_blank')">`;
                 }
             });
             gridHTML += `</div>`;
@@ -714,7 +699,7 @@ function loadData() {
             const card = `<div class="card" onclick="this.classList.toggle('expanded')">
                 ${checkboxHTML}
                 <div style="display:flex; gap:12px; align-items:center;">
-                    <img src="${o.photo || ''}" style="width:60px; height:60px; border-radius:12px; object-fit:cover; border:1px solid #eee;">
+                    <img src="${o.photo || ''}" crossorigin="anonymous" style="width:60px; height:60px; border-radius:12px; object-fit:cover; border:1px solid #eee;">
                     <div style="flex:1;">
                         <div style="display:flex; justify-content:space-between;">
                             <b style="color:var(--brown); font-size:16px;">${o.id}</b>
@@ -826,4 +811,5 @@ function nav(p, el) {
 }
 </script>
 </body>
+</html>
 </html>
