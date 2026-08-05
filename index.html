@@ -6,7 +6,7 @@
     <title>SHANTI JEWEL</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
     
-    <link rel="manifest" href="./manifest.json?v=8">
+    <link rel="manifest" href="./manifest.json?v=9">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="#3E2723">
@@ -289,42 +289,20 @@ let pendingMoveId = null;
 let pendingMoveCurStage = null;
 let currentActiveCardId = "Order";
 
-// In-app Notification Handling (Web Notifications API)
-function initPhoneNotifications() {
-    try {
-        if ('Notification' in window) {
-            Notification.requestPermission().then(permission => {
-                if (permission === 'granted') {
-                    console.log("Browser notifications enabled.");
-                }
-            });
-        }
-    } catch(e) {
-        console.warn("Notification init error:", e);
-    }
-}
-
+// Original Working Notification Handling
 function sendNativePhoneNotification(title, body, imageUrl) {
     try {
-        if ('Notification' in window && Notification.permission === 'granted') {
-            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                navigator.serviceWorker.ready.then(registration => {
-                    registration.showNotification(title, {
-                        body: body,
-                        icon: imageUrl || './manifest-icon.png',
-                        image: imageUrl || null,
-                        vibrate: [200, 100, 200]
-                    });
-                });
-            } else {
-                new Notification(title, {
+        if ("Notification" in window && Notification.permission === "granted") {
+            navigator.serviceWorker.ready.then(reg => {
+                reg.showNotification(title, {
                     body: body,
-                    icon: imageUrl || './manifest-icon.png'
+                    icon: imageUrl || '',
+                    image: imageUrl || ''
                 });
-            }
+            });
         }
     } catch (e) {
-        console.log("Notification send bypass:", e);
+        console.log("Notification send error:", e);
     }
 }
 
@@ -344,7 +322,9 @@ function unlockMain() {
         document.getElementById('appContent').style.display = 'block';
         
         loadData();
-        initPhoneNotifications();
+        if ("Notification" in window) {
+            Notification.requestPermission();
+        }
         try {
             setInterval(checkDeliveryDeadlines, 7200000);
             checkDeliveryDeadlines();
@@ -488,6 +468,7 @@ function openJobCard(orderID) {
             const field = i === 1 ? 'photo' : 'photo' + i;
             const imgEl = document.getElementById('jc_img' + i);
             if(o[field]) {
+                imgEl.crossOrigin = "anonymous";
                 imgEl.src = o[field];
                 imgEl.style.display = 'block';
             } else {
@@ -502,24 +483,28 @@ function downloadJobCard() {
     const cardContainer = document.getElementById('printableJobCard');
     if (!cardContainer) return;
 
-    showToast("GENERATING ORDER FORM IMAGE...", "success");
+    showToast("PREPARING IMAGES...", "success");
 
-    html2canvas(cardContainer, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: false,
-        backgroundColor: '#ffffff'
-    }).then(canvas => {
-        const image = canvas.toDataURL("image/jpeg", 0.95);
-        const link = document.createElement('a');
-        link.download = `Order_Form_${currentActiveCardId}.jpg`;
-        link.href = image;
-        link.click();
-        showToast("ORDER FORM DOWNLOADED", "success");
-    }).catch(err => {
-        console.error("Download Error:", err);
-        showToast("DOWNLOAD FAILED: " + err.message, "error");
-    });
+    setTimeout(() => {
+        showToast("GENERATING ORDER FORM...", "success");
+
+        html2canvas(cardContainer, {
+            scale: 2,
+            useCORS: true,
+            allowTaint: false,
+            backgroundColor: '#ffffff'
+        }).then(canvas => {
+            const image = canvas.toDataURL("image/jpeg", 0.95);
+            const link = document.createElement('a');
+            link.download = `Order_Form_${currentActiveCardId}.jpg`;
+            link.href = image;
+            link.click();
+            showToast("ORDER FORM DOWNLOADED", "success");
+        }).catch(err => {
+            console.error("Download Error:", err);
+            showToast("DOWNLOAD FAILED: " + err.message, "error");
+        });
+    }, 500);
 }
 
 function triggerMoveConfirm(id, cur) {
@@ -561,43 +546,28 @@ function closeConfirm() {
 
 function checkDeliveryDeadlines() {
     const now = new Date();
-
-    const formatLocalDateString = (dateObj) => {
-        const year = dateObj.getFullYear();
-        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-        const day = String(dateObj.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    };
-
-    const todayStr = formatLocalDateString(now);
-    
-    const tomorrow = new Date(now);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const tomorrowStr = formatLocalDateString(tomorrow);
-
-    const inTwoDays = new Date(now);
-    inTwoDays.setDate(inTwoDays.getDate() + 2);
-    const inTwoDaysStr = formatLocalDateString(inTwoDays);
+    const today = now.toISOString().split('T')[0];
+    const tomorrow = new Date(now.getTime() + 86400000).toISOString().split('T')[0];
+    const inTwoDays = new Date(now.getTime() + 172800000).toISOString().split('T')[0];
 
     db.ref('orders').once('value').then(snap => {
         const orders = snap.val();
         if (!orders) return;
 
-        let trackingKey = `notified_phone_${todayStr}_${Math.floor(now.getHours() / 2)}`;
-        if (localStorage.getItem(trackingKey)) return; 
+        let trackingKey = `notified_${today}_${Math.floor(now.getHours()/2)}`;
+        if (localStorage.getItem(trackingKey)) return;
 
         Object.values(orders).forEach(o => {
             if (o.status === "READY" || o.status === "DISPATCHED") return;
 
-            if (o.dd === todayStr) {
+            if (o.dd === today) {
                 sendNativePhoneNotification(`URGENT: Order ${o.id} Due Today!`, `Party: ${o.party} | Stage: ${o.status}`, o.photo);
-            } else if (o.dd === tomorrowStr) {
+            } else if (o.dd === tomorrow) {
                 sendNativePhoneNotification(`Due Tomorrow: Order ${o.id}`, `Party: ${o.party} | Stage: ${o.status}`, o.photo);
-            } else if (o.dd === inTwoDaysStr) {
+            } else if (o.dd === inTwoDays) {
                 sendNativePhoneNotification(`Due in 2 Days: Order ${o.id}`, `Party: ${o.party} | Stage: ${o.status}`, o.photo);
             }
         });
-
         localStorage.setItem(trackingKey, "true");
     });
 }
@@ -811,5 +781,6 @@ function nav(p, el) {
 }
 </script>
 </body>
+</html>
 </html>
 </html>
