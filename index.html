@@ -148,7 +148,7 @@
 
 <div id="confirmOverlay">
     <div class="confirm-box">
-        <h3 style="margin-top:0; font-family:'Cinzel'; color:var(--brown);">MOVE TO NEXT DEPARTMENT</h3>
+        <h3 style="margin-top:0; font-family:'Cinzel'; color:var(--brown);" id="confirmTitle">MOVE TO NEXT DEPARTMENT</h3>
         <p style="font-size:14px; font-weight:600; color:#666;" id="confirmMsg">Are you sure you want to advance this order?</p>
         <div style="display:flex; gap:10px; margin-top:20px;">
             <button class="btn-gold" style="margin:0; padding:10px; flex:1;" id="confirmYesBtn">YES</button>
@@ -203,7 +203,13 @@
                 <option>Neelkanth Jewellers</option>
                 <option>Inhouse Production</option>
             </select>
-            <select id="i_cad"><option value="">DESIGNER</option><option value="DYE">DYE</option><option value="SHINDE">SHINDE</option><option value="ALAUDDIN">ALAUDDIN</option></select>
+            <select id="i_cad">
+                <option value="">DESIGNER</option>
+                <option value="DYE">DYE</option>
+                <option value="SHINDE">SHINDE</option>
+                <option value="ALAUDDIN">ALAUDDIN</option>
+                <option value="INDRO">INDRO</option>
+            </select>
             <div style="display:flex; gap:10px;"><input type="number" step="0.001" id="i_wt" placeholder="WT"><input type="text" id="i_kt" placeholder="KT"></div>
             <div style="display:flex; gap:10px;"><input type="text" id="i_sz" placeholder="Size"><input type="date" id="i_dd"></div>
             <textarea id="i_sp" rows="2" placeholder="Instructions..."></textarea>
@@ -230,6 +236,10 @@
             <button class="btn-clear" onclick="resetActiveFilters()">Clear Filters</button>
         </div>
         <div id="activeList"></div>
+    </div>
+
+    <div id="readyPage" class="page">
+        <div id="readyList"></div>
     </div>
 
     <div id="historyPage" class="page">
@@ -259,6 +269,7 @@
     <div class="tab-bar">
         <div class="tab active" onclick="nav('punch', this)">Punch</div>
         <div class="tab" onclick="nav('active', this)">Active</div>
+        <div class="tab" onclick="nav('ready', this)">Ready</div>
         <div class="tab" onclick="nav('history', this)">History</div>
         <div class="tab" onclick="nav('dash', this)">Dash</div>
     </div>
@@ -460,6 +471,7 @@ function triggerMoveConfirm(id, cur) {
     pendingMoveCurStage = cur;
     const nextStage = stages[stages.indexOf(cur) + 1];
     
+    document.getElementById('confirmTitle').innerText = "MOVE TO NEXT DEPARTMENT";
     document.getElementById('confirmMsg').innerText = `Advance Order ${id} from ${cur} to ${nextStage}?`;
     document.getElementById('confirmOverlay').style.display = 'flex';
     
@@ -473,6 +485,18 @@ function triggerMoveConfirm(id, cur) {
     };
 }
 
+function triggerDispatchConfirm(id) {
+    document.getElementById('confirmTitle').innerText = "DISPATCH ORDER";
+    document.getElementById('confirmMsg').innerText = `Are you sure you want to dispatch Order ${id}? It will be moved to History.`;
+    document.getElementById('confirmOverlay').style.display = 'flex';
+    
+    document.getElementById('confirmYesBtn').onclick = function() {
+        db.ref('orders/' + id).update({status: "DISPATCHED"});
+        showToast(`ORDER ${id} DISPATCHED TO HISTORY`, "success");
+        closeConfirm();
+    };
+}
+
 function closeConfirm() {
     document.getElementById('confirmOverlay').style.display = 'none';
     pendingMoveId = null;
@@ -481,13 +505,6 @@ function closeConfirm() {
 
 function checkDeliveryDeadlines() {
     const now = new Date();
-    const currentHour = now.getHours();
-    const currentMinute = now.getMinutes();
-
-    const is10AM = (currentHour === 10 && currentMinute === 0);
-    const is8PM = (currentHour === 20 && currentMinute === 0);
-
-    if (!is10AM && !is8PM) return;
 
     const formatLocalDateString = (dateObj) => {
         const year = dateObj.getFullYear();
@@ -502,35 +519,46 @@ function checkDeliveryDeadlines() {
     tomorrow.setDate(tomorrow.getDate() + 1);
     const tomorrowStr = formatLocalDateString(tomorrow);
 
+    const inTwoDays = new Date(now);
+    inTwoDays.setDate(inTwoDays.getDate() + 2);
+    const inTwoDaysStr = formatLocalDateString(inTwoDays);
+
     db.ref('orders').once('value').then(snap => {
         const orders = snap.val();
         if (!orders) return;
 
-        let trackingKey = `notified_${todayStr}_${currentHour}`;
+        let trackingKey = `notified_${todayStr}_${now.getHours()}`;
         if (localStorage.getItem(trackingKey)) return; 
 
         let sameDayAlerts = [];
-        let nextDayAlerts = [];
+        let oneDayAlerts = [];
+        let twoDayAlerts = [];
 
         Object.values(orders).forEach(o => {
-            if (o.status === "READY") return;
+            if (o.status === "READY" || o.status === "DISPATCHED") return;
 
             if (o.dd === todayStr) {
-                sameDayAlerts.push(`ID: ${o.id} | PARTY: ${o.party} | WT: ${o.wt}g | PURITY: ${o.kt} | SIZE: ${o.sz} | STATUS: ${o.status}`);
+                sameDayAlerts.push(`ID: ${o.id} (${o.party})`);
             } else if (o.dd === tomorrowStr) {
-                nextDayAlerts.push(o.id);
+                oneDayAlerts.push(`ID: ${o.id} (${o.party})`);
+            } else if (o.dd === inTwoDaysStr) {
+                twoDayAlerts.push(`ID: ${o.id} (${o.party})`);
             }
         });
 
-        if (is10AM && sameDayAlerts.length > 0) {
-            let compiledMsg = "URGENT SAME DAY DELIVERY ORDERS\n\n" + sameDayAlerts.join("\n\n");
-            showToast(compiledMsg, "success");
-            localStorage.setItem(trackingKey, "true");
+        let msgParts = [];
+        if (sameDayAlerts.length > 0) {
+            msgParts.push("URGENT: SAME DAY DELIVERY\n" + sameDayAlerts.join("\n"));
+        }
+        if (oneDayAlerts.length > 0) {
+            msgParts.push("1 DAY PRIOR (DUE TOMORROW)\n" + oneDayAlerts.join("\n"));
+        }
+        if (twoDayAlerts.length > 0) {
+            msgParts.push("2 DAYS PRIOR DEADLINE\n" + twoDayAlerts.join("\n"));
         }
 
-        if (is8PM && nextDayAlerts.length > 0) {
-            let compiledMsg = "UPCOMING TOMORROW DEADLINES\n\nORDERS DUE: " + nextDayAlerts.join(", ");
-            showToast(compiledMsg, "success");
+        if (msgParts.length > 0) {
+            showToast(msgParts.join("\n\n"), "success");
             localStorage.setItem(trackingKey, "true");
         }
     });
@@ -558,9 +586,10 @@ function loadData() {
 
     db.ref('orders').on('value', snap => {
         const act = document.getElementById('activeList');
+        const rdy = document.getElementById('readyList');
         const hist = document.getElementById('historyList');
         const statsDiv = document.getElementById('stats');
-        act.innerHTML = ""; hist.innerHTML = "";
+        act.innerHTML = ""; rdy.innerHTML = ""; hist.innerHTML = "";
         
         const data = snap.val() ? Object.values(snap.val()).reverse() : [];
         const counts = {}; stages.forEach(s => counts[s] = 0);
@@ -572,18 +601,18 @@ function loadData() {
         let ordersDoneCount = 0;
 
         data.forEach(o => {
-            counts[o.status]++;
+            if (counts[o.status] !== undefined) counts[o.status]++;
             if(!partyDist[o.party]) partyDist[o.party] = { pcs: 0, wt: 0 };
             partyDist[o.party].pcs++;
             partyDist[o.party].wt += (parseFloat(o.wt) || 0);
 
-            if (o.status !== "READY") {
+            if (o.status !== "READY" && o.status !== "DISPATCHED") {
                 currentOrdersCount++;
             } else {
                 ordersDoneCount++;
             }
 
-            if(o.cad && o.cad.toUpperCase() === "DYE" && o.status !== "READY") {
+            if(o.cad && o.cad.toUpperCase() === "DYE" && o.status !== "READY" && o.status !== "DISPATCHED") {
                 dyeActiveCount++;
                 dyeActiveWeight += (parseFloat(o.wt) || 0);
             }
@@ -611,8 +640,15 @@ function loadData() {
             }
 
             let checkboxHTML = '';
-            if (o.status === 'READY') {
+            if (o.status === 'DISPATCHED') {
                 checkboxHTML = `<input type="checkbox" class="history-checkbox" data-id="${o.id}" onclick="event.stopPropagation();">`;
+            }
+
+            let actionBtn = '';
+            if (o.status !== 'READY' && o.status !== 'DISPATCHED') {
+                actionBtn = `<button class="btn-gold" style="font-size:11px;" onclick="event.stopPropagation(); triggerMoveConfirm('${o.id}','${o.status}')">NEXT STAGE</button>`;
+            } else if (o.status === 'READY') {
+                actionBtn = `<button class="btn-gold" style="font-size:11px; background: linear-gradient(135deg, #2e7d32, #1b5e20); color:#fff;" onclick="event.stopPropagation(); triggerDispatchConfirm('${o.id}')">DISPATCHED</button>`;
             }
 
             const card = `<div class="card" onclick="this.classList.toggle('expanded')">
@@ -622,7 +658,7 @@ function loadData() {
                     <div style="flex:1;">
                         <div style="display:flex; justify-content:space-between;">
                             <b style="color:var(--brown); font-size:16px;">${o.id}</b>
-                            <small style="color:var(--red); font-weight:800; margin-right: ${o.status === 'READY' ? '25px' : '0px'};">DUE: ${o.dd || 'NONE'}</small>
+                            <small style="color:var(--red); font-weight:800; margin-right: ${o.status === 'DISPATCHED' ? '25px' : '0px'};">DUE: ${o.dd || 'NONE'}</small>
                         </div>
                         <div style="font-weight:700; font-size:13px; color:#555;">${o.party || 'UNKNOWN'}</div>
                         <small style="text-transform:uppercase; color:var(--gold); font-weight:800; font-size:10px;">STAGE: ${displayStatus}</small>
@@ -647,11 +683,11 @@ function loadData() {
                     ${gridHTML}
                     
                     <button class="btn-jobcard" onclick="event.stopPropagation(); openJobCard('${o.id}')">ORDER FORM</button>
-                    ${o.status!=='READY'?`<button class="btn-gold" style="font-size:11px;" onclick="event.stopPropagation(); triggerMoveConfirm('${o.id}','${o.status}')">NEXT STAGE</button>`:''}
+                    ${actionBtn}
                     <button class="btn-red" style="font-size:10px; opacity:0.6;" onclick="event.stopPropagation(); del('${o.id}')">DELETE</button>
                 </div></div>`;
             
-            if(o.status !== 'READY') {
+            if(o.status !== 'READY' && o.status !== 'DISPATCHED') {
                 let idMatch = !searchId || o.id.toLowerCase().includes(searchId);
                 let partyMatch = !searchParty || (o.party && o.party === searchParty);
                 let dateMatch = !searchDate || (o.dd && o.dd === searchDate);
@@ -659,7 +695,11 @@ function loadData() {
                 if(idMatch && partyMatch && dateMatch) {
                     act.innerHTML += card;
                 }
-            } else { hist.innerHTML += card; }
+            } else if (o.status === 'READY') {
+                rdy.innerHTML += card;
+            } else { 
+                hist.innerHTML += card; 
+            }
         });
 
         document.getElementById('dashSummaryMetrics').innerHTML = `
@@ -683,7 +723,7 @@ function loadData() {
 
         statsDiv.innerHTML = stages.map(s => {
             return `<div class="dash-metric-slot">
-                <h3 style="margin: 0; font-size: 20px; font-weight: 800;">${counts[s]}</h3>
+                <h3 style="margin: 0; font-size: 20px; font-weight: 800;">${counts[s] || 0}</h3>
                 <small style="font-size:9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.85;">${s}</small>
             </div>`;
         }).join('');
