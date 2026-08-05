@@ -1,41 +1,40 @@
-importScripts('https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js');
-importScripts('https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js');
+// sw.js
 
-const firebaseConfig = {
-    apiKey: "AIzaSyBnvmQBPkJmJcjXf71vEUY91B2_2P9oAgU",
-    databaseURL: "https://shanti-jewel-order-default-rtdb.firebaseio.com/",
-    projectId: "shanti-jewel-order",
-    storageBucket: "shanti-jewel-order.firebasestorage.app",
-    messagingSenderId: "109312345678" // Optional: Replace with your actual FCM Messaging Sender ID if custom
-};
+self.addEventListener('push', function(event) {
+  // 1. Get current hour in IST (Asia/Kolkata)
+  const currentHour = parseInt(
+    new Date().toLocaleString('en-US', {
+      timeZone: 'Asia/Kolkata',
+      hour: 'numeric',
+      hour12: false
+    }),
+    10
+  );
 
-firebase.initializeApp(firebaseConfig);
-const messaging = firebase.messaging();
+  // 2. Quiet hours: 9:00 PM (21) to 8:59 AM (less than 9)
+  const isQuietHours = currentHour >= 21 || currentHour < 9;
 
-messaging.setBackgroundMessageHandler(function(payload) {
-    const title = payload.notification ? payload.notification.title : (payload.data ? payload.data.title : "SHANTI JEWEL ALERT");
-    const options = {
-        body: payload.notification ? payload.notification.body : (payload.data ? payload.data.body : "You have an order due soon!"),
-        icon: payload.notification && payload.notification.icon ? payload.notification.icon : "./manifest-icon.png",
-        image: payload.notification && payload.notification.image ? payload.notification.image : (payload.data ? payload.data.image : null),
-        badge: "./manifest-icon.png",
-        vibrate: [200, 100, 200],
-        data: {
-            url: self.location.origin
-        }
-    };
+  if (isQuietHours) {
+    console.log('Quiet hours active (9 PM - 9 AM). Notification suppressed.');
+    return; // Stops the notification pop-up/sound completely
+  }
 
-    return self.registration.showNotification(title, options);
-});
+  // 3. Extract notification payload
+  let payload = { title: 'New Order Alert', body: 'You have a new order update.' };
+  if (event.data) {
+    payload = event.data.json();
+  }
 
-self.addEventListener('notificationclick', function(event) {
-    event.notification.close();
-    event.waitUntil(
-        clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(clientList) {
-            if (clientList.length > 0) {
-                return clientList[0].focus();
-            }
-            return clients.openWindow(event.notification.data.url || '/');
-        })
-    );
+  const title = payload.title || payload.notification?.title || 'Shanti Jewel Order';
+  const options = {
+    body: payload.body || payload.notification?.body || 'New update available',
+    icon: '/icon-192.png', // Replace with your icon path
+    badge: '/badge.png',   // Replace with your badge path
+    data: payload.data || {}
+  };
+
+  // 4. Display notification during active hours (9 AM - 9 PM)
+  event.waitUntil(
+    self.registration.showNotification(title, options)
+  );
 });
