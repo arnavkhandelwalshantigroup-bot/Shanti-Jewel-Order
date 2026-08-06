@@ -36,7 +36,7 @@
 
         #jobCardOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:5000; overflow-y:auto; padding:15px; box-sizing:border-box; }
         .job-card-modal-wrapper { max-width: 400px; margin: 20px auto; }
-        .job-card-action-bar { display: flex; gap: 10px; margin-bottom: 12px; }
+        .job-card-action-bar { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
         .digital-form { background: #fff; border: 6px double var(--gold); padding: 20px; color: var(--brown); border-radius: 2px; box-sizing: border-box; width: 100%; }
         .df-header { text-align: center; border-bottom: 2px solid var(--gold); padding-bottom: 12px; margin-bottom: 18px; }
         
@@ -88,7 +88,7 @@
         .btn-clear { background: #f0f0f0; color: #555; border: 1px solid #ddd; padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; width: 100%; cursor: pointer; text-transform: uppercase; margin-top: 2px; box-sizing: border-box; text-align: center; }
         
         .detail-img-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 10px; }
-        .detail-thumb { width: 100%; height: 80px; object-fit: contain; border-radius: 6px; border: 1px solid #eee; background: #fafafa; }
+        .detail-thumb { width: 100%; height: 110px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd; background: #fafafa; cursor: pointer; display: block; }
 
         .dash-dye-box, .dash-metric-slot { background: linear-gradient(135deg, #f57f17, #fbc02d); border: 2px solid #fff; color: #3e2723; padding: 15px; border-radius: 14px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .dash-dye-box { margin-bottom: 20px; }
@@ -120,14 +120,15 @@
         
         <!-- Action Buttons Bar Outside Form -->
         <div class="job-card-action-bar">
-            <button class="btn-gold" style="margin:0; padding:12px; flex:1;" onclick="downloadJobCard()">DOWNLOAD FORM</button>
-            <button class="btn-red" style="margin:0; padding:12px; width:100px;" onclick="document.getElementById('jobCardOverlay').style.display='none'">CLOSE</button>
+            <button class="btn-gold" style="margin:0; padding:12px; flex:1;" onclick="downloadJobCard()">DOWNLOAD</button>
+            <button class="btn-gold" style="margin:0; padding:12px; flex:1; background: linear-gradient(135deg, #1b5e20, #2e7d32); color:#fff;" onclick="shareJobCard()">SHARE IMAGE</button>
+            <button class="btn-red" style="margin:0; padding:12px; width:80px;" onclick="document.getElementById('jobCardOverlay').style.display='none'">CLOSE</button>
         </div>
 
         <!-- Printable Order Form Card -->
         <div class="digital-form" id="printableJobCard">
             <div class="df-header">
-                <small>SHANTI JEWEL</small>
+                <small> ||श्री||</small>
                 <h2 style="font-family:'Cinzel'; margin:5px 0;">SHANTI JEWEL</h2>
                 <small style="font-weight:700; color:var(--gold); letter-spacing:2px;">ORDER FORM SPECIFICATIONS</small>
             </div>
@@ -277,7 +278,6 @@ const firebaseConfig = {
     storageBucket: "shanti-jewel-order.firebasestorage.app"
 };
 
-// Initialize Core Firebase
 firebase.initializeApp(firebaseConfig);
 
 const db = firebase.database();
@@ -289,7 +289,6 @@ let pendingMoveId = null;
 let pendingMoveCurStage = null;
 let currentActiveCardId = "Order";
 
-// Original Working Notification Handling
 function sendNativePhoneNotification(title, body, imageUrl) {
     try {
         if ("Notification" in window && Notification.permission === "granted") {
@@ -375,7 +374,7 @@ function processPhoto(input, boxId, index) {
 
             canvas.toBlob(function(blob) {
                 selectedFiles[index] = blob;
-                document.getElementById(boxId).innerHTML = `<img src="${URL.createObjectURL(blob)}" style="width:100%; height:100%; object-fit:contain;">`;
+                document.getElementById(boxId).innerHTML = `<img src="${URL.createObjectURL(blob)}" style="width:100%; height:100%; object-fit:cover; border-radius:10px;">`;
             }, 'image/jpeg', 0.8);
         };
         img.src = e.target.result;
@@ -438,7 +437,6 @@ async function saveOrder() {
         };
 
         await db.ref('orders/' + id).set(obj);
-        
         showToast("ORDER PUNCHED SUCCESSFULLY", "success");
         
         setTimeout(() => {
@@ -469,7 +467,7 @@ function openJobCard(orderID) {
             const imgEl = document.getElementById('jc_img' + i);
             if(o[field]) {
                 imgEl.crossOrigin = "anonymous";
-                imgEl.src = o[field];
+                imgEl.src = o[field] + (o[field].includes('?') ? '&' : '?') + 't=' + Date.now();
                 imgEl.style.display = 'block';
             } else {
                 imgEl.style.display = 'none';
@@ -483,28 +481,82 @@ function downloadJobCard() {
     const cardContainer = document.getElementById('printableJobCard');
     if (!cardContainer) return;
 
-    showToast("PREPARING IMAGES...", "success");
+    showToast("PREPARING ORDER FORM...", "success");
 
     setTimeout(() => {
-        showToast("GENERATING ORDER FORM...", "success");
-
         html2canvas(cardContainer, {
             scale: 2,
             useCORS: true,
             allowTaint: false,
             backgroundColor: '#ffffff'
         }).then(canvas => {
-            const image = canvas.toDataURL("image/jpeg", 0.95);
-            const link = document.createElement('a');
-            link.download = `Order_Form_${currentActiveCardId}.jpg`;
-            link.href = image;
-            link.click();
-            showToast("ORDER FORM DOWNLOADED", "success");
+            canvas.toBlob(blob => {
+                if (!blob) {
+                    showToast("CANVAS ERROR", "error");
+                    return;
+                }
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.download = `Order_Form_${currentActiveCardId}.jpg`;
+                link.href = url;
+                link.click();
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+                showToast("ORDER FORM DOWNLOADED", "success");
+            }, 'image/jpeg', 0.95);
         }).catch(err => {
             console.error("Download Error:", err);
             showToast("DOWNLOAD FAILED: " + err.message, "error");
         });
-    }, 500);
+    }, 600);
+}
+
+function shareJobCard() {
+    const cardContainer = document.getElementById('printableJobCard');
+    if (!cardContainer) return;
+
+    showToast("PREPARING IMAGE TO SHARE...", "success");
+
+    setTimeout(() => {
+        html2canvas(cardContainer, {
+            scale: 2,
+            useCORS: true,
+            allowTaint: false,
+            backgroundColor: '#ffffff'
+        }).then(canvas => {
+            canvas.toBlob(blob => {
+                if (!blob) {
+                    showToast("SHARE ERROR", "error");
+                    return;
+                }
+                const file = new File([blob], `Order_Form_${currentActiveCardId}.jpg`, { type: 'image/jpeg' });
+                
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    navigator.share({
+                        files: [file],
+                        title: `Order Form ${currentActiveCardId}`,
+                        text: `Specification Form for Order ID: ${currentActiveCardId}`
+                    }).then(() => {
+                        showToast("SHARED SUCCESSFULLY", "success");
+                    }).catch(err => {
+                        if (err.name !== 'AbortError') {
+                            showToast("SHARE CANCELLED OR FAILED", "error");
+                        }
+                    });
+                } else {
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.download = `Order_Form_${currentActiveCardId}.jpg`;
+                    link.href = url;
+                    link.click();
+                    setTimeout(() => URL.revokeObjectURL(url), 1000);
+                    showToast("SHARING NOT SUPPORTED - DOWNLOADED INSTEAD", "success");
+                }
+            }, 'image/jpeg', 0.95);
+        }).catch(err => {
+            console.error("Share Error:", err);
+            showToast("SHARE FAILED: " + err.message, "error");
+        });
+    }, 600);
 }
 
 function triggerMoveConfirm(id, cur) {
@@ -781,6 +833,4 @@ function nav(p, el) {
 }
 </script>
 </body>
-</html>
-</html>
 </html>
