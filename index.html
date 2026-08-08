@@ -2,835 +2,334 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SHANTI JEWEL</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
-    
-    <link rel="manifest" href="./manifest.json?v=9">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="#3E2723">
-    <meta name="theme-color" content="#3E2723">
-    <meta name="application-name" content="SHANTI JEWEL">
-    <meta name="apple-mobile-web-app-title" content="SHANTI JEWEL">
-    
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js"></script>
-    
-    <!-- HTML2Canvas Library for Order Form Download -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shanti Jewel - Master Custom Order Management System</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- html2canvas for generating snapshots -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
+    <!-- Google Fonts -->
     <style>
-        :root { --gold: #D4AF37; --brown: #3E2723; --cream: #FFFDE7; --text: #212121; --red: #c62828; --green: #2e7d32; }
-        * { box-sizing: border-box; }
-        body { font-family: 'Montserrat', sans-serif; background: #fdfbf7; margin: 0; padding-bottom: 90px; color: var(--text); -webkit-tap-highlight-color: transparent; overflow-x: hidden; }
-        
-        #mainLock { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--brown); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
-        .lock-container { background: rgba(255,255,255,0.05); padding: 30px; border-radius: 25px; border: 1px solid var(--gold); width: 85%; max-width: 320px; text-align: center; }
-
-        .header { background: var(--brown); color: var(--gold); text-align: center; padding: 25px 10px; border-bottom: 5px solid var(--gold); }
-        .header h1 { font-family: 'Cinzel', serif; margin: 0; font-size: 24px; letter-spacing: 4px; }
-
-        #jobCardOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:5000; overflow-y:auto; padding:15px; box-sizing:border-box; }
-        .job-card-modal-wrapper { max-width: 400px; margin: 20px auto; }
-        .job-card-action-bar { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
-        .digital-form { background: #fff; border: 6px double var(--gold); padding: 20px; color: var(--brown); border-radius: 2px; box-sizing: border-box; width: 100%; }
-        .df-header { text-align: center; border-bottom: 2px solid var(--gold); padding-bottom: 12px; margin-bottom: 18px; }
-        
-        .jc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; width: 100%; box-sizing: border-box; }
-        .df-img { width: 100%; height: 150px; object-fit: contain; background: #fcfcfc; border-radius: 5px; border: 1px solid #eee; display: none; box-sizing: border-box; }
-
-        .df-row { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid #f8f8f8; padding-bottom: 5px; gap: 10px; width: 100%; }
-        .df-label { font-weight: 800; font-size: 10px; text-transform: uppercase; color: #aaa; }
-        .df-value { font-weight: 700; font-size: 14px; color: var(--brown); }
-        
-        #confirmOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:6000; align-items:center; justify-content:center; }
-        .confirm-box { background: white; border: 2px solid var(--gold); border-radius: 20px; padding: 25px; max-width: 300px; width: 85%; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        
-        #themeToast { position: fixed; top: -200px; left: 50%; transform: translateX(-50%); width: 85%; max-width: 350px; padding: 16px; border-radius: 14px; color: white; font-weight: 700; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.35); z-index: 10000; transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-size: 13px; letter-spacing: 1px; border: 1.5px solid rgba(255,255,255,0.2); white-space: pre-line; }
-        #themeToast.show { top: 25px; }
-        #themeToast.success { background: linear-gradient(135deg, var(--brown), #2b1b18); color: var(--gold); border-color: var(--gold); font-family: 'Cinzel', serif; }
-        #themeToast.error { background: linear-gradient(135deg, var(--red), #900); color: #fff; }
-
-        .punch-card { background: white; border-radius: 20px; padding: 20px; border: 1px solid var(--gold); }
-        input, select, textarea { width: 100%; padding: 12px; margin: 6px 0; border: 1.5px solid #eee; border-radius: 12px; font-family: 'Montserrat'; font-weight: 600; box-sizing: border-box; font-size: 14px; }
-        input:focus, select:focus, textarea:focus { border-color: var(--gold); outline: none; background: #fffdf9; }
-        
-        .photo-box-grid { display: flex; gap: 10px; margin-bottom: 15px; }
-        .photo-box { flex: 1; height: 110px; background: #fdfbf7; border: 2px dashed var(--gold); border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden; color: var(--gold); font-family: 'Cinzel'; font-size: 10px; font-weight: 800; text-align: center; padding: 5px; cursor: pointer; box-sizing: border-box; }
-
-        .tab-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: white; display: flex; height: 75px; border-top: 2px solid var(--gold); z-index: 1000; }
-        .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 8px; font-weight: 800; color: #bbb; text-transform: uppercase; cursor: pointer; }
-        .tab.active { color: var(--brown); background: var(--cream); border-top: 5px solid var(--gold); }
-        .page { display: none; padding: 15px; box-sizing: border-box; width: 100%; }
-        .page.active { display: block; }
-
-        .card { background: white; border-radius: 18px; padding: 18px; margin-bottom: 15px; border: 1px solid #f0f0f0; box-shadow: 0 4px 8px rgba(0,0,0,0.05); position: relative; }
-        .details { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #ddd; }
-        .card.expanded .details { display: block; }
-        
-        .timeline { display: flex; justify-content: space-between; margin: 25px 0 15px 0; position: relative; padding: 0 10px; }
-        .timeline::before { content: ""; position: absolute; top: 5px; left: 15px; right: 15px; height: 2px; background: #f0f0f0; z-index: 1; }
-        .t-step { width: 10px; height: 10px; border-radius: 50%; background: #ddd; z-index: 2; position: relative; }
-        .t-step.active { background: var(--gold); }
-        .t-label { position: absolute; top: 15px; font-size: 7px; transform: translateX(-40%); font-weight: 800; color: #ccc; }
-
-        .party-table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; font-size: 12px; border: 1px solid var(--gold); margin-top: 15px; }
-        .party-table th { background: var(--brown); color: var(--gold); padding: 10px; text-align: left; }
-        .party-table td { padding: 10px; border-bottom: 1px solid #eee; font-weight: 600; }
-
-        .btn-gold { background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728); border: none; padding: 16px; border-radius: 12px; color: #3E2723; font-weight: 800; width: 100%; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
-        .btn-jobcard { background: var(--brown); color: var(--gold); border: 1px solid var(--gold); padding: 12px; border-radius: 10px; font-weight: 800; margin-top: 10px; width: 100%; display: block; text-align: center; cursor: pointer; }
-        .btn-red { background: var(--red); color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; font-weight: 800; margin-top: 10px; cursor: pointer; }
-        .btn-clear { background: #f0f0f0; color: #555; border: 1px solid #ddd; padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; width: 100%; cursor: pointer; text-transform: uppercase; margin-top: 2px; box-sizing: border-box; text-align: center; }
-        
-        .detail-img-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 10px; }
-        .detail-thumb { width: 100%; height: 110px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd; background: #fafafa; cursor: pointer; display: block; }
-
-        .dash-dye-box, .dash-metric-slot { background: linear-gradient(135deg, #f57f17, #fbc02d); border: 2px solid #fff; color: #3e2723; padding: 15px; border-radius: 14px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .dash-dye-box { margin-bottom: 20px; }
-        .filter-panel { background: #fff; padding: 14px; border-radius: 16px; border: 1px solid var(--gold); margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
-
-        .restricted-wrapper { position: relative; width: 100%; min-height: calc(100vh - 165px); }
-        .restricted-lock-screen { position: absolute; top: -15px; left: -15px; width: calc(100% + 30px); height: calc(100vh - 160px); background: var(--brown); display: flex; flex-direction: column; align-items: center; justify-content: center; box-sizing: border-box; padding: 20px; z-index: 100; }
-
-        .history-checkbox { position: absolute; top: 18px; right: 15px; width: 22px; height: 22px; accent-color: var(--brown); z-index: 10; }
-        .dash-summary-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .dash-summary-box { background: linear-gradient(135deg, var(--brown), #2b1b18); border: 2px solid var(--gold); color: var(--gold); padding: 15px; border-radius: 14px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Poppins:wght@300;400;500;600;700&display=swap');
+        .font-serif-custom {
+            font-family: 'Playfair Display', serif;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0f172a;
+        }
+        /* Custom scrollbar for clean dashboard feel */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 3px;
+        }
     </style>
 </head>
-<body>
+<body class="text-slate-100 min-h-screen py-6 px-3 sm:px-6 lg:px-8">
 
-<div id="themeToast"></div>
-
-<div id="mainLock">
-    <h1 style="font-family:'Cinzel'; color:var(--gold); letter-spacing:5px; margin-bottom: 20px;">SHANTI JEWEL</h1>
-    <div class="lock-container">
-        <input type="password" id="entryPin" placeholder="PIN" onkeyup="if(this.value.length === 4) unlockMain()" style="text-align:center; letter-spacing:15px; font-size:24px; color:black; width:100%; margin-bottom:15px;">
-        <button class="btn-gold" onclick="unlockMain()">ENTER APP</button>
-    </div>
-</div>
-
-<!-- Order Form Modal with External Action Buttons -->
-<div id="jobCardOverlay" onclick="document.getElementById('jobCardOverlay').style.display='none'">
-    <div class="job-card-modal-wrapper" onclick="event.stopPropagation()">
+    <div class="max-w-4xl mx-auto space-y-6">
         
-        <!-- Action Buttons Bar Outside Form -->
-        <div class="job-card-action-bar">
-            <button class="btn-gold" style="margin:0; padding:12px; flex:1;" onclick="downloadJobCard()">DOWNLOAD</button>
-            <button class="btn-gold" style="margin:0; padding:12px; flex:1; background: linear-gradient(135deg, #1b5e20, #2e7d32); color:#fff;" onclick="shareJobCard()">SHARE IMAGE</button>
-            <button class="btn-red" style="margin:0; padding:12px; width:80px;" onclick="document.getElementById('jobCardOverlay').style.display='none'">CLOSE</button>
-        </div>
-
-        <!-- Printable Order Form Card -->
-        <div class="digital-form" id="printableJobCard">
-            <div class="df-header">
-                <small> ||श्री||</small>
-                <h2 style="font-family:'Cinzel'; margin:5px 0;">SHANTI JEWEL</h2>
-                <small style="font-weight:700; color:var(--gold); letter-spacing:2px;">ORDER FORM SPECIFICATIONS</small>
-            </div>
-            
-            <div class="jc-grid">
-                <img id="jc_img1" class="df-img" src="" crossorigin="anonymous">
-                <img id="jc_img2" class="df-img" src="" crossorigin="anonymous">
-                <img id="jc_img3" class="df-img" src="" crossorigin="anonymous">
-                <img id="jc_img4" class="df-img" src="" crossorigin="anonymous">
-                <img id="jc_img5" class="df-img" src="" crossorigin="anonymous">
-                <img id="jc_img6" class="df-img" src="" crossorigin="anonymous">
-                <img id="jc_img7" class="df-img" src="" crossorigin="anonymous">
-                <img id="jc_img8" class="df-img" src="" crossorigin="anonymous">
-                <img id="jc_img9" class="df-img" src="" crossorigin="anonymous">
-                <img id="jc_img10" class="df-img" src="" crossorigin="anonymous">
-            </div>
-
-            <div class="df-row">
-                <div><span class="df-label">Weight</span><br><span class="df-value" id="jc_wt"></span></div>
-                <div><span class="df-label">Purity</span><br><span class="df-value" id="jc_kt"></span></div>
-                <div><span class="df-label">Size</span><br><span class="df-value" id="jc_sz"></span></div>
-            </div>
-            <div class="df-row"><span class="df-label">Designer</span><span class="df-value" id="jc_cad"></span></div>
-            <div style="margin-top:15px; background:#fdfbf7; padding:12px; border-radius:8px; border: 1px solid #eee; box-sizing: border-box; width: 100%;">
-                <span class="df-label">Instructions:</span><br>
-                <p id="jc_sp" style="font-size:13px; font-weight:600; line-height:1.4; margin:5px 0; word-break: break-word;"></p>
-            </div>
-        </div>
-        
-    </div>
-</div>
-
-<div id="confirmOverlay">
-    <div class="confirm-box">
-        <h3 style="margin-top:0; font-family:'Cinzel'; color:var(--brown);" id="confirmTitle">MOVE TO NEXT DEPARTMENT</h3>
-        <p style="font-size:14px; font-weight:600; color:#666;" id="confirmMsg">Are you sure you want to advance this order?</p>
-        <div style="display:flex; gap:10px; margin-top:20px;">
-            <button class="btn-gold" style="margin:0; padding:10px; flex:1;" id="confirmYesBtn">YES</button>
-            <button class="btn-red" style="margin:0; padding:10px; flex:1; background:#777;" onclick="closeConfirm()">NO</button>
-        </div>
-    </div>
-</div>
-
-<div id="appContent" style="display:none;">
-    <div class="header"><h1>SHANTI JEWEL</h1></div>
-
-    <div id="punchPage" class="page active">
-        <div class="punch-card">
-            
-            <label style="font-size: 10px; font-weight: 800; color: var(--brown); text-transform: uppercase; letter-spacing: 1px;">Order Photos (2 Slots)</label>
-            <div class="photo-box-grid">
-                <div id="p1" class="photo-box" onclick="document.getElementById('f1').click()">IMG 1 (MAIN)</div>
-                <div id="p2" class="photo-box" onclick="document.getElementById('f2').click()">IMG 2 (PERSPECTIVE)</div>
-            </div>
-
-            <input type="file" id="f1" accept="image/*" hidden onchange="processPhoto(this, 'p1', 0)">
-            <input type="file" id="f2" accept="image/*" hidden onchange="processPhoto(this, 'p2', 1)">
-
-            <input type="text" id="i_id" placeholder="ORDER ID">
-            <select id="i_pa">
-                <option value="">SELECT PARTY</option>
-                <option>Annapurna Gold</option>
-                <option>REVA DIAMONDS</option>
-                <option>Shree Gajanan Jewellers</option>
-                <option>P.N.GADGIL & SONS</option>
-                <option>PNG Brothers</option>
-                <option>Neelkanth Jewellers</option>
-                <option>Inhouse Production</option>
-            </select>
-            <select id="i_cad">
-                <option value="">DESIGNER</option>
-                <option value="DYE">DYE</option>
-                <option value="SHINDE">SHINDE</option>
-                <option value="ALAUDDIN">ALAUDDIN</option>
-                <option value="INDRO">INDRO</option>
-            </select>
-            <div style="display:flex; gap:10px;"><input type="number" step="0.001" id="i_wt" placeholder="WT"><input type="text" id="i_kt" placeholder="KT"></div>
-            <div style="display:flex; gap:10px;"><input type="text" id="i_sz" placeholder="Size"><input type="date" id="i_dd"></div>
-            <textarea id="i_sp" rows="2" placeholder="Instructions..."></textarea>
-            <button id="punchBtn" class="btn-gold" onclick="saveOrder()">PUNCH ORDER</button>
-        </div>
-    </div>
-
-    <div id="activePage" class="page">
-        <div class="filter-panel">
-            <input type="text" id="src" placeholder="Search ID..." onkeyup="loadData()" style="margin: 3px 0;">
-            <div style="display: flex; gap: 8px; margin: 3px 0;">
-                <select id="filter_party" onchange="loadData()" style="margin: 0; flex: 1;">
-                    <option value="">ALL PARTIES</option>
-                    <option>Annapurna Gold</option>
-                    <option>REVA DIAMONDS</option>
-                    <option>Shree Gajanan Jewellers</option>
-                    <option>P.N.GADGIL & SONS</option>
-                    <option>PNG Brothers</option>
-                    <option>Neelkanth Jewellers</option>
-                    <option>Inhouse Production</option>
-                </select>
-                <input type="date" id="filter_date" onchange="loadData()" style="margin: 0; flex: 1;">
-            </div>
-            <button class="btn-clear" onclick="resetActiveFilters()">Clear Filters</button>
-        </div>
-        <div id="activeList"></div>
-    </div>
-
-    <div id="readyPage" class="page">
-        <div id="readyList"></div>
-    </div>
-
-    <div id="historyPage" class="page">
-        <button class="btn-red" style="margin-bottom: 15px; padding: 14px;" onclick="deleteSelectedHistory()">DELETE SELECTED ORDERS</button>
-        <div id="historyList"></div>
-    </div>
-
-    <div id="dashPage" class="page">
-        <div class="restricted-wrapper">
-            <div id="dashLock" class="restricted-lock-screen">
-                <h1 style="font-family:'Cinzel'; color:var(--gold); letter-spacing:5px; margin: 0 0 25px 0; font-size: 28px; text-align: center;">RESTRICTED</h1>
-                <div class="lock-container">
-                    <input type="password" id="dashPinInput" onkeyup="if(this.value.length === 4) unlockDash()" placeholder="PIN" style="text-align:center; letter-spacing:15px; font-size:24px; color:black; width:100%; margin-bottom:15px;">
-                    <button class="btn-gold" onclick="unlockDash()">UNLOCK</button>
+        <!-- Top App Navigation / Header Banner -->
+        <header class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="h-12 w-12 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-serif-custom text-2xl font-bold">
+                    श्री
+                </div>
+                <div>
+                    <h1 class="font-serif-custom text-2xl font-bold text-amber-300 tracking-wide">Shanti Jewel Studio</h1>
+                    <p class="text-xs text-slate-400 uppercase tracking-widest">Advanced Order & Specification Generator</p>
                 </div>
             </div>
-            <div id="dashBody" style="display:none;">
-                <div class="dash-summary-container" id="dashSummaryMetrics"></div>
-                <div id="dyeMetricsContainer"></div>
-                <div id="stats" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;"></div>
-                <div id="partyAnalysis"></div>
-                <button class="btn-red" style="margin-top: 30px;" onclick="wipeDataTrigger()">WIPEOUT DATABASE</button>
+            <div class="flex items-center gap-2">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <span class="w-1.5 h-1.5 mr-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
+                    System Online
+                </span>
             </div>
-        </div>
-    </div>
+        </header>
 
-    <div class="tab-bar">
-        <div class="tab active" onclick="nav('punch', this)">Punch</div>
-        <div class="tab" onclick="nav('active', this)">Active</div>
-        <div class="tab" onclick="nav('ready', this)">Ready</div>
-        <div class="tab" onclick="nav('history', this)">History</div>
-        <div class="tab" onclick="nav('dash', this)">Dash</div>
-    </div>
-</div>
-
-<script>
-const firebaseConfig = { 
-    apiKey: "AIzaSyBnvmQBPkJmJcjXf71vEUY91B2_2P9oAgU", 
-    databaseURL: "https://shanti-jewel-order-default-rtdb.firebaseio.com/", 
-    projectId: "shanti-jewel-order",
-    storageBucket: "shanti-jewel-order.firebasestorage.app"
-};
-
-firebase.initializeApp(firebaseConfig);
-
-const db = firebase.database();
-const storage = firebase.storage();
-const stages = ["CAD", "CAM", "CASTING", "POLISH", "HUID", "READY"];
-
-let selectedFiles = new Array(2).fill(null);
-let pendingMoveId = null;
-let pendingMoveCurStage = null;
-let currentActiveCardId = "Order";
-
-function sendNativePhoneNotification(title, body, imageUrl) {
-    try {
-        if ("Notification" in window && Notification.permission === "granted") {
-            navigator.serviceWorker.ready.then(reg => {
-                reg.showNotification(title, {
-                    body: body,
-                    icon: imageUrl || '',
-                    image: imageUrl || ''
-                });
-            });
-        }
-    } catch (e) {
-        console.log("Notification send error:", e);
-    }
-}
-
-function showToast(message, type = "success") {
-    const toast = document.getElementById("themeToast");
-    toast.innerText = message.toUpperCase();
-    toast.className = `show ${type}`;
-    
-    setTimeout(() => {
-        toast.classList.remove("show");
-    }, 6000);
-}
-
-function unlockMain() {
-    if(document.getElementById('entryPin').value === '1008') {
-        document.getElementById('mainLock').style.display = 'none';
-        document.getElementById('appContent').style.display = 'block';
-        
-        loadData();
-        if ("Notification" in window) {
-            Notification.requestPermission();
-        }
-        try {
-            setInterval(checkDeliveryDeadlines, 7200000);
-            checkDeliveryDeadlines();
-        } catch(e) {}
-    } else { 
-        showToast("INVALID ACCESS PIN", "error"); 
-    }
-}
-
-function unlockDash() {
-    if(document.getElementById('dashPinInput').value === '2215') {
-        document.getElementById('dashLock').style.display = 'none';
-        document.getElementById('dashBody').style.display = 'block';
-    } else { 
-        showToast("INVALID ADMIN PIN", "error"); 
-    }
-}
-
-function resetActiveFilters() {
-    document.getElementById('src').value = "";
-    document.getElementById('filter_party').value = "";
-    document.getElementById('filter_date').value = "";
-    loadData();
-}
-
-function processPhoto(input, boxId, index) {
-    if(!input.files[0]) return;
-    const file = input.files[0];
-    
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const img = new Image();
-        img.onload = function() {
-            const canvas = document.createElement('canvas');
-            const MAX_WIDTH = 900; 
-            let width = img.width;
-            let height = img.height;
-
-            if (width > MAX_WIDTH) {
-                height *= MAX_WIDTH / width;
-                width = MAX_WIDTH;
-            }
-            canvas.width = width;
-            canvas.height = height;
-
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, width, height);
-
-            canvas.toBlob(function(blob) {
-                selectedFiles[index] = blob;
-                document.getElementById(boxId).innerHTML = `<img src="${URL.createObjectURL(blob)}" style="width:100%; height:100%; object-fit:cover; border-radius:10px;">`;
-            }, 'image/jpeg', 0.8);
-        };
-        img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-}
-
-async function saveOrder() {
-    const btn = document.getElementById('punchBtn');
-    
-    const id = document.getElementById('i_id').value.trim();
-    const party = document.getElementById('i_pa').value;
-    const designer = document.getElementById('i_cad').value;
-    const weight = document.getElementById('i_wt').value.trim();
-    const purity = document.getElementById('i_kt').value.trim();
-    const size = document.getElementById('i_sz').value.trim();
-    const dueDate = document.getElementById('i_dd').value;
-    const instructions = document.getElementById('i_sp').value.trim();
-
-    if (!selectedFiles[0]) { showToast("MISSING PHOTO: MAIN IMG 1 IS REQUIRED", "error"); return; }
-    if (!id) { showToast("INPUT REQUIRED: ORDER ID IS BLANK", "error"); return; }
-    if (!party) { showToast("INPUT REQUIRED: SELECT PARTY NAME", "error"); return; }
-    if (!designer) { showToast("INPUT REQUIRED: SELECT DESIGNER ASSIGNMENT", "error"); return; }
-    if (!weight) { showToast("INPUT REQUIRED: ENTER ITEM WEIGHT", "error"); return; }
-    if (!purity) { showToast("INPUT REQUIRED: ENTER METAL PURITY (KT)", "error"); return; }
-    if (!size) { showToast("INPUT REQUIRED: ENTER SPECIFICATION SIZE", "error"); return; }
-    if (!dueDate) { showToast("INPUT REQUIRED: SELECT DELIVERY DUE DATE", "error"); return; }
-    if (!instructions) { showToast("INPUT REQUIRED: PROVIDE ORDER INSTRUCTIONS", "error"); return; }
-    
-    btn.innerText = "UPLOADING PHOTOS...";
-    btn.disabled = true;
-
-    try {
-        let urls = new Array(2).fill("");
-
-        for(let i = 0; i < 2; i++) {
-            if(selectedFiles[i]) {
-                const photoPath = `order_photos/${id}_slot${i}_${Date.now()}.jpg`;
-                const storageRef = storage.ref(photoPath);
-                const uploadTask = await storageRef.put(selectedFiles[i]);
-                urls[i] = await uploadTask.ref.getDownloadURL();
-            }
-        }
-
-        btn.innerText = "SAVING ALL DETAILS...";
-
-        const obj = { 
-            id: id, 
-            party: party, 
-            cad: designer, 
-            wt: parseFloat(weight) || 0, 
-            kt: purity, 
-            sz: size, 
-            dd: dueDate, 
-            sp: instructions, 
-            photo: urls[0], 
-            photo2: urls[1],
-            status: "CAD", 
-            ts: Date.now() 
-        };
-
-        await db.ref('orders/' + id).set(obj);
-        showToast("ORDER PUNCHED SUCCESSFULLY", "success");
-        
-        setTimeout(() => {
-            location.reload(); 
-        }, 1200);
-
-    } catch (e) {
-        console.error("Save Error:", e);
-        showToast("DATABASE DISCONNECT: " + e.message, "error");
-        btn.innerText = "PUNCH ORDER";
-        btn.disabled = false;
-    }
-}
-
-function openJobCard(orderID) {
-    currentActiveCardId = orderID;
-    db.ref('orders/' + orderID).once('value').then(snap => {
-        const o = snap.val();
-        if(!o) return;
-        document.getElementById('jc_cad').innerText = o.cad;
-        document.getElementById('jc_wt').innerText = o.wt + "g";
-        document.getElementById('jc_kt').innerText = o.kt;
-        document.getElementById('jc_sz').innerText = o.sz;
-        document.getElementById('jc_sp').innerText = o.sp || "No instructions";
-        
-        for(let i=1; i<=10; i++) {
-            const field = i === 1 ? 'photo' : 'photo' + i;
-            const imgEl = document.getElementById('jc_img' + i);
-            if(o[field]) {
-                imgEl.crossOrigin = "anonymous";
-                imgEl.src = o[field] + (o[field].includes('?') ? '&' : '?') + 't=' + Date.now();
-                imgEl.style.display = 'block';
-            } else {
-                imgEl.style.display = 'none';
-            }
-        }
-        document.getElementById('jobCardOverlay').style.display = 'block';
-    });
-}
-
-function downloadJobCard() {
-    const cardContainer = document.getElementById('printableJobCard');
-    if (!cardContainer) return;
-
-    showToast("PREPARING ORDER FORM...", "success");
-
-    setTimeout(() => {
-        html2canvas(cardContainer, {
-            scale: 2,
-            useCORS: true,
-            allowTaint: false,
-            backgroundColor: '#ffffff'
-        }).then(canvas => {
-            canvas.toBlob(blob => {
-                if (!blob) {
-                    showToast("CANVAS ERROR", "error");
-                    return;
-                }
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.download = `Order_Form_${currentActiveCardId}.jpg`;
-                link.href = url;
-                link.click();
-                setTimeout(() => URL.revokeObjectURL(url), 1000);
-                showToast("ORDER FORM DOWNLOADED", "success");
-            }, 'image/jpeg', 0.95);
-        }).catch(err => {
-            console.error("Download Error:", err);
-            showToast("DOWNLOAD FAILED: " + err.message, "error");
-        });
-    }, 600);
-}
-
-function shareJobCard() {
-    const cardContainer = document.getElementById('printableJobCard');
-    if (!cardContainer) return;
-
-    showToast("PREPARING IMAGE TO SHARE...", "success");
-
-    setTimeout(() => {
-        html2canvas(cardContainer, {
-            scale: 2,
-            useCORS: true,
-            allowTaint: false,
-            backgroundColor: '#ffffff'
-        }).then(canvas => {
-            canvas.toBlob(blob => {
-                if (!blob) {
-                    showToast("SHARE ERROR", "error");
-                    return;
-                }
-                const file = new File([blob], `Order_Form_${currentActiveCardId}.jpg`, { type: 'image/jpeg' });
-                
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    navigator.share({
-                        files: [file],
-                        title: `Order Form ${currentActiveCardId}`,
-                        text: `Specification Form for Order ID: ${currentActiveCardId}`
-                    }).then(() => {
-                        showToast("SHARED SUCCESSFULLY", "success");
-                    }).catch(err => {
-                        if (err.name !== 'AbortError') {
-                            showToast("SHARE CANCELLED OR FAILED", "error");
-                        }
-                    });
-                } else {
-                    const url = URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.download = `Order_Form_${currentActiveCardId}.jpg`;
-                    link.href = url;
-                    link.click();
-                    setTimeout(() => URL.revokeObjectURL(url), 1000);
-                    showToast("SHARING NOT SUPPORTED - DOWNLOADED INSTEAD", "success");
-                }
-            }, 'image/jpeg', 0.95);
-        }).catch(err => {
-            console.error("Share Error:", err);
-            showToast("SHARE FAILED: " + err.message, "error");
-        });
-    }, 600);
-}
-
-function triggerMoveConfirm(id, cur) {
-    pendingMoveId = id;
-    pendingMoveCurStage = cur;
-    const nextStage = stages[stages.indexOf(cur) + 1];
-    
-    document.getElementById('confirmTitle').innerText = "MOVE TO NEXT DEPARTMENT";
-    document.getElementById('confirmMsg').innerText = `Advance Order ${id} from ${cur} to ${nextStage}?`;
-    document.getElementById('confirmOverlay').style.display = 'flex';
-    
-    document.getElementById('confirmYesBtn').onclick = function() {
-        const nxt = stages[stages.indexOf(pendingMoveCurStage) + 1]; 
-        if(nxt) {
-            db.ref('orders/' + pendingMoveId).update({status: nxt});
-            showToast(`ORDER ${pendingMoveId} MOVED TO ${nxt}`, "success");
-        }
-        closeConfirm();
-    };
-}
-
-function triggerDispatchConfirm(id) {
-    document.getElementById('confirmTitle').innerText = "DISPATCH ORDER";
-    document.getElementById('confirmMsg').innerText = `Are you sure you want to dispatch Order ${id}? It will be moved to History.`;
-    document.getElementById('confirmOverlay').style.display = 'flex';
-    
-    document.getElementById('confirmYesBtn').onclick = function() {
-        db.ref('orders/' + id).update({status: "DISPATCHED"});
-        showToast(`ORDER ${id} DISPATCHED TO HISTORY`, "success");
-        closeConfirm();
-    };
-}
-
-function closeConfirm() {
-    document.getElementById('confirmOverlay').style.display = 'none';
-    pendingMoveId = null;
-    pendingMoveCurStage = null;
-}
-
-function checkDeliveryDeadlines() {
-    const now = new Date();
-    const today = now.toISOString().split('T')[0];
-    const tomorrow = new Date(now.getTime() + 86400000).toISOString().split('T')[0];
-    const inTwoDays = new Date(now.getTime() + 172800000).toISOString().split('T')[0];
-
-    db.ref('orders').once('value').then(snap => {
-        const orders = snap.val();
-        if (!orders) return;
-
-        let trackingKey = `notified_${today}_${Math.floor(now.getHours()/2)}`;
-        if (localStorage.getItem(trackingKey)) return;
-
-        Object.values(orders).forEach(o => {
-            if (o.status === "READY" || o.status === "DISPATCHED") return;
-
-            if (o.dd === today) {
-                sendNativePhoneNotification(`URGENT: Order ${o.id} Due Today!`, `Party: ${o.party} | Stage: ${o.status}`, o.photo);
-            } else if (o.dd === tomorrow) {
-                sendNativePhoneNotification(`Due Tomorrow: Order ${o.id}`, `Party: ${o.party} | Stage: ${o.status}`, o.photo);
-            } else if (o.dd === inTwoDays) {
-                sendNativePhoneNotification(`Due in 2 Days: Order ${o.id}`, `Party: ${o.party} | Stage: ${o.status}`, o.photo);
-            }
-        });
-        localStorage.setItem(trackingKey, "true");
-    });
-}
-
-function deleteSelectedHistory() {
-    const checkboxes = document.querySelectorAll('.history-checkbox:checked');
-    if (checkboxes.length === 0) {
-        showToast("NO ORDERS SELECTED", "error");
-        return;
-    }
-    if (confirm(`Delete ${checkboxes.length} selected order(s) from history?`)) {
-        checkboxes.forEach(cb => {
-            const id = cb.getAttribute('data-id');
-            db.ref('orders/' + id).remove();
-        });
-        showToast("SELECTED ORDERS DELETED", "error");
-    }
-}
-
-function loadData() {
-    const srcInput = document.getElementById('src');
-    const partyInput = document.getElementById('filter_party');
-    const dateInput = document.getElementById('filter_date');
-
-    const searchId = srcInput ? srcInput.value.toLowerCase().trim() : "";
-    const searchParty = partyInput ? partyInput.value : "";
-    const searchDate = dateInput ? dateInput.value : "";
-
-    db.ref('orders').on('value', snap => {
-        const act = document.getElementById('activeList');
-        const rdy = document.getElementById('readyList');
-        const hist = document.getElementById('historyList');
-        const statsDiv = document.getElementById('stats');
-        
-        if (!act || !rdy || !hist) return;
-        
-        act.innerHTML = ""; rdy.innerHTML = ""; hist.innerHTML = "";
-        
-        const data = snap.val() ? Object.values(snap.val()).reverse() : [];
-        const counts = {}; stages.forEach(s => counts[s] = 0);
-        const partyDist = {};
-
-        let dyeActiveCount = 0;
-        let dyeActiveWeight = 0;
-        let currentOrdersCount = 0;
-        let ordersDoneCount = 0;
-
-        data.forEach(o => {
-            if (counts[o.status] !== undefined) counts[o.status]++;
-            if(!partyDist[o.party]) partyDist[o.party] = { pcs: 0, wt: 0 };
-            partyDist[o.party].pcs++;
-            partyDist[o.party].wt += (parseFloat(o.wt) || 0);
-
-            if (o.status !== "READY" && o.status !== "DISPATCHED") {
-                currentOrdersCount++;
-            } else {
-                ordersDoneCount++;
-            }
-
-            if(o.cad && o.cad.toUpperCase() === "DYE" && o.status !== "READY" && o.status !== "DISPATCHED") {
-                dyeActiveCount++;
-                dyeActiveWeight += (parseFloat(o.wt) || 0);
-            }
-
-            let gridHTML = `<div class="detail-img-grid">`;
-            const imageFields = ['photo', 'photo2', 'photo3', 'photo4', 'photo5', 'photo6', 'photo7', 'photo8', 'photo9', 'photo10'];
-            imageFields.forEach(f => {
-                if(o[f]) {
-                    gridHTML += `<img src="${o[f]}" class="detail-thumb" crossorigin="anonymous" onclick="event.stopPropagation(); window.open('${o[f]}', '_blank')">`;
-                }
-            });
-            gridHTML += `</div>`;
-
-            let displayStatus = o.status;
-            let timelineLabels = stages.map((s, i) => {
-                let stepLabel = s;
-                if (s === "CAD" && o.cad && o.cad.toUpperCase() === "DYE") {
-                    stepLabel = "DYE";
-                }
-                return `<div class="t-step ${stages.indexOf(o.status) >= i ? 'active' : ''}"><span class="t-label">${stepLabel}</span></div>`;
-            }).join('');
-
-            if (o.status === "CAD" && o.cad && o.cad.toUpperCase() === "DYE") {
-                displayStatus = "DYE";
-            }
-
-            let checkboxHTML = '';
-            if (o.status === 'DISPATCHED') {
-                checkboxHTML = `<input type="checkbox" class="history-checkbox" data-id="${o.id}" onclick="event.stopPropagation();">`;
-            }
-
-            let actionBtn = '';
-            if (o.status !== 'READY' && o.status !== 'DISPATCHED') {
-                actionBtn = `<button class="btn-gold" style="font-size:11px;" onclick="event.stopPropagation(); triggerMoveConfirm('${o.id}','${o.status}')">NEXT STAGE</button>`;
-            } else if (o.status === 'READY') {
-                actionBtn = `<button class="btn-gold" style="font-size:11px; background: linear-gradient(135deg, #2e7d32, #1b5e20); color:#fff;" onclick="event.stopPropagation(); triggerDispatchConfirm('${o.id}')">DISPATCHED</button>`;
-            }
-
-            const card = `<div class="card" onclick="this.classList.toggle('expanded')">
-                ${checkboxHTML}
-                <div style="display:flex; gap:12px; align-items:center;">
-                    <img src="${o.photo || ''}" crossorigin="anonymous" style="width:60px; height:60px; border-radius:12px; object-fit:cover; border:1px solid #eee;">
-                    <div style="flex:1;">
-                        <div style="display:flex; justify-content:space-between;">
-                            <b style="color:var(--brown); font-size:16px;">${o.id}</b>
-                            <small style="color:var(--red); font-weight:800; margin-right: ${o.status === 'DISPATCHED' ? '25px' : '0px'};">DUE: ${o.dd || 'NONE'}</small>
+        <!-- Main Workspace Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Left Column: Printable Order Card Preview (7 Cols) -->
+            <div class="lg:col-span-7 flex flex-col items-center">
+                <div class="w-full bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden relative">
+                    
+                    <!-- Printable Area -->
+                    <div id="capture-area" class="p-6 sm:p-8 bg-slate-800 text-slate-100 space-y-6">
+                        
+                        <!-- Header Section -->
+                        <div class="text-center pb-5 border-b border-slate-700">
+                            <div class="text-amber-400 text-base tracking-widest font-semibold mb-1">
+                                // श्री \\
+                            </div>
+                            <h2 class="font-serif-custom text-3xl font-bold tracking-wide text-amber-300">Shanti Jewel</h2>
+                            <p class="text-[11px] text-slate-400 mt-0.5 uppercase tracking-widest">Master Craftsmanship & Custom Order Specification</p>
                         </div>
-                        <div style="font-weight:700; font-size:13px; color:#555;">${o.party || 'UNKNOWN'}</div>
-                        <small style="text-transform:uppercase; color:var(--gold); font-weight:800; font-size:10px;">STAGE: ${displayStatus}</small>
+
+                        <!-- Data Fields Grid -->
+                        <div class="space-y-4 text-sm">
+                            
+                            <!-- Row 1: Order No & Date -->
+                            <div class="grid grid-cols-2 gap-4 pb-3 border-b border-slate-700/60">
+                                <div class="bg-slate-900/40 p-2.5 rounded-xl border border-slate-700/40">
+                                    <span class="text-slate-400 block text-[10px] uppercase tracking-wider font-medium">Order Number</span>
+                                    <span id="display-order-no" class="font-semibold text-slate-100 text-base">#SJ-2026-001</span>
+                                </div>
+                                <div class="bg-slate-900/40 p-2.5 rounded-xl border border-slate-700/40">
+                                    <span class="text-slate-400 block text-[10px] uppercase tracking-wider font-medium">Order Date</span>
+                                    <span id="display-date" class="font-semibold text-slate-100 text-base">2026-08-08</span>
+                                </div>
+                            </div>
+
+                            <!-- Row 2: Customer Name & CAD Designer -->
+                            <div class="grid grid-cols-2 gap-4 pb-3 border-b border-slate-700/60">
+                                <div class="bg-slate-900/40 p-2.5 rounded-xl border border-slate-700/40">
+                                    <span class="text-slate-400 block text-[10px] uppercase tracking-wider font-medium">Customer Name</span>
+                                    <span id="display-customer" class="font-semibold text-slate-100 truncate block">Valued Client</span>
+                                </div>
+                                <div class="bg-slate-900/40 p-2.5 rounded-xl border border-slate-700/40">
+                                    <span class="text-slate-400 block text-[10px] uppercase tracking-wider font-medium">CAD Designer</span>
+                                    <span class="font-semibold text-amber-300 truncate block">Radha Gopinath CAD</span>
+                                </div>
+                            </div>
+
+                            <!-- Row 3: Weight Matrix -->
+                            <div class="grid grid-cols-3 gap-2 pb-3 border-b border-slate-700/60 text-center">
+                                <div class="bg-slate-900/40 p-2.5 rounded-xl border border-slate-700/40">
+                                    <span class="text-slate-400 block text-[10px] uppercase tracking-wider font-medium">Gross Wt</span>
+                                    <span id="display-gwt" class="font-semibold text-slate-100">0.000 g</span>
+                                </div>
+                                <div class="bg-slate-900/40 p-2.5 rounded-xl border border-slate-700/40">
+                                    <span class="text-slate-400 block text-[10px] uppercase tracking-wider font-medium">Net Wt</span>
+                                    <span id="display-nwt" class="font-semibold text-slate-100">0.000 g</span>
+                                </div>
+                                <div class="bg-slate-900/40 p-2.5 rounded-xl border border-slate-700/40">
+                                    <span class="text-slate-400 block text-[10px] uppercase tracking-wider font-medium">Purity</span>
+                                    <span id="display-purity" class="font-semibold text-amber-300">916 / 22K</span>
+                                </div>
+                            </div>
+
+                            <!-- Design Image Preview Slot -->
+                            <div class="space-y-1.5">
+                                <span class="text-slate-400 block text-[10px] uppercase tracking-wider font-medium">Design Blueprint / Reference Photo</span>
+                                <div class="bg-slate-900/60 rounded-2xl p-4 border border-slate-700/60 flex flex-col items-center justify-center min-h-[180px] relative overflow-hidden">
+                                    <img id="preview-img" src="" alt="Design Preview" class="max-h-52 object-contain rounded-lg hidden shadow-md" crossorigin="anonymous">
+                                    <div id="no-img-placeholder" class="text-center py-6">
+                                        <svg class="w-10 h-10 mx-auto text-slate-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                        <p class="text-xs text-slate-500 italic">No reference image loaded</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Additional Custom Notes / Description -->
+                            <div id="notes-container" class="hidden bg-slate-900/40 p-3 rounded-xl border border-slate-700/40">
+                                <span class="text-slate-400 block text-[10px] uppercase tracking-wider font-medium mb-1">Special Instructions / Remarks</span>
+                                <p id="display-notes" class="text-xs text-slate-200 whitespace-pre-wrap leading-relaxed"></p>
+                            </div>
+
+                        </div>
+
+                        <!-- Card Footer Inside Export -->
+                        <div class="pt-4 border-t border-slate-700/60 flex items-center justify-between text-[10px] text-slate-500 uppercase tracking-widest">
+                            <span>Shanti Jewel • High-Precision Manufacturing</span>
+                            <span>Authorized Order Document</span>
+                        </div>
+
                     </div>
                 </div>
-                <div class="timeline">${timelineLabels}</div>
-                
-                <div class="details">
-                    <div class="df-row"><span class="df-label">Order ID:</span><span class="df-value">${o.id}</span></div>
-                    <div class="df-row"><span class="df-label">Party Name:</span><span class="df-value">${o.party || 'N/A'}</span></div>
-                    <div class="df-row"><span class="df-label">Designer:</span><span class="df-value">${o.cad || 'N/A'}</span></div>
-                    <div class="df-row"><span class="df-label">Weight:</span><span class="df-value">${o.wt ? o.wt + 'g' : 'N/A'}</span></div>
-                    <div class="df-row"><span class="df-label">Purity:</span><span class="df-value">${o.kt || 'N/A'}</span></div>
-                    <div class="df-row"><span class="df-label">Size:</span><span class="df-value">${o.sz || 'N/A'}</span></div>
-                    <div class="df-row"><span class="df-label">Delivery Date:</span><span class="df-value">${o.dd || 'N/A'}</span></div>
-                    <div class="df-row"><span class="df-label">Current Status:</span><span class="df-value" style="color:var(--gold); font-weight:800;">${displayStatus}</span></div>
-                    <div style="margin-top:8px; margin-bottom:8px; background:#fdfbf7; padding:10px; border-radius:8px; border:1px solid #eee;">
-                        <span class="df-label">Special Instructions:</span><br>
-                        <span style="font-size:13px; font-weight:600; color:var(--brown);">${o.sp || 'None'}</span>
-                    </div>
-                    
-                    ${gridHTML}
-                    
-                    <button class="btn-jobcard" onclick="event.stopPropagation(); openJobCard('${o.id}')">ORDER FORM</button>
-                    ${actionBtn}
-                    <button class="btn-red" style="font-size:10px; opacity:0.6;" onclick="event.stopPropagation(); del('${o.id}')">DELETE</button>
-                </div></div>`;
-            
-            if(o.status !== 'READY' && o.status !== 'DISPATCHED') {
-                let idMatch = !searchId || o.id.toLowerCase().includes(searchId);
-                let partyMatch = !searchParty || (o.party && o.party === searchParty);
-                let dateMatch = !searchDate || (o.dd && o.dd === searchDate);
+            </div>
 
-                if(idMatch && partyMatch && dateMatch) {
-                    act.innerHTML += card;
-                }
-            } else if (o.status === 'READY') {
-                rdy.innerHTML += card;
-            } else { 
-                hist.innerHTML += card; 
+            <!-- Right Column: Full Interactive Editor Control Panel (5 Cols) -->
+            <div class="lg:col-span-5 space-y-6">
+                
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-700 pb-3">
+                        <h3 class="text-sm font-semibold uppercase tracking-widest text-amber-400">Order Form Controls</h3>
+                        <span class="text-xs text-slate-400">Live Editor</span>
+                    </div>
+
+                    <!-- Input Grid Form Elements -->
+                    <div class="space-y-3.5 text-xs">
+                        
+                        <div>
+                            <label class="block text-slate-300 font-medium mb-1">Customer Full Name</label>
+                            <input type="text" id="input-customer" placeholder="e.g. Rajesh Sharma" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-amber-400 transition" oninput="updateField('customer')">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-slate-300 font-medium mb-1">Order Number</label>
+                                <input type="text" id="input-order-no" value="#SJ-2026-001" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-amber-400 transition" oninput="updateField('order-no')">
+                            </div>
+                            <div>
+                                <label class="block text-slate-300 font-medium mb-1">Order Date</label>
+                                <input type="date" id="input-date" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-amber-400 transition" onchange="updateField('date')">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-slate-300 font-medium mb-1">Gross Weight (g)</label>
+                                <input type="text" id="input-gwt" placeholder="e.g. 15.450" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-amber-400 transition" oninput="updateField('gwt')">
+                            </div>
+                            <div>
+                                <label class="block text-slate-300 font-medium mb-1">Net Weight (g)</label>
+                                <input type="text" id="input-nwt" placeholder="e.g. 14.200" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-amber-400 transition" oninput="updateField('nwt')">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-slate-300 font-medium mb-1">Purity Grade</label>
+                            <select id="input-purity" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-amber-400 transition" onchange="updateField('purity')">
+                                <option value="916 / 22K">916 / 22K Gold</option>
+                                <option value="750 / 18K">750 / 18K Gold</option>
+                                <option value="585 / 14K">585 / 14K Gold</option>
+                                <option value="999 / 24K">999 / 24K Fine Gold</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-slate-300 font-medium mb-1">Upload Design Blueprint / Photo</label>
+                            <input type="file" id="image-upload" accept="image/*" class="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-amber-500 file:text-slate-950 hover:file:bg-amber-400 cursor-pointer bg-slate-900 border border-slate-700 rounded-xl" onchange="loadDesignImage(event)">
+                        </div>
+
+                        <div>
+                            <label class="block text-slate-300 font-medium mb-1">Special Notes / Crafting Instructions</label>
+                            <textarea id="input-notes" rows="2" placeholder="Add custom stone settings, size requirements, or sizing details..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-slate-200 focus:outline-none focus:border-amber-400 transition" oninput="updateField('notes')"></textarea>
+                        </div>
+
+                    </div>
+
+                    <!-- Primary Export & Action Buttons -->
+                    <div class="pt-2 space-y-2.5">
+                        <button onclick="downloadCardSnapshot()" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold py-3 px-4 rounded-xl text-sm transition shadow-lg flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            Download Order Card Image
+                        </button>
+                        <button onclick="shareCardSnapshot()" class="w-full bg-slate-700 hover:bg-slate-600 text-slate-200 font-semibold py-3 px-4 rounded-xl text-sm transition border border-slate-600 flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3.316 3.316 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3.316 3.316 0 00-5.368-2.684z"></path></svg>
+                            Share Order Snapshot
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Application Engine Script -->
+    <script>
+        // Set default date picker value to today
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+            const dateInput = document.getElementById('input-date');
+            if(dateInput) {
+                dateInput.value = today;
+                document.getElementById('display-date').innerText = today;
             }
         });
 
-        const summaryDiv = document.getElementById('dashSummaryMetrics');
-        if (summaryDiv) {
-            summaryDiv.innerHTML = `
-                <div class="dash-summary-box">
-                    <div style="font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:1px; opacity:0.85;">Current Orders</div>
-                    <div style="font-size:24px; font-weight:800; margin-top:5px;">${currentOrdersCount}</div>
-                </div>
-                <div class="dash-summary-box">
-                    <div style="font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:1px; opacity:0.85;">Orders Done</div>
-                    <div style="font-size:24px; font-weight:800; margin-top:5px;">${ordersDoneCount}</div>
-                </div>`;
+        function updateField(field) {
+            const inputVal = document.getElementById(`input-${field}`).value;
+            const displayEl = document.getElementById(`display-${field}`);
+            
+            if (field === 'date') {
+                displayEl.innerText = inputVal || new Date().toISOString().split('T')[0];
+                return;
+            }
+
+            if (field === 'purity') {
+                displayEl.innerText = inputVal;
+                return;
+            }
+
+            if (field === 'notes') {
+                const notesContainer = document.getElementById('notes-container');
+                if (inputVal.trim() !== '') {
+                    displayEl.innerText = inputVal;
+                    notesContainer.classList.remove('hidden');
+                } else {
+                    notesContainer.classList.add('hidden');
+                }
+                return;
+            }
+
+            if (inputVal.trim() !== '') {
+                displayEl.innerText = (field === 'gwt' || field === 'nwt') ? inputVal + ' g' : inputVal;
+            } else {
+                if(field === 'customer') displayEl.innerText = 'Valued Client';
+                if(field === 'order-no') displayEl.innerText = '#SJ-2026-001';
+                if(field === 'gwt') displayEl.innerText = '0.000 g';
+                if(field === 'nwt') displayEl.innerText = '0.000 g';
+            }
         }
 
-        const dyeDiv = document.getElementById('dyeMetricsContainer');
-        if (dyeDiv) {
-            dyeDiv.innerHTML = `
-                <div class="dash-dye-box">
-                    <div style="font-family:'Cinzel'; font-size:14px; font-weight:800; letter-spacing:2px; margin-bottom:5px; border-bottom:1px solid rgba(62,39,35,0.2); padding-bottom:5px;">DYE</div>
-                    <div style="display:flex; justify-content:space-around; margin-top:8px;">
-                        <div><span class="df-label" style="color:#5d4037;">Active Pcs</span><br><span style="font-size:18px; font-weight:800;">${dyeActiveCount}</span></div>
-                        <div><span class="df-label" style="color:#5d4037;">Total Weight</span><br><span style="font-size:18px; font-weight:800;">${dyeActiveWeight.toFixed(3)}g</span></div>
-                    </div>
-                </div>`;
+        function loadDesignImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById('preview-img');
+                    img.src = e.target.result;
+                    img.crossOrigin = "anonymous";
+                    img.classList.remove('hidden');
+                    document.getElementById('no-img-placeholder').classList.add('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
         }
 
-        if (statsDiv) {
-            statsDiv.innerHTML = stages.map(s => {
-                return `<div class="dash-metric-slot">
-                    <h3 style="margin: 0; font-size: 20px; font-weight: 800;">${counts[s] || 0}</h3>
-                    <small style="font-size:9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.85;">${s}</small>
-                </div>`;
-            }).join('');
+        async function downloadCardSnapshot() {
+            const captureArea = document.getElementById('capture-area');
+            const canvas = await html2canvas(captureArea, {
+                scale: 2,
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: '#1e293b'
+            });
+            const image = canvas.toDataURL("image/png");
+            const a = document.createElement('a');
+            a.href = image;
+            a.download = 'Shanti-Jewel-Order-Card.png';
+            a.click();
         }
-        
-        const partyDiv = document.getElementById('partyAnalysis');
-        if (partyDiv) {
-            let tableHTML = `<table class="party-table"><thead><tr><th>Party</th><th>Pcs</th><th>Total Wt</th></tr></thead><tbody>`;
-            for (const p in partyDist) tableHTML += `<tr><td>${p || "N/A"}</td><td>${partyDist[p].pcs}</td><td>${partyDist[p].wt.toFixed(3)}g</td></tr>`;
-            partyDiv.innerHTML = tableHTML + `</tbody></table>`;
+
+        async function shareCardSnapshot() {
+            const captureArea = document.getElementById('capture-area');
+            const canvas = await html2canvas(captureArea, {
+                scale: 2,
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: '#1e293b'
+            });
+            canvas.toBlob(async (blob) => {
+                const file = new File([blob], "Shanti-Jewel-Order-Card.png", { type: "image/png" });
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    try {
+                        await navigator.share({
+                            files: [file],
+                            title: 'Shanti Jewel Order Specification',
+                            text: 'Custom jewelry manufacturing order card from Shanti Jewel.'
+                        });
+                    } catch (error) {
+                        console.log('Sharing failed', error);
+                    }
+                } else {
+                    alert('File sharing is not supported directly in this browser. Please use the Download Image button instead.');
+                }
+            });
         }
-    });
-}
-
-function del(id) { 
-    if(confirm("Delete Order " + id + "?")) {
-        db.ref('orders/'+id).remove();
-        showToast("ORDER DELETED", "error");
-    } 
-}
-
-function wipeDataTrigger() { 
-    if(confirm("CRITICAL WARNING: ERASE ENTIRE DATABASE PERMANENTLY?")) {
-        db.ref('orders').remove();
-        showToast("DATABASE COMPLETELY WIPED", "error");
-    } 
-}
-
-function nav(p, el) { 
-    document.querySelectorAll('.page, .tab').forEach(x => x.classList.remove('active')); 
-    document.getElementById(p+'Page').classList.add('active'); 
-    el.classList.add('active'); 
-}
-</script>
+    </script>
 </body>
 </html>
